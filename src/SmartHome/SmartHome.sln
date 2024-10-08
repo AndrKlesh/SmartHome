@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartHomeWeb", "SmartHomeWeb\SmartHomeWeb.csproj", "{D0CEF151-EEF6-4834-AE17-8B0A27B61A4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollectionController", "CollectionController\CollectionController.csproj", "{F32F0DC5-E380-4B95-A8EB-3E03CCDC0CF6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D0CEF151-EEF6-4834-AE17-8B0A27B61A4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0CEF151-EEF6-4834-AE17-8B0A27B61A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0CEF151-EEF6-4834-AE17-8B0A27B61A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0CEF151-EEF6-4834-AE17-8B0A27B61A4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F32F0DC5-E380-4B95-A8EB-3E03CCDC0CF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F32F0DC5-E380-4B95-A8EB-3E03CCDC0CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F32F0DC5-E380-4B95-A8EB-3E03CCDC0CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F32F0DC5-E380-4B95-A8EB-3E03CCDC0CF6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ACB9CE7F-DE52-431A-834F-D95119961622}
+	EndGlobalSection
+EndGlobal

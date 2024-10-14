@@ -1,20 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace SmartHomeWeb.Pages
+namespace SmartHomeWeb.Pages;
+
+public class SettingsModel (ILogger<SettingsModel> logger) : PageModel
 {
-  public class SettingsModel : PageModel
-  {
-    private readonly ILogger<SettingsModel> _logger;
+	private readonly ILogger<SettingsModel> _logger = logger;
 
-    public SettingsModel(ILogger<SettingsModel> logger)
-    {
-      _logger = logger;
-    }
-
-    public void OnGet()
-    {
-    }
-  }
-
+	public void OnGet ()
+	{
+	}
 }

@@ -1,48 +1,50 @@
 using MQTTnet.AspNetCore;
 using SmartHomeWeb.Services;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddRazorPages();
-
-builder.WebHost.ConfigureKestrel(op =>
+internal sealed class Program
 {
-  op.ListenAnyIP(1883, l => l.UseMqtt());
-  op.ListenAnyIP(5000);
-});
+	private static void Main (string [] args)
+	{
+		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<MeasuresUIPreprocessingService>();
-builder.Services.AddSingleton<MeasuresStorageService>();
-builder.Services.AddHostedService<MeasuresReceiverService>();
+		// Add services to the container.
+		builder.Services.AddRazorPages();
 
-builder.Services.AddHostedMqttServer(optionsBuilder =>
-{
-  optionsBuilder.WithDefaultEndpoint();
-});
+		builder.WebHost.ConfigureKestrel(op =>
+		{
+			op.ListenAnyIP(1883, l => l.UseMqtt());
+			op.ListenAnyIP(5000);
+		});
 
+		builder.Services.AddSingleton<MeasuresUIPreprocessingService>();
+		builder.Services.AddSingleton<MeasuresStorageService>();
+		builder.Services.AddHostedService<MeasuresReceiverService>();
 
-builder.Services.AddMqttConnectionHandler();
-builder.Services.AddConnections();
+		builder.Services.AddHostedMqttServer(optionsBuilder => optionsBuilder.WithDefaultEndpoint());
 
-var app = builder.Build();
+		builder.Services.AddMqttConnectionHandler();
+		builder.Services.AddConnections();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-  app.UseExceptionHandler("/Error");
+		WebApplication app = builder.Build();
+
+		// Configure the HTTP request pipeline.
+		if (!app.Environment.IsDevelopment())
+		{
+			app.UseExceptionHandler("/Error");
+		}
+
+		app.UseMqttServer(server =>
+		{
+		});
+
+		app.UseStaticFiles();
+
+		app.UseRouting();
+
+		app.UseAuthorization();
+
+		app.MapRazorPages();
+
+		app.Run();
+	}
 }
-
-app.UseMqttServer(server =>
-{ 
-});
-
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapRazorPages();
-
-app.Run();

@@ -1,20 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace SmartHomeWeb.Pages
+namespace SmartHomeWeb.Pages;
+
+public class IndexModel (ILogger<IndexModel> logger) : PageModel
 {
-  public class IndexModel : PageModel
-  {
-    private readonly ILogger<IndexModel> _logger;
+	private readonly ILogger<IndexModel> _logger = logger;
 
-    public IndexModel(ILogger<IndexModel> logger)
-    {
-      _logger = logger;
-    }
+	public void OnGet ()
+	{
 
-    public void OnGet()
-    {
-
-    }
-  }
+	}
 }

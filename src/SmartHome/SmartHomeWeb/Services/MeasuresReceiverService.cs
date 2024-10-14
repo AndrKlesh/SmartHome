@@ -1,7 +1,6 @@
 using System.Text;
 using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Server;
 
 namespace SmartHomeWeb.Services;
 

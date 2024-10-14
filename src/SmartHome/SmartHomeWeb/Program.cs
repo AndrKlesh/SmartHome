@@ -10,7 +10,7 @@ internal sealed class Program
 		builder.Services.AddRazorPages();
 
 		builder.Services.AddSingleton<MeasuresUIPreprocessingService>();
-		builder.Services.AddSingleton<MeasuresStorageService>();
+		builder.Services.AddSingleton<IMeasuresStorageService, MeasuresStorageService>();
 		builder.Services.AddHostedService<MeasuresReceiverService>();
 
 		WebApplication app = builder.Build();

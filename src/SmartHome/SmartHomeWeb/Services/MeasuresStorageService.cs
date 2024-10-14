@@ -1,34 +1,87 @@
+using SmartHomeWeb.Models;
+
 namespace SmartHomeWeb.Services;
 
-public class MeasuresStorageService
+public class MeasuresStorageService : IMeasuresStorageService
 {
-	internal sealed class Measure (string topic, string value, DateTime timestamp)
-	{
-		public string Topic { get; } = topic;
-		public string Value { get; set; } = value;
-		public DateTime Timestamp { get; set; } = timestamp;
-	}
+	private readonly Dictionary<string, List<Measure>> _measures = new();
 
-	internal IEnumerable<Measure> AllMeasures => _measures.Values;
-
-	internal void PutMeasure (string mqttTopic, string value, DateTime timestamp)
+	public void AddMeasure (Measure measure)
 	{
-		if (_measures.TryGetValue(mqttTopic, out Measure? measure))
+		if (_measures.TryGetValue(measure.Topic, out List<Measure>? existingMeasures))
 		{
-			measure.Value = value;
-			measure.Timestamp = timestamp;
+			Measure? existingMeasure = existingMeasures.FirstOrDefault(m => m.Timestamp == measure.Timestamp);
+			if (existingMeasure != null)
+			{
+				existingMeasure.Value = measure.Value;
+				existingMeasure.Timestamp = measure.Timestamp;
+			}
+			else
+			{
+				existingMeasures.Add(measure);
+			}
+		}
+		else
+		{
+			_measures [measure.Topic] = new List<Measure> { measure };
 		}
 	}
 
-	private readonly Dictionary<string, Measure> _measures = new()
+	public void AddMeasures (IEnumerable<Measure> measures)
 	{
-	  { "home/door", new Measure("home/door", string.Empty, DateTime.MinValue) },
-	  { "home/outside/temperature", new Measure("home/outside/temperature", string.Empty, DateTime.MinValue) },
-	  { "home/living_room/temperature", new Measure("home/living_room/temperature", string.Empty, DateTime.MinValue) },
-	  { "home/living_room/lighting", new Measure("home/living_room/lighting", string.Empty, DateTime.MinValue) },
-	  { "home/bathroom/cold_water_temp", new Measure("home/bathroom/cold_water_temp", string.Empty, DateTime.MinValue) },
-	  { "home/bathroom/hot_water_temp", new Measure("home/bathroom/hot_water_temp", string.Empty, DateTime.MinValue) },
-	  { "home/bathroom/venting", new Measure("home/bathroom/venting", string.Empty, DateTime.MinValue) },
-	  { "home/bathroom/air_humidity", new Measure("home/bathroom/air_humidity", string.Empty, DateTime.MinValue) },
-	};
+		foreach (Measure measure in measures)
+		{
+			AddMeasure(measure);
+		}
+	}
+
+	public void RemoveMeasureById (string id)
+	{
+		_measures.Remove(id);
+	}
+
+	public void RemoveMeasuresByTimestamp (DateTime fromDate, DateTime toDate)
+	{
+		foreach (List<Measure> entry in _measures.Values)
+		{
+			entry.RemoveAll(m => m.Timestamp >= fromDate && m.Timestamp <= toDate);
+		}
+	}
+
+	public void RemoveMeasures (string id, DateTime fromDate, DateTime toDate)
+	{
+		if (_measures.TryGetValue(id, out List<Measure>? value))
+		{
+			value.RemoveAll(m => m.Timestamp >= fromDate && m.Timestamp <= toDate);
+		}
+	}
+
+	public IEnumerable<Measure> GetMeasures (IEnumerable<string> ids, DateTime fromDate, DateTime toDate)
+	{
+		List<Measure> result = new();
+		foreach (string id in ids)
+		{
+			if (_measures.TryGetValue(id, out List<Measure>? value))
+			{
+				result.AddRange(value.Where(m => m.Timestamp >= fromDate && m.Timestamp <= toDate));
+			}
+		}
+
+		return result;
+	}
+
+	public Measure? GetLastMeasureById (string id)
+	{
+		if (_measures.TryGetValue(id, out List<Measure>? value) && value.Count != 0)
+		{
+			return value.OrderByDescending(m => m.Timestamp).FirstOrDefault();
+		}
+
+		return null;
+	}
+
+	public IEnumerable<Measure> GetAllMeasures ()
+	{
+		return _measures.Values.SelectMany(m => m);
+	}
 }

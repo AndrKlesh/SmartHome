@@ -1,15 +1,21 @@
 using System.Text;
 using MQTTnet;
 using MQTTnet.Client;
+using SmartHomeWeb.Models;
 
 namespace SmartHomeWeb.Services;
 
-public class MeasuresReceiverService (IHostApplicationLifetime lifetime, MeasuresStorageService measuresStorageService) : IHostedService
+public class MeasuresReceiverService (IHostApplicationLifetime lifetime, IMeasuresStorageService measuresStorageService) : IHostedService
 {
+	private readonly IHostApplicationLifetime _lifetime = lifetime;
+	private readonly IMeasuresStorageService _measuresStorageService = measuresStorageService;
+	private IMqttClient? _mqttClient;
+	private readonly MqttFactory _mqttFactory = new();
+
 	public Task StartAsync (CancellationToken cancellationToken)
 	{
-		lifetime.ApplicationStarted.Register(() => _ = ConfigureSubscriptions(default));
-		lifetime.ApplicationStopping.Register(() => _ = UnconfigureSubscriptions(default));
+		_lifetime.ApplicationStarted.Register(() => _ = ConfigureSubscriptions(cancellationToken));
+		_lifetime.ApplicationStopping.Register(() => _ = UnconfigureSubscriptions(cancellationToken));
 		return Task.CompletedTask;
 	}
 
@@ -22,8 +28,8 @@ public class MeasuresReceiverService (IHostApplicationLifetime lifetime, Measure
 	{
 		_mqttClient = _mqttFactory.CreateMqttClient();
 		MqttClientOptions mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder()
-										  .WithTcpServer("localhost", 1883)
-										  .Build();
+											.WithTcpServer("localhost", 1883)
+											.Build();
 
 #pragma warning disable CA1031 // Не перехватывать исключения общих типов
 		try
@@ -32,17 +38,17 @@ public class MeasuresReceiverService (IHostApplicationLifetime lifetime, Measure
 
 			_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
 			MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
-											   .WithTopicFilter("home/#")
-											   .Build();
+												   .WithTopicFilter("home/#")
+												   .Build();
 			await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
 		}
-		// TODO: перехватывать конкретные исключения
 		catch (Exception)
 		{
-
+			// TODO: Обработать конкретные исключения
 		}
 #pragma warning restore CA1031 // Не перехватывать исключения общих типов
 	}
+
 	private async Task UnconfigureSubscriptions (CancellationToken cancellationToken)
 	{
 		IMqttClient? mqttClient = _mqttClient;
@@ -59,13 +65,15 @@ public class MeasuresReceiverService (IHostApplicationLifetime lifetime, Measure
 
 	private Task OnApplicationMessageReceivedAsync (MqttApplicationMessageReceivedEventArgs e)
 	{
-		//TODO: конвертер из mqtt во внутренние измерения
-		measuresStorageService.PutMeasure(e.ApplicationMessage.Topic,
-										 Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment),
-										 DateTime.UtcNow);
+		// Конвертация MQTT-сообщения в модель Measure
+		string topic = e.ApplicationMessage.Topic;
+		string payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+		DateTime timestamp = DateTime.UtcNow;
+
+		// Сохранение измерения в хранилище
+		Measure measure = new(topic, payload, timestamp);
+		_measuresStorageService.AddMeasure(measure);
+
 		return Task.CompletedTask;
 	}
-
-	private IMqttClient? _mqttClient;
-	private readonly MqttFactory _mqttFactory = new();
 }

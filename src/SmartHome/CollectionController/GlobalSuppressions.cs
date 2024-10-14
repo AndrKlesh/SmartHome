@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Usage", "IDE0058")]
+[assembly: SuppressMessage("", "IDE0058")]

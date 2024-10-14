@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Usage", "CA1823")]
-[assembly: SuppressMessage("Usage", "IDE0058")]
-[assembly: SuppressMessage("Usage", "IDE0052")]
+[assembly: SuppressMessage("", "CA1062")]
+[assembly: SuppressMessage("", "CA1823")]
+[assembly: SuppressMessage("", "IDE0058")]
+[assembly: SuppressMessage("", "IDE0052")]

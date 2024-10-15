@@ -16,9 +16,6 @@ public class MqttHostedService : IHostedService
 
 		_mqttServer = new MqttFactory().CreateMqttServer(options);
 
-		_mqttServer.ClientConnectedAsync += _ => Task.CompletedTask;
-		_mqttServer.ClientDisconnectedAsync += _ => Task.CompletedTask;
-
 		await _mqttServer.StartAsync().ConfigureAwait(false);
 	}
 

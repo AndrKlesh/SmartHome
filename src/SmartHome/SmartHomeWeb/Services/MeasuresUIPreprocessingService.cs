@@ -4,13 +4,50 @@ public class MeasuresUIPreprocessingService (IMeasuresStorageService measuresSto
 {
 	private readonly IMeasuresStorageService _measuresStorageService = measuresStorageService;
 
-	public IEnumerable<string> EnumerateAllMeasures ()
+	// Если measure отсутствует или нет данных в _names или _units, возвращаем сообщение об отсутствии данных.
+	internal IEnumerable<string> EnumerateAllMeasures ()
 	{
-		IEnumerable<Models.Measure> allMeasures = _measuresStorageService.GetAllMeasures()
-								.GroupBy(m => m.Topic)
-								.Select(g => g.Last());
+		List<string> result = new();
 
-		return allMeasures.Select(m => $"<p>{_names [m.Topic]}</p><p>{m.Value} {_units [m.Topic]}</p>");
+		// Получаем все доступные ID
+		foreach (string id in _names.Keys)
+		{
+			Models.Measure? measure = _measuresStorageService.GetLastMeasureById(id);
+
+			// Проверяем, что измерение существует и в словарях есть записи для текущего ID
+			if (measure != null && _units.TryGetValue(id, out string? unit))
+			{
+				string name = _names [id];
+
+				result.Add($"<p>{name}</p><p>{measure.Value} {unit}</p>");
+			}
+			else
+			{
+				// Если данные отсутствуют, добавляем сообщение об отсутствии данных
+				result.Add($"<p>Неизвестный топик: {id}</p><p>Нет доступных измерений</p>");
+			}
+		}
+
+		return result;
+	}
+
+	// Альтернативный подход: Исключение отсутствующих данных
+	internal IEnumerable<string> EnumerateAllMeasuresAlternative ()
+	{
+		List<string> result = new();
+
+		foreach (string id in _names.Keys)
+		{
+			Models.Measure? measure = _measuresStorageService.GetLastMeasureById(id);
+
+			// Проверяем, что измерение существует и в словарях есть записи для текущего ID
+			if (measure != null && _names.TryGetValue(id, out string? name) && _units.TryGetValue(id, out string? value))
+			{
+				result.Add($"<p>{name}</p><p>{measure.Value} {value}</p>");
+			}
+		}
+
+		return result;
 	}
 
 	// TODO: Перенести строки в ресурсы для локализации

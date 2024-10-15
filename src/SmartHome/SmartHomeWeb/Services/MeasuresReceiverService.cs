@@ -1,6 +1,7 @@
 using System.Text;
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Exceptions;
 using SmartHomeWeb.Models;
 
 namespace SmartHomeWeb.Services;
@@ -27,32 +28,40 @@ public class MeasuresReceiverService (IHostApplicationLifetime lifetime, IMeasur
 	private async Task ConfigureSubscriptions (CancellationToken cancellationToken)
 	{
 		_mqttClient = _mqttFactory.CreateMqttClient();
-		MqttClientOptions mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder()
-											.WithTcpServer("localhost", 1883)
-											.Build();
+		MqttClientOptions mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder().WithTcpServer("localhost", 1883).Build();
 
-#pragma warning disable CA1031 // Не перехватывать исключения общих типов
 		try
 		{
 			await _mqttClient.ConnectAsync(mqttClientOptions, cancellationToken).ConfigureAwait(false);
 
 			_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
-			MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
-												   .WithTopicFilter("home/#")
-												   .Build();
+			MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder().WithTopicFilter("home/#").Build();
 			await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
 		}
-		catch (Exception)
+		catch (OperationCanceledException ex)
 		{
-			// TODO: Обработать конкретные исключения
+			Console.WriteLine($"Операция была отменена: {ex.Message}");
 		}
-#pragma warning restore CA1031 // Не перехватывать исключения общих типов
+		catch (MqttCommunicationTimedOutException ex)
+		{
+			Console.WriteLine($"Тайм-аут при подключении к MQTT брокеру: {ex.Message}");
+			// TODO: повторное подключение
+		}
+		catch (MqttCommunicationException ex)
+		{
+			Console.WriteLine($"Ошибка коммуникации с MQTT брокером: {ex.Message}");
+			// TODO: восстановить подключение
+		}
+		catch (TimeoutException ex)
+		{
+			Console.WriteLine($"Произошел тайм-аут операции: {ex.Message}");
+			// TODO: повторное подключение
+		}
 	}
 
 	private async Task UnconfigureSubscriptions (CancellationToken cancellationToken)
 	{
-		IMqttClient? mqttClient = _mqttClient;
-		_mqttClient = null;
+		IMqttClient? mqttClient = Interlocked.Exchange(ref _mqttClient, null);
 		if (mqttClient is null)
 		{
 			return;

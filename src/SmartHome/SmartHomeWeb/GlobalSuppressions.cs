@@ -5,8 +5,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("", "CA1303")] // Предупреждение о локализации данных в консоли
 [assembly: SuppressMessage("", "CA1062")]
+[assembly: SuppressMessage("", "CA1812")]
 [assembly: SuppressMessage("", "CA1823")]
 [assembly: SuppressMessage("", "IDE0058")]
 [assembly: SuppressMessage("", "IDE0052")]

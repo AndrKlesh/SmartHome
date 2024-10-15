@@ -2,11 +2,10 @@ using SmartHomeWeb.Services;
 
 internal sealed class Program
 {
-	private static void Main (string [] args)
+	private static void Main ()
 	{
-		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+		WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-		// Add services to the container.
 		builder.Services.AddRazorPages();
 
 		builder.Services.AddSingleton<MeasuresUIPreprocessingService>();
@@ -15,7 +14,6 @@ internal sealed class Program
 
 		WebApplication app = builder.Build();
 
-		// Configure the HTTP request pipeline.
 		if (!app.Environment.IsDevelopment())
 		{
 			app.UseExceptionHandler("/Error");

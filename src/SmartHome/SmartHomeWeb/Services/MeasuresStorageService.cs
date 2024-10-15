@@ -14,7 +14,6 @@ public class MeasuresStorageService : IMeasuresStorageService
 			if (existingMeasure != null)
 			{
 				existingMeasure.Value = measure.Value;
-				existingMeasure.Timestamp = measure.Timestamp;
 			}
 			else
 			{
@@ -78,10 +77,5 @@ public class MeasuresStorageService : IMeasuresStorageService
 		}
 
 		return null;
-	}
-
-	public IEnumerable<Measure> GetAllMeasures ()
-	{
-		return _measures.Values.SelectMany(m => m);
 	}
 }

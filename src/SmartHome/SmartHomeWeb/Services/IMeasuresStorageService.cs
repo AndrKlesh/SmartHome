@@ -17,6 +17,4 @@ public interface IMeasuresStorageService
 	IEnumerable<Measure> GetMeasures (IEnumerable<string> ids, DateTime fromDate, DateTime toDate);
 
 	Measure? GetLastMeasureById (string id);
-
-	IEnumerable<Measure> GetAllMeasures ();
 }

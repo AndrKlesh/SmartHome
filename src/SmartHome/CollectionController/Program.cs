@@ -17,7 +17,7 @@ internal sealed class Program
 			.WithTcpServer("localhost", 1883)
 			.Build();
 
-		await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None).ConfigureAwait(false);
+		_ = await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None).ConfigureAwait(false);
 
 		Random random = new();
 		while (!Console.KeyAvailable)
@@ -26,50 +26,50 @@ internal sealed class Program
 			  .WithTopic("home/door")
 			  .WithPayload(random.Next(0, 2).ToString(CultureInfo.InvariantCulture))
 			  .Build();
-			await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 			applicationMessage = new MqttApplicationMessageBuilder()
 			  .WithTopic("home/outside/temperature")
 			  .WithPayload(random.Next(5, 12).ToString(CultureInfo.InvariantCulture))
 			  .Build();
-			await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 			applicationMessage = new MqttApplicationMessageBuilder()
 			  .WithTopic("home/living_room/temperature")
 			  .WithPayload(random.Next(14, 26).ToString(CultureInfo.InvariantCulture))
 			  .Build();
-			await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 			applicationMessage = new MqttApplicationMessageBuilder()
 			.WithTopic("home/living_room/lighting")
 			.WithPayload(random.Next(0, 2).ToString(CultureInfo.InvariantCulture))
 			.Build();
-			await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 			applicationMessage = new MqttApplicationMessageBuilder()
 			  .WithTopic("home/bathroom/cold_water_temp")
 			  .WithPayload(random.Next(5, 18).ToString(CultureInfo.InvariantCulture))
 			  .Build();
-			await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 			applicationMessage = new MqttApplicationMessageBuilder()
 			  .WithTopic("home/bathroom/hot_water_temp")
 			  .WithPayload(random.Next(30, 65).ToString(CultureInfo.InvariantCulture))
 			  .Build();
-			await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 			int airHumidity = random.Next(25, 96);
 			applicationMessage = new MqttApplicationMessageBuilder()
 			  .WithTopic("home/bathroom/air_humidity")
 			  .WithPayload(airHumidity.ToString(CultureInfo.InvariantCulture))
 			  .Build();
-			await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 			applicationMessage = new MqttApplicationMessageBuilder()
 			  .WithTopic("home/bathroom/venting")
 			  .WithPayload((airHumidity > 85 ? 1 : 0).ToString(CultureInfo.InvariantCulture))
 			  .Build();
-			await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 			await Task.Delay(500).ConfigureAwait(false);
 		}

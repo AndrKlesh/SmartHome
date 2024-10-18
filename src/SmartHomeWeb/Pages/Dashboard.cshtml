@@ -4,17 +4,25 @@
 }
 @model SmartHomeWeb.Pages.DashboardModel
 @{
-	ViewData ["Title"] = "Dashboard";
+    ViewData ["Title"] = "Dashboard";
 }
 <html>
 <body>
-	<div class="row">
-		@foreach (string? measure in Model.MeasuresUI)
-		{
-			<a href="/" class="btn col-md-2 col-sm-2 col-xs-2" style="background: gray; text-align: center; padding: 1vw 0 1vw 0; margin: 5px">
-				@Html.Raw(@measure)
-			</a>
-		}
-	</div>
+    <div class="row" style="display: flex; flex-wrap: wrap; justify-content: flex-start;">
+        @foreach (string? measure in Model.MeasuresUI)
+        {
+            <div class="col-md-2 col-sm-2 col-xs-2" style="margin: 5px; position: relative; display: flex; flex-direction: column; align-items: center;">
+                <a href="/" class="btn" style="background: gray; text-align: center; padding: 1vw 0; min-width: 100px; width: 100%;">
+                    @Html.Raw(measure)
+                </a>
+                <button type="button" class="btn btn-favourite" onclick="toggleFavourite(this)" data-icon-default="@Url.Content("~/bookmark-star.svg")" data-icon-active="@Url.Content("~/bookmark-star-fill.svg")">
+                    <img src="@Url.Content("~/bookmark-star.svg")" alt="" style="width: 16px; height: 16px;">
+                </button>
+            </div>
+        }
+    </div>
+
+    <script src="@Url.Content("~/js/Favourite.js")"></script>
+
 </body>
 </html>

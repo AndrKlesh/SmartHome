@@ -26,3 +26,13 @@ body {
 	width: 16px;
 	height: 16px;
 }
+
+.btn-favourite {
+	position: absolute;
+	top: 2%;
+	right: 4%;
+	color: white;
+	border: none;
+	padding: 0.2vw;
+	font-size: 0.4em;
+}

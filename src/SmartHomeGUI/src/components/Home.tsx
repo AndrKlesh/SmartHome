@@ -61,8 +61,8 @@ function Home ()
 					return (
 						<div key={ index } className="dashboard-item">
 							<h2>{ translation.name }</h2>
-							<p><strong>Значение:</strong> { formatValue(item.topicName, item.value) } { translation.unit }</p>
-							<p><strong>Время:</strong> { new Date(item.timestamp).toLocaleString() }</p>
+							<p>Значение: { formatValue(item.topicName, item.value) } { translation.unit }</p>
+							<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
 						</div>
 					)
 				}) }

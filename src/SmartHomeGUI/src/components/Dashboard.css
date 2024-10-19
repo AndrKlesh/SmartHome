@@ -7,7 +7,7 @@ body {
 
 .dashboard {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr); /* Две колонки */
+	grid-template-columns: repeat(5, 1fr); /* Две колонки */
 	grid-auto-rows: minmax(100px, auto); /* Высота строк по содержимому */
 	gap: 15px; /* Уменьшаем расстояние между элементами */
 	padding: 20px;
@@ -28,15 +28,6 @@ body {
 	.dashboard-item:hover {
 		transform: translateY(-5px); /* Анимация при наведении */
 	}
-
-h2 {
-	font-size: 16px; /* Уменьшаем размер шрифта заголовка */
-	margin: 5px; /* Уменьшаем нижний отступ */
-}
-
-p {
-	font-size: 12px; /* Уменьшаем размер шрифта текста */
-}
 
 .favourite-star {
 	cursor: pointer;

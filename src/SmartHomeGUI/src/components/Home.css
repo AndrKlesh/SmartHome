@@ -7,7 +7,7 @@ body {
 
 .dashboard {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr); /* Две колонки */
+	grid-template-columns: repeat(5, 1fr); /* Две колонки */
 	grid-auto-rows: minmax(100px, auto); /* Высота строк по содержимому */
 	gap: 15px; /* Уменьшаем расстояние между элементами */
 	padding: 20px;
@@ -28,15 +28,6 @@ body {
 	.dashboard-item:hover {
 		transform: translateY(-5px); /* Анимация при наведении */
 	}
-
-h2 {
-	font-size: 16px; /* Размер шрифта заголовка */
-	margin: 5px; /* Уменьшаем отступы сверху и снизу */
-}
-
-p {
-	font-size: 12px; /* Размер шрифта текста */
-}
 
 /* Медиазапрос для мобильных устройств */
 @media (max-width: 600px) {

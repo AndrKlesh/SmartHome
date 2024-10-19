@@ -12,8 +12,8 @@ using SmartHomeAPI.DbContexts;
 namespace SmartHomeAPI.Migrations
 {
     [DbContext(typeof(SmartHomeDbContext))]
-    [Migration("20241019082519_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241019132710_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,9 +32,6 @@ namespace SmartHomeAPI.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsFavourite")
-                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
@@ -61,15 +58,10 @@ namespace SmartHomeAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("IsFavourite")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Unit")
                         .IsRequired()
                         .HasColumnType("text");
 

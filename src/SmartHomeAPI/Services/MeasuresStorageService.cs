@@ -63,10 +63,12 @@ public class MeasuresStorageService
 		// Находим топик по имени
 		TopicDomain? topic = await context.Topics.FirstOrDefaultAsync(t => t.Name == topicName);
 
+#pragma warning disable IDE0270
 		if (topic == null)
 		{
-			throw new ArgumentException($"Topic with name '{topicName}' not found.");
+			throw new ArgumentNullException($"Topic with name '{topicName}' not found.");
 		}
+#pragma warning restore IDE0270
 
 		// Обновляем значение поля IsFavourite
 		topic.IsFavourite = isFavourite;

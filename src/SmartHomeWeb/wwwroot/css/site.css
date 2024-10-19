@@ -41,3 +41,17 @@ body {
 	outline: none;
 	border: none;
 }
+
+.button {
+	color: #000000;
+	box-shadow: 2px 1px 5px #999999;
+	text-decoration: none;
+	background: none;
+	border: 2px solid #082567;
+	text-align: center;
+	padding: 17px 35px;
+	min-width: 100px;
+	width: auto;
+	max-width: 100%;
+}
+

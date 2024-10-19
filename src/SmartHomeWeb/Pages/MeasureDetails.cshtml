@@ -1,0 +1,15 @@
+@page
+@model SmartHomeWeb.Pages.MeasureDetailsModel
+@{
+    ViewData["Title"] = "Детали измерения";
+}
+<html>
+<body>
+    <div class="text-center">
+        <div class="p-3 alert-info text-primary border border-primary rounded-3">
+            <h1>Детали измерения</h1>
+        </div>
+    </div>
+    <p>Измерение: @Html.Raw(Model.MeasureId)</p>
+</body>
+</html>

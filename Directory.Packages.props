@@ -1,12 +1,13 @@
 <Project>
-  <PropertyGroup>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <NoWarn>$(NoWarn);NU1507</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageVersion Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
-    <PackageVersion Include="MQTTnet" Version="4.3.7.1207" />
-    <PackageVersion Include="MQTTnet.AspNetCore" Version="4.3.7.1207" />
-  </ItemGroup>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+		<NoWarn>$(NoWarn);NU1507</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
+		<PackageVersion Include="MQTTnet" Version="4.3.7.1207" />
+		<PackageVersion Include="MQTTnet.AspNetCore" Version="4.3.7.1207" />
+		<PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	</ItemGroup>
 </Project>

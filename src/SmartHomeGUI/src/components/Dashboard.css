@@ -1,5 +1,5 @@
 body {
-	background-color: #121212; /* Тёмный фон для всей страницы */
+	background-color: #121212; /* Тёмный фон */
 	color: #e0e0e0; /* Светлый текст */
 	font-family: Verdana, sans-serif;
 	margin: 0; /* Убираем отступы по умолчанию */
@@ -8,20 +8,21 @@ body {
 .dashboard {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr); /* Две колонки */
-	grid-template-rows: repeat(2, auto); /* Две строки */
-	gap: 20px;
+	grid-auto-rows: minmax(100px, auto); /* Высота строк по содержимому */
+	gap: 15px; /* Уменьшаем расстояние между элементами */
 	padding: 20px;
+	margin-top: 75px;
 }
 
 .dashboard-item {
 	background-color: #1e1e1e; /* Тёмная коробка */
 	color: #e0e0e0; /* Светлый текст */
-	padding: 10px; /* Уменьшаем внутренние отступы */
+	padding: 15px; /* Уменьшаем внутренние отступы */
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-	transition: transform 0.2s;
-	flex: 1 1 300px; /* Элементы занимают равное пространство и минимальная ширина 300px */
-	max-width: 300px; /* Максимальная ширина элемента */
+	transition: transform 0.2s; /* Плавная анимация при наведении */
+	flex: 1 1 100%; /* Элементы занимают равное пространство */
+	max-width: 100%; /* Максимальная ширина элемента */
 }
 
 	.dashboard-item:hover {
@@ -30,7 +31,7 @@ body {
 
 h2 {
 	font-size: 16px; /* Уменьшаем размер шрифта заголовка */
-	margin-bottom: 5px; /* Уменьшаем нижний отступ */
+	margin: 5px; /* Уменьшаем нижний отступ */
 }
 
 p {

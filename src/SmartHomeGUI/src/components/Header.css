@@ -5,13 +5,14 @@ header {
 	position: fixed;
 	top: 0;
 	width: 100%;
+	margin-bottom: 40px; /* Убираем отступы по умолчанию */
 }
 
 nav ul {
 	display: flex;
 	justify-content: center;
 	list-style: none;
-	margin: 0;
+	margin: 20px;
 	padding: 0;
 }
 

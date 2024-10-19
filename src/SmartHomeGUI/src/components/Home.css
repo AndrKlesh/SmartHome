@@ -1,0 +1,43 @@
+body {
+    background-color: #121212; /* Тёмный фон */
+    color: #e0e0e0; /* Светлый текст */
+    font-family: Verdana, sans-serif;
+}
+
+h1 {
+    font-size: 24px;
+    text-align: center;
+    color: #e0e0e0;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Две колонки */
+    grid-template-rows: repeat(2, auto); /* Две строки */
+    gap: 20px;
+    padding: 20px;
+}
+
+.dashboard-item {
+    background-color: #1e1e1e; /* Тёмная коробка */
+    color: #e0e0e0; /* Светлый текст */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 14px;
+}
+
+/* Медиазапрос для мобильных устройств */
+@media (max-width: 600px) {
+    .dashboard {
+        grid-template-columns: 1fr; /* Одна колонка на узких экранах */
+    }
+}

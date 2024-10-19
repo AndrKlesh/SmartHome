@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollectionController", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SHMQ", "src\SHMQ\SHMQ.csproj", "{49AE0B66-B87A-4681-9319-D71B1407C112}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartHomeAPI", "src\SmartHomeWeb\SmartHomeAPI\SmartHomeAPI.csproj", "{A26DDD4F-FF2D-4E1C-B667-EB651EB40AD2}"
-EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "smarthomegui", "src\SmartHomeGUI\smarthomegui.esproj", "{C1BD8B14-F54A-47DD-A401-948E03E0A208}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartHomeAPI", "src\SmartHomeAPI\SmartHomeAPI.csproj", "{63FFBBD0-0727-4116-A086-476DC4D4F85E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,16 +31,16 @@ Global
 		{49AE0B66-B87A-4681-9319-D71B1407C112}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49AE0B66-B87A-4681-9319-D71B1407C112}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49AE0B66-B87A-4681-9319-D71B1407C112}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A26DDD4F-FF2D-4E1C-B667-EB651EB40AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A26DDD4F-FF2D-4E1C-B667-EB651EB40AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A26DDD4F-FF2D-4E1C-B667-EB651EB40AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A26DDD4F-FF2D-4E1C-B667-EB651EB40AD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C1BD8B14-F54A-47DD-A401-948E03E0A208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1BD8B14-F54A-47DD-A401-948E03E0A208}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1BD8B14-F54A-47DD-A401-948E03E0A208}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{C1BD8B14-F54A-47DD-A401-948E03E0A208}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1BD8B14-F54A-47DD-A401-948E03E0A208}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C1BD8B14-F54A-47DD-A401-948E03E0A208}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{63FFBBD0-0727-4116-A086-476DC4D4F85E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63FFBBD0-0727-4116-A086-476DC4D4F85E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63FFBBD0-0727-4116-A086-476DC4D4F85E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63FFBBD0-0727-4116-A086-476DC4D4F85E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

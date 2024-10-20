@@ -7,7 +7,7 @@ body {
 
 .dashboard {
 	display: grid;
-	grid-template-columns: repeat(5, 1fr); /* Две колонки */
+	grid-template-columns: repeat(5, 1fr); /* Пять колонок */
 	grid-auto-rows: minmax(100px, auto); /* Высота строк по содержимому */
 	gap: 15px; /* Уменьшаем расстояние между элементами */
 	padding: 20px;
@@ -23,6 +23,7 @@ body {
 	transition: transform 0.2s; /* Плавная анимация при наведении */
 	flex: 1 1 100%; /* Элементы занимают равное пространство */
 	max-width: 100%; /* Максимальная ширина элемента */
+	position: relative; /* Добавляем относительное позиционирование для родителя */
 }
 
 	.dashboard-item:hover {
@@ -31,9 +32,12 @@ body {
 
 .favourite-star {
 	cursor: pointer;
-	font-size: 20px; /* Уменьшаем размер звезды */
-	color: gray;
+	font-size: 20px;
+	color: grey;
 	transition: color 0.3s;
+	position: absolute; /* Абсолютное позиционирование */
+	top: 10px; /* Отступ от верхнего края */
+	right: 10px; /* Отступ от правого края */
 }
 
 	.favourite-star.active {

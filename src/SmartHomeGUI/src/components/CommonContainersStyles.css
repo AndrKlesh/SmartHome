@@ -7,7 +7,7 @@ body {
 
 .dashboard {
 	display: grid;
-	grid-template-columns: repeat(5, 1fr); /* Две колонки */
+	grid-template-columns: repeat(5, 1fr); /* Пять колонок */
 	grid-auto-rows: minmax(100px, auto); /* Высота строк по содержимому */
 	gap: 15px; /* Уменьшаем расстояние между элементами */
 	padding: 20px;
@@ -15,7 +15,7 @@ body {
 }
 
 .dashboard-item {
-	background-color: #1e1e1e; /* Тёмная коробка */
+	background-color: #1e1e1e; /*Тёмная коробка */
 	color: #e0e0e0; /* Светлый текст */
 	padding: 15px; /* Уменьшаем внутренние отступы */
 	border-radius: 8px;
@@ -23,15 +23,70 @@ body {
 	transition: transform 0.2s; /* Плавная анимация при наведении */
 	flex: 1 1 100%; /* Элементы занимают равное пространство */
 	max-width: 100%; /* Максимальная ширина элемента */
+	position: relative; /* Добавляем относительное позиционирование для родителя */
+	opacity: 0;
+	transform: translateY(20px);
+	animation: fadeInUp 0.5s ease forwards;
 }
 
 	.dashboard-item:hover {
 		transform: translateY(-5px); /* Анимация при наведении */
 	}
 
+	.dashboard-item.updated {
+		animation: pulse 0.5s ease;
+	}
+
+.favourite-star {
+	cursor: pointer;
+	font-size: 25px;
+	color: grey;
+	transition: color 0.3s, transform 0.3s;
+	position: absolute; /* Абсолютное позиционирование */
+	top: 10px; /* Отступ от верхнего края */
+	right: 10px; /* Отступ от правого края */
+}
+
+	.favourite-star.active {
+		color: gold;
+		animation: spin 0.5s ease;
+		color: gold;
+	}
+
 /* Медиазапрос для мобильных устройств */
 @media (max-width: 600px) {
 	.dashboard {
 		grid-template-columns: 1fr; /* Одна колонка на узких экранах */
+	}
+}
+
+@keyframes fadeInUp {
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes pulse {
+	0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.05);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
 	}
 }

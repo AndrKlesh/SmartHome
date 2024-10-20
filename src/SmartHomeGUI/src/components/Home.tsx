@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { DashboardData, topicTranslations } from './types';
-import { formatValue } from './utils';
-import './Home.css'
+import { DashboardData, topicTranslations } from './Types'
+import { formatValue } from './Utils'
+import './CommonContainersStyles.css'
 
 function Home ()
 {
@@ -18,7 +18,7 @@ function Home ()
 			{
 				throw new Error(`HTTP error! status: ${ response.status }`)
 			}
-			const json : DashboardData[] = await response.json()
+			const json: DashboardData[] = await response.json()
 			setData(json.filter(item => item.isFavourite))
 			setLoading(false)
 		} catch (err)

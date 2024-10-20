@@ -139,7 +139,9 @@ const MeasurementHistory = () =>
                             textAnchor="end"
                             height={ 80 }
                         />
-                        <YAxis />
+                        <YAxis
+                            tickFormatter={(tick) => `${tick} ${translation?.unit}`}
+                        />
                         <Tooltip labelFormatter={ (label) => new Date(label).toLocaleString() } />
                         <Line type="monotone" dataKey="value" stroke="#8884d8" dot={ false } strokeWidth={ 2 } />
                     </LineChart>

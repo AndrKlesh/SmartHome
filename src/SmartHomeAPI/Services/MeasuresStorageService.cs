@@ -76,4 +76,24 @@ public class MeasuresStorageService
 		// Сохраняем изменения в базе данных
 		_ = await context.SaveChangesAsync();
 	}
+
+	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
+	{
+		startDate = startDate.ToUniversalTime();
+		endDate = endDate.ToUniversalTime();
+		using SmartHomeDbContext context = new();
+
+		// Получаем измерения для указанного топика и диапазона дат
+		List<MeasureDomain> measurements = await context.Measurements
+			.Include(m => m.Topic)
+			.Where(m => m.Topic.Name == topicName && m.Timestamp >= startDate && m.Timestamp <= endDate)
+			.ToListAsync();
+
+		// Конвертируем в DTO
+		return measurements.Select(m => new MeasuresHistoryDTO
+		{
+			Value = m.Value,
+			Timestamp = m.Timestamp
+		}).ToList();
+	}
 }

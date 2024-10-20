@@ -43,6 +43,8 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 	{
 		try
 		{
+			startDate = startDate.ToUniversalTime();
+			endDate = endDate.ToUniversalTime();
 			List<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementsByTopicAndDateRangeAsync(topicName, startDate, endDate);
 
 			if (measurements == null || measurements.Count == 0)

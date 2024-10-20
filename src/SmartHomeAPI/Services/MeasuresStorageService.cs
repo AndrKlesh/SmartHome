@@ -79,8 +79,6 @@ public class MeasuresStorageService
 
 	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
 	{
-		startDate = startDate.ToUniversalTime();
-		endDate = endDate.ToUniversalTime();
 		using SmartHomeDbContext context = new();
 
 		// Получаем измерения для указанного топика и диапазона дат

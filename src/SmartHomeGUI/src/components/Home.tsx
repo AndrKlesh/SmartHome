@@ -41,6 +41,35 @@ function Home ()
 		return () => clearInterval(intervalId)
 	}, [])
 
+	const toggleFavourite = async (topicName: string, currentFavouriteState: boolean) =>
+	{
+		try
+		{
+			const response = await fetch('https://localhost:7098/api/Dashboard/toggleFavourite', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ topicName, isFavourite: !currentFavouriteState }),
+			})
+
+			if (response.ok)
+			{
+				setData((prevData) =>
+					prevData.filter(item =>
+						item.topicName !== topicName || !currentFavouriteState
+					)
+				)
+			} else
+			{
+				console.error(`Ошибка при обновлении состояния: ${ response.status }`)
+			}
+		} catch (error)
+		{
+			console.error(`Произошла ошибка: ${ error }`)
+		}
+	}
+
 	if (loading)
 	{
 		return <p>Loading...</p>
@@ -64,6 +93,13 @@ function Home ()
 							<h2>{ translation.name }</h2>
 							<p>Значение: { formatValue(item.topicName, item.value) } { translation.unit }</p>
 							<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
+
+							<div
+								className={ `favourite-star ${ item.isFavourite ? 'active' : '' }` }
+								onClick={ () => toggleFavourite(item.topicName, item.isFavourite) }
+							>
+								★
+							</div>
 						</div>
 					)
 				}) }

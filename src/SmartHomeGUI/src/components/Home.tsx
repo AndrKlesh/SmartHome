@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { DashboardData, topicTranslations, formatValue } from './Dashboard' // Импортируем из Dashboard
+import { DashboardData, topicTranslations } from './types';
+import { formatValue } from './utils';
 import './Home.css'
 
 function Home ()

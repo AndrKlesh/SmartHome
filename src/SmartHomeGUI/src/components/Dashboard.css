@@ -32,7 +32,7 @@ body {
 
 .favourite-star {
 	cursor: pointer;
-	font-size: 20px;
+	font-size: 25px;
 	color: grey;
 	transition: color 0.3s;
 	position: absolute; /* Абсолютное позиционирование */

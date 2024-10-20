@@ -15,6 +15,7 @@ body {
 }
 
 .dashboard-item {
+	cursor: pointer;
 	background-color: #1e1e1e; /*Тёмная коробка */
 	color: #e0e0e0; /* Светлый текст */
 	padding: 15px; /* Уменьшаем внутренние отступы */
@@ -43,7 +44,7 @@ body {
 	color: grey;
 	transition: color 0.3s, transform 0.3s;
 	position: absolute; /* Абсолютное позиционирование */
-	top: 10px; /* Отступ от верхнего края */
+	top: 0px; /* Отступ от верхнего края */
 	right: 10px; /* Отступ от правого края */
 }
 

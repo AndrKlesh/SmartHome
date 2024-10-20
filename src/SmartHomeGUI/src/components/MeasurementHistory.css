@@ -1,0 +1,81 @@
+.measurement-history {
+	margin: 0 auto;
+	padding: 20px;
+	background-color: #1a1a1a; /* Добавлен фон для лучшего контраста */
+	border-radius: 10px; /* Скругление углов */
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Легкая тень */
+}
+
+.sensor-info {
+	padding: 10px 15px;
+	margin-top: 80px; /* Убрано лишнее расстояние */
+	margin-bottom: 20px;
+	font-size: 16px;
+	background-color: rgba(255, 255, 255, 0.1); /* Полупрозрачный фон для блока информации */
+	border-radius: 8px; /* Скругление углов */
+}
+
+	.sensor-info p {
+		margin: 5px 0;
+		color: #e0e0e0; /* Цвет текста */
+	}
+
+.period-selector {
+	margin-top: 10px; /* Отступ сверху для селектора */
+}
+
+	.period-selector label {
+		margin-right: 10px; /* Отступ справа для метки */
+		color: #e0e0e0; /* Цвет метки */
+	}
+
+	.period-selector select {
+		cursor: pointer;
+		background-color: #333; /* Темный фон для селектора */
+		color: #e0e0e0; /* Цвет текста */
+		border: 1px solid #555; /* Темная рамка */
+		border-radius: 4px; /* Скругление углов */
+		padding: 8px; /* Отступ внутри селектора */
+		font-size: 16px; /* Размер шрифта */
+		appearance: none; /* Убираем стандартные стили браузера */
+		outline: none; /* Убираем обводку при фокусе */
+	}
+
+		/* Стиль для селектора при наведении */
+		.period-selector select:hover {
+			background-color: #444; /* Более светлый фон при наведении */
+		}
+
+		/* Стиль для селектора при фокусе */
+		.period-selector select:focus {
+			border-color: #888; /* Цвет рамки при фокусе */
+		}
+
+
+.chart-container {
+	height: 100%; /* Высота графика теперь 100% от родительского контейнера */
+	border-radius: 10px;
+	padding: 10px;
+	background-color: #2a2a2a; /* Темный фон для графика */
+}
+
+.loading, .error {
+	text-align: center;
+	font-size: 18px;
+	color: #888; /* Серый цвет для текста загрузки и ошибок */
+}
+
+/* Уменьшаем размеры шрифта на маленьких экранах */
+@media (max-width: 600px) {
+	.sensor-title {
+		font-size: 20px;
+	}
+
+	.sensor-info {
+		font-size: 14px;
+	}
+
+	.loading, .error {
+		font-size: 16px;
+	}
+}

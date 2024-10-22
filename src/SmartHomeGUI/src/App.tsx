@@ -1,7 +1,7 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import Home from './components/Home'
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import Dashboard from './components/Dashboard'
 import Header from './components/Header'
+import Home from './components/Home'
 import MeasurementHistory from './components/MeasurementHistory'
 
 function App ()

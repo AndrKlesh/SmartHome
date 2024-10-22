@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts'
-import { topicTranslations } from './Types'
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import './MeasurementHistory.css'
+import { topicTranslations } from './Types'
 
 interface Measurement
 {
@@ -118,7 +118,7 @@ const MeasurementHistory = () =>
                     <p><strong>Время последнего обновления:</strong> { new Date(latestMeasurement.timestamp).toLocaleString() }</p>
                     <div className="period-selector">
                         <label>Выберите период: </label>
-                        <select value={ selectedPeriod } onChange={ (e) => setSelectedPeriod(e.target.value as any) }>
+                        <select value={ selectedPeriod } onChange={ (e) => setSelectedPeriod(e.target.value as keyof typeof periods) }>
                             <option value="hour">Последний час</option>
                             <option value="24hours">Последние 24 часа</option>
                             <option value="week">Последняя неделя</option>

@@ -1,0 +1,76 @@
+/* Общий контейнер формы */
+.registration-form {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 30px 60px 20px 20px; 
+    background-color: #333333;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+}
+
+
+    /* Заголовок */
+    .registration-form h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+
+    /* Контейнер для каждого элемента */
+    .registration-form div {
+        margin-bottom: 10px;
+    }
+
+    /* Метки для полей */
+    .registration-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+        color: #cccccc;
+    }
+
+    /* Поля ввода */
+    .registration-form input[type="text"],
+    .registration-form input[type="email"],
+    .registration-form input[type="password"] {
+        width: 100%; 
+        padding: 20px 20px 20px 20px;
+        border: 1px solid #555555;
+        border-radius: 15px;
+        background-color: #222222;
+        color: #ffffff;
+        font-size: 1rem;
+    }
+
+        .registration-form input[type="text"]:focus,
+        .registration-form input[type="email"]:focus,
+        .registration-form input[type="password"]:focus {
+            outline: 2px solid #777777;
+        }
+
+    /* Кнопка отправки */
+    .registration-form button {
+        width: 50%; 
+        margin: 0 auto; 
+        padding: 10px 10px 10px 10px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 10px; 
+        background-color: #444444;
+        color: #ffffff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .registration-form button:hover {
+            background-color: #555555;
+        }
+
+    /* Сообщение об ошибке */
+    .registration-form p {
+        color: #ff4d4d;
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: -10px;
+    }

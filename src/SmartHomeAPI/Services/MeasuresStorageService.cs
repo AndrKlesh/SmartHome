@@ -85,6 +85,7 @@ public class MeasuresStorageService
 		List<MeasureDomain> measurements = await context.Measurements
 			.Include(m => m.Topic)
 			.Where(m => m.Topic.Name == topicName && m.Timestamp >= startDate && m.Timestamp <= endDate)
+			.OrderBy(m => m.Timestamp)
 			.ToListAsync();
 
 		// Конвертируем в DTO

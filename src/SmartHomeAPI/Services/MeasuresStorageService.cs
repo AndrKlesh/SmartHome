@@ -7,6 +7,7 @@ public class MeasuresStorageService
 {
 	private readonly List<TopicDomain> _topics = new();
 	private readonly List<MeasureDomain> _measurements = new();
+	private const int MaxMeasurementsPerTopic = 100;
 
 	public async Task AddMeasureAsync (MeasureDTO measurementDto)
 	{
@@ -31,6 +32,19 @@ public class MeasuresStorageService
 
 		// Добавляем новое измерение в память
 		_measurements.Add(measurement);
+
+		// Ограничиваем количество измерений до 100 для каждого топика
+		List<MeasureDomain> measurementsForTopic = _measurements.Where(m => m.TopicId == topic.Id).ToList();
+		if (measurementsForTopic.Count > MaxMeasurementsPerTopic)
+		{
+			// Находим самое старое измерение и удаляем его
+			MeasureDomain? oldestMeasurement = measurementsForTopic.OrderBy(m => m.Timestamp).FirstOrDefault();
+			if (oldestMeasurement != null)
+			{
+				_ = _measurements.Remove(oldestMeasurement);
+			}
+		}
+
 		await Task.CompletedTask;
 	}
 

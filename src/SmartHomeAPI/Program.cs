@@ -1,4 +1,4 @@
-
+using JwtMiddleware;
 using SmartHomeAPI.Services;
 
 namespace SmartHomeAPI;
@@ -30,6 +30,8 @@ public class Program
 		_ = builder.Services.AddEndpointsApiExplorer();
 		_ = builder.Services.AddSwaggerGen();
 
+		_ = builder.Services.AddHttpClient<TokenService>(client => client.BaseAddress = new Uri("https://localhost:5288/"));
+
 		WebApplication app = builder.Build();
 
 		// Configure the HTTP request pipeline.
@@ -42,6 +44,8 @@ public class Program
 		_ = app.UseHttpsRedirection();
 
 		_ = app.UseCors("AllowAll");
+
+		_ = app.UseJwtMiddleware();
 
 		_ = app.UseAuthorization();
 

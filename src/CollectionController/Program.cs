@@ -3,6 +3,10 @@
 using System.Globalization;
 using MQTTnet;
 using MQTTnet.Client;
+using CollectionController.Models;
+using System.Text.Json;
+using System;
+using System.Diagnostics.Metrics;
 
 namespace CollectionController;
 
@@ -10,70 +14,95 @@ internal sealed class Program
 {
 	private static async Task Main ()
 	{
-		MqttFactory mqttFactory = new();
+		string filePath = "appsettings.json";
+		List<SchedulerConfig>? configs = await ConfigLoader.LoadConfigAsync(filePath).ConfigureAwait(false);
+		if (configs == null)
+		{
+			return; // Или обработка ошибки
+		}
 
+		MqttFactory mqttFactory = new();
 		using IMqttClient mqttClient = mqttFactory.CreateMqttClient();
 		MqttClientOptions mqttClientOptions = new MqttClientOptionsBuilder()
 			.WithTcpServer("localhost", 1883)
 			.Build();
-
 		_ = await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None).ConfigureAwait(false);
+		MqttClientProvider.Client = mqttClient;
 
-		Random random = new();
-		while (!Console.KeyAvailable)
+		await Scheduler.Start(configs).ConfigureAwait(false);
+		while (true)
 		{
-			MqttApplicationMessage applicationMessage = new MqttApplicationMessageBuilder()
-			  .WithTopic("home/door")
-			  .WithPayload(random.Next(0, 2).ToString(CultureInfo.InvariantCulture))
-			  .Build();
-			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			// Input for living room light status
+			await Task.Run(() => Console.WriteLine("Enter the living room light status (true/false): ")).ConfigureAwait(false);
 
-			applicationMessage = new MqttApplicationMessageBuilder()
-			  .WithTopic("home/outside/temperature")
-			  .WithPayload(random.Next(5, 12).ToString(CultureInfo.InvariantCulture))
-			  .Build();
-			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			string? lightInput = Console.ReadLine();
 
-			applicationMessage = new MqttApplicationMessageBuilder()
-			  .WithTopic("home/living_room/temperature")
-			  .WithPayload(random.Next(14, 26).ToString(CultureInfo.InvariantCulture))
-			  .Build();
-			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			if (string.IsNullOrWhiteSpace(lightInput))  
+			{
+				await Task.Run(()=>Console.WriteLine("Input cannot be null or empty.")).ConfigureAwait(false);
+			}
+			else if (bool.TryParse(lightInput, out bool isLightOn))
+			{
+				MqttApplicationMessage lightMessage = new MqttApplicationMessageBuilder()
+					.WithTopic("home/living_room/light")
+					.WithPayload(isLightOn.ToString(CultureInfo.InvariantCulture))
+					.Build();
 
-			applicationMessage = new MqttApplicationMessageBuilder()
-			.WithTopic("home/living_room/lighting")
-			.WithPayload(random.Next(0, 2).ToString(CultureInfo.InvariantCulture))
-			.Build();
-			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+				_ = await mqttClient.PublishAsync(lightMessage, CancellationToken.None).ConfigureAwait(false);
+				Console.WriteLine($"Living room light status published: {isLightOn}");
+			}
+			else
+			{
+				await Task.Run(()=>Console.WriteLine("Invalid input. Please enter true or false.")).ConfigureAwait(false);
+			}
 
-			applicationMessage = new MqttApplicationMessageBuilder()
-			  .WithTopic("home/bathroom/cold_water_temp")
-			  .WithPayload(random.Next(5, 18).ToString(CultureInfo.InvariantCulture))
-			  .Build();
-			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			// Input for door status
+			await Task.Run(() => Console.WriteLine("Enter the door status (true/false): ")).ConfigureAwait(false);
+			string? doorInput = Console.ReadLine();
+			if (string.IsNullOrWhiteSpace(lightInput))  
+			{
+				await Task.Run(() => Console.WriteLine("Input cannot be null or empty.")).ConfigureAwait(false);
+			}
+			else if (bool.TryParse(doorInput, out bool isDoorOpen))
+			{
+				MqttApplicationMessage doorMessage = new MqttApplicationMessageBuilder()
+					.WithTopic("home/door")
+					.WithPayload(isDoorOpen.ToString(CultureInfo.InvariantCulture))
+					.Build();
 
-			applicationMessage = new MqttApplicationMessageBuilder()
-			  .WithTopic("home/bathroom/hot_water_temp")
-			  .WithPayload(random.Next(30, 65).ToString(CultureInfo.InvariantCulture))
-			  .Build();
-			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+				_ = await mqttClient.PublishAsync(doorMessage, CancellationToken.None).ConfigureAwait(false);
+				Console.WriteLine($"Door status published: {isDoorOpen}");
+			}
+			else
+			{
+				await Task.Run(() => Console.WriteLine("Invalid input.Please enter true or false.")).ConfigureAwait(false);
+			}
 
-			int airHumidity = random.Next(25, 96);
-			applicationMessage = new MqttApplicationMessageBuilder()
-			  .WithTopic("home/bathroom/air_humidity")
-			  .WithPayload(airHumidity.ToString(CultureInfo.InvariantCulture))
-			  .Build();
-			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+			await Task.Run(() => Console.WriteLine("Enter the venting status(true/false): ")).ConfigureAwait(false);
+			string? ventingInput = Console.ReadLine();
+			if (string.IsNullOrWhiteSpace(ventingInput))
+			{
+				await Task.Run(() => Console.WriteLine("Input cannot be null or empty.")).ConfigureAwait(false);
+			}
+			else if (bool.TryParse(ventingInput, out bool isVentingActive))
+			{
+				MqttApplicationMessage ventingMessage = new MqttApplicationMessageBuilder()
+					.WithTopic("home/venting")
+					.WithPayload(isVentingActive.ToString(CultureInfo.InvariantCulture))
+					.Build();
 
-			applicationMessage = new MqttApplicationMessageBuilder()
-			  .WithTopic("home/bathroom/venting")
-			  .WithPayload((airHumidity > 85 ? 1 : 0).ToString(CultureInfo.InvariantCulture))
-			  .Build();
-			_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+				_ = await mqttClient.PublishAsync(ventingMessage, CancellationToken.None).ConfigureAwait(false);
+				Console.WriteLine($"Door status published: {isVentingActive}");
+			}
+			else
+			{
+				await Task.Run(() => Console.WriteLine("Invalid input.Please enter true or false.")).ConfigureAwait(false);
+			}
 
-			await Task.Delay(500).ConfigureAwait(false);
+			await Task.Delay(20000).ConfigureAwait(false);
 		}
 
-		await mqttClient.DisconnectAsync().ConfigureAwait(false);
+		
+		//await mqttClient.DisconnectAsync().ConfigureAwait(false);
 	}
 }

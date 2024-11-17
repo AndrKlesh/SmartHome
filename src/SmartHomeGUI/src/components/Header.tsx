@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import UserDisplay  from './UserDisplay';
 import LogoutButton  from './LogoutButton';
 import './Header.css'
 
@@ -9,7 +8,6 @@ function Header ()
 		<header>
 			<nav>
 				<ul>
-					<UserDisplay />
 					<li>
 						<Link to="/">Home</Link>
 					</li>

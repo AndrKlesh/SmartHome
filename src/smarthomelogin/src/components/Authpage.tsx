@@ -36,12 +36,12 @@ const Authpage: React.FC = () => {
         }*/
 
         if (formData.password.length < 6) {
-            setErrors("Password should be at least 6 characters long");
+            setErrors("Invalid password");
             return;
         }
 
         setErrors(null);
-        setUser({ username: formData.username }); 
+        setUser({ username: formData.username });
         navigate("/");
         console.log("Form submitted successfully", formData);
     };
@@ -61,7 +61,7 @@ const Authpage: React.FC = () => {
                         required
                     />
                 </div>
-                
+
                 <div>
                     <label htmlFor="password">Password</label>
                     <input

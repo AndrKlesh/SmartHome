@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './CommonContainersStyles.css'
 import { DashboardData, topicTranslations } from './Types'
 import { formatValue } from './Utils'
+import './CommonContainersStyles.css'
 
 const Home = () =>
 {

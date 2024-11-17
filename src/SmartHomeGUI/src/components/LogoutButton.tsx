@@ -1,13 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from './UserContext';
 
-const LogoutButton: React.FC = () => {
-    const { setUser } = useUser();
+
+const LogoutButton: React.FC = () =>
+{
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        setUser(null); // Очищаем данные пользователя
+    const handleLogout = () =>
+    {
         navigate("/login"); // Перенаправляем на страницу входа
     };
 

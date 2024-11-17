@@ -6,13 +6,23 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DashboardController (MeasuresStorageService measuresStorageService) : ControllerBase
+public class DashboardController (MeasuresStorageService measuresStorageService, SubscriptionsService subscriptionsService) : ControllerBase
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
+	private readonly SubscriptionsService _subscriptionsService = subscriptionsService;
 
 	[HttpGet("latest")]
-	public async Task<ActionResult<List<MeasureWithFavouriteFlagDTO>>> GetLatestMeasurements ()
+	public async Task<ActionResult<List<MeasureWithFavouriteFlagDTO>>> GetLatestMeasurements ([FromQuery] string mqttTopic)
 	{
+		// Проверяем, есть ли подписка с таким MqttTopic
+		bool isSubscribed = await _measuresStorageService.IsTopicSubscribedAsync(mqttTopic);
+
+		if (!isSubscribed)
+		{
+			return NotFound(new { message = $"No subscription found for MQTT topic '{mqttTopic}'." });
+		}
+
+		// Если подписка существует, продолжаем обработку
 		List<MeasureWithFavouriteFlagDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync();
 		return Ok(latestMeasurements);
 	}
@@ -37,9 +47,9 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 
 	[HttpGet("topicMeasurementsHistory")]
 	public async Task<ActionResult<List<MeasuresHistoryDTO>>> GetMeasurementsByTopicAndDateRange (
-	[FromQuery] string topicName,
-	[FromQuery] DateTime startDate,
-	[FromQuery] DateTime endDate)
+		[FromQuery] string topicName,
+		[FromQuery] DateTime startDate,
+		[FromQuery] DateTime endDate)
 	{
 		try
 		{

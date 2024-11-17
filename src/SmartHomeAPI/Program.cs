@@ -12,6 +12,7 @@ public class Program
 		// Add services to the container.
 
 		_ = builder.Services.AddSingleton<MeasuresStorageService>();
+		_ = builder.Services.AddSingleton<SubscriptionsService>();
 		_ = builder.Services.AddHostedService<MeasuresReceiverService>();
 
 		_ = builder.Services.AddCors(options =>

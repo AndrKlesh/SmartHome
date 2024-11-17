@@ -5,6 +5,7 @@ using MQTTnet.Server;
 
 namespace SHMQ;
 
+#pragma warning disable CA1515 // Рассмотрите возможность сделать общедоступные типы внутренними
 public class MqttHostedService (IConfiguration configuration) : IHostedService
 {
 	private readonly IConfiguration _configuration = configuration;

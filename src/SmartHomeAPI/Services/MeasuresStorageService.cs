@@ -3,11 +3,13 @@ using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
 
-public class MeasuresStorageService
+public class MeasuresStorageService (SubscriptionsService subscriptionsService)
 {
 	private readonly List<TopicDomain> _topics = new();
 	private readonly List<MeasureDomain> _measurements = new();
 	private const int MaxMeasurementsPerTopic = 100;
+
+	private readonly SubscriptionsService _subscriptionsService = subscriptionsService;
 
 	public async Task AddMeasureAsync (MeasureDTO measurementDto)
 	{
@@ -95,6 +97,12 @@ public class MeasuresStorageService
 			Value = m.Value,
 			Timestamp = m.Timestamp
 		}).ToList());
+	}
+
+	public async Task<bool> IsTopicSubscribedAsync (string mqttTopic)
+	{
+		SubscriptionDomain? subscription = await _subscriptionsService.GetSubscriptionByMqttTopicAsync(mqttTopic);
+		return subscription != null;
 	}
 }
 

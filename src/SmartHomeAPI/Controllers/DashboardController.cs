@@ -12,17 +12,9 @@ public class DashboardController (MeasuresStorageService measuresStorageService,
 	private readonly SubscriptionsService _subscriptionsService = subscriptionsService;
 
 	[HttpGet("latest")]
-	public async Task<ActionResult<List<MeasureWithFavouriteFlagDTO>>> GetLatestMeasurements ([FromQuery] string mqttTopic)
+	public async Task<ActionResult<List<MeasureWithFavouriteFlagDTO>>> GetLatestMeasurements ()
 	{
-		// Проверяем, есть ли подписка с таким MqttTopic
-		bool isSubscribed = await _measuresStorageService.IsTopicSubscribedAsync(mqttTopic);
 
-		if (!isSubscribed)
-		{
-			return NotFound(new { message = $"No subscription found for MQTT topic '{mqttTopic}'." });
-		}
-
-		// Если подписка существует, продолжаем обработку
 		List<MeasureWithFavouriteFlagDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync();
 		return Ok(latestMeasurements);
 	}

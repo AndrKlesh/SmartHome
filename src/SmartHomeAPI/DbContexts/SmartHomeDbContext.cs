@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+/*using Microsoft.EntityFrameworkCore;
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.DbContexts;
@@ -13,3 +13,4 @@ public class SmartHomeDbContext : DbContext
 		_ = optionsBuilder.UseNpgsql("Host=localhost;Database=SmartHomeDb;Username=postgres;Password=postgres");
 	}
 }
+*/

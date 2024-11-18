@@ -6,36 +6,37 @@ using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
 
-public class MeasuresReceiverService (IHostApplicationLifetime lifetime, MeasuresStorageService measuresStorageService) : IHostedService
+public class MeasuresReceiverService (MeasuresStorageService measuresStorageService) : IHostedService
 {
-	private readonly IHostApplicationLifetime _lifetime = lifetime;
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 	private IMqttClient? _mqttClient;
 	private readonly MqttFactory _mqttFactory = new();
 
-	public Task StartAsync (CancellationToken cancellationToken)
+	public async Task StartAsync (CancellationToken cancellationToken)
 	{
-		_ = _lifetime.ApplicationStarted.Register(() => _ = ConfigureSubscriptions(cancellationToken));
-		_ = _lifetime.ApplicationStopping.Register(() => _ = UnconfigureSubscriptions(cancellationToken));
-		return Task.CompletedTask;
+		await ConfigureSubscriptions(cancellationToken);
 	}
 
-	public Task StopAsync (CancellationToken cancellationToken)
+	public async Task StopAsync (CancellationToken cancellationToken)
 	{
-		return Task.CompletedTask;
+		await UnconfigureSubscriptions(cancellationToken);
 	}
 
 	private async Task ConfigureSubscriptions (CancellationToken cancellationToken)
 	{
 		_mqttClient = _mqttFactory.CreateMqttClient();
-		MqttClientOptions mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder().WithTcpServer("localhost", 1883).Build();
+		MqttClientOptions mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder()
+			.WithTcpServer("localhost", 1883)
+			.Build();
 
 		try
 		{
 			_ = await _mqttClient.ConnectAsync(mqttClientOptions, cancellationToken).ConfigureAwait(false);
 
 			_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
-			MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder().WithTopicFilter("home/#").Build();
+			MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
+				.WithTopicFilter("home/#")
+				.Build();
 			_ = await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
 		}
 		catch (OperationCanceledException ex)

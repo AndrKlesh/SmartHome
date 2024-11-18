@@ -27,3 +27,12 @@ Content-Type: application/json
 ### Получение измерений по топику и диапазону дат
 GET {{SmartHomeAPI_HostAddress}}/api/Dashboard/topicMeasurementsHistory?topicName=home/door&startDate=2000-01-01T00:00:00&endDate=2100-01-01T00:00:00
 Accept: application/json
+
+### Запрос на получение токена
+POST {{SmartHomeAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user"
+}

@@ -1,12 +1,9 @@
 #pragma warning disable CA5394
-
 using System.Globalization;
 using MQTTnet;
 using MQTTnet.Client;
 using CollectionController.Models;
-using System.Text.Json;
-using System;
-using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Logging;
 
 namespace CollectionController;
 
@@ -14,11 +11,11 @@ internal sealed class Program
 {
 	private static async Task Main ()
 	{
-		string filePath = "appsettings.json";
+		string filePath = "configuration.json";
 		List<SchedulerConfig>? configs = await ConfigLoader.LoadConfigAsync(filePath).ConfigureAwait(false);
 		if (configs == null)
 		{
-			return; // Или обработка ошибки
+			Console.WriteLine(Resources.EmptyConfig);
 		}
 
 		MqttFactory mqttFactory = new();
@@ -29,17 +26,18 @@ internal sealed class Program
 		_ = await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None).ConfigureAwait(false);
 		MqttClientProvider.Client = mqttClient;
 
-		await Scheduler.Start(configs).ConfigureAwait(false);
+		Scheduler scheduler = new();
+		await scheduler.Start(configs).ConfigureAwait(false);
+
 		while (true)
 		{
 			// Input for living room light status
-			await Task.Run(() => Console.WriteLine("Enter the living room light status (true/false): ")).ConfigureAwait(false);
-
+			Console.WriteLine(Resources.EnterLightStatus);
 			string? lightInput = Console.ReadLine();
 
 			if (string.IsNullOrWhiteSpace(lightInput))  
 			{
-				await Task.Run(()=>Console.WriteLine("Input cannot be null or empty.")).ConfigureAwait(false);
+				Console.WriteLine(Resources.EmptyInput);
 			}
 			else if (bool.TryParse(lightInput, out bool isLightOn))
 			{
@@ -53,15 +51,15 @@ internal sealed class Program
 			}
 			else
 			{
-				await Task.Run(()=>Console.WriteLine("Invalid input. Please enter true or false.")).ConfigureAwait(false);
+				Console.WriteLine(Resources.InvalidInput);
 			}
 
 			// Input for door status
-			await Task.Run(() => Console.WriteLine("Enter the door status (true/false): ")).ConfigureAwait(false);
+			Console.WriteLine(Resources.EnterDoorStatus);
 			string? doorInput = Console.ReadLine();
 			if (string.IsNullOrWhiteSpace(lightInput))  
 			{
-				await Task.Run(() => Console.WriteLine("Input cannot be null or empty.")).ConfigureAwait(false);
+				Console.WriteLine(Resources.EmptyInput);
 			}
 			else if (bool.TryParse(doorInput, out bool isDoorOpen))
 			{
@@ -75,14 +73,15 @@ internal sealed class Program
 			}
 			else
 			{
-				await Task.Run(() => Console.WriteLine("Invalid input.Please enter true or false.")).ConfigureAwait(false);
+				Console.WriteLine(Resources.InvalidInput);
 			}
 
-			await Task.Run(() => Console.WriteLine("Enter the venting status(true/false): ")).ConfigureAwait(false);
+			//input for venting
+			Console.WriteLine(Resources.EnterVentingStatus);
 			string? ventingInput = Console.ReadLine();
 			if (string.IsNullOrWhiteSpace(ventingInput))
 			{
-				await Task.Run(() => Console.WriteLine("Input cannot be null or empty.")).ConfigureAwait(false);
+				Console.WriteLine(Resources.EmptyInput);
 			}
 			else if (bool.TryParse(ventingInput, out bool isVentingActive))
 			{
@@ -96,13 +95,10 @@ internal sealed class Program
 			}
 			else
 			{
-				await Task.Run(() => Console.WriteLine("Invalid input.Please enter true or false.")).ConfigureAwait(false);
+				Console.WriteLine(Resources.InvalidInput);
 			}
 
 			await Task.Delay(20000).ConfigureAwait(false);
 		}
-
-		
-		//await mqttClient.DisconnectAsync().ConfigureAwait(false);
 	}
 }

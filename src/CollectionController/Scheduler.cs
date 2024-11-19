@@ -1,23 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+#pragma warning disable CA1002
+#pragma warning disable CA1822 
 using CollectionController.Models;
+using MQTTnet.Client;
 using Quartz;
 using Quartz.Impl;
 
 namespace CollectionController;
-public static class Scheduler
+public sealed class Scheduler ()
 {
-	public static async Task Start(List<SchedulerConfig>? configs)
+	public async Task Start(List<SchedulerConfig>? configs)
 	{
 		IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler().ConfigureAwait(false);
 		await scheduler.Start().ConfigureAwait(false);
 
 		if (configs == null)
 		{
-			await Task.Run(() => Console.WriteLine("MQTT client is not initialized.")).ConfigureAwait(false);
+			Console.WriteLine(Resources.EmptyConfig);
 			return;
 		}
 

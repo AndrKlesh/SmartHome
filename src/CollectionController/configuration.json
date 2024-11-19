@@ -15,19 +15,19 @@
         "MqttTopic": "home/outside/temperature",
         "StartValue": 0,
         "EndValue": 30,
-        "CronExpression": "0/14 * * * * ?"
+        "CronExpression": "0/5 * * * * ?"
     },
     {
         "MqttTopic": "home/bathroom/hot_water_temp",
         "StartValue": 30,
         "EndValue": 65,
-        "CronExpression": "0/11 * * * * ?"
+        "CronExpression": "0/20 * * * * ?"
     },
     {
         "MqttTopic": "home/bathroom/air_humidity",
         "StartValue": 25,
         "EndValue": 96,
-        "CronExpression": "0/11 * * * * ?"
+        "CronExpression": "0/25 * * * * ?"
     }
 
 ]   

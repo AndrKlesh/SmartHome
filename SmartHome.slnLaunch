@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "Новый профиль",
+    "Projects": [
+      {
+        "Path": "src\\CollectionController\\CollectionController.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\SHMQ\\SHMQ.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\SmartHomeAPI\\SmartHomeAPI.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\SmartHomeGUI\\smarthomegui.esproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

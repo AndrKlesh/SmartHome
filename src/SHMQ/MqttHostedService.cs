@@ -1,17 +1,23 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using MQTTnet;
 using MQTTnet.Server;
 
 namespace SHMQ;
-public class MqttHostedService : IHostedService
+
+#pragma warning disable CA1515 // Рассмотрите возможность сделать общедоступные типы внутренними
+public class MqttHostedService (IConfiguration configuration) : IHostedService
 {
+	private readonly IConfiguration _configuration = configuration;
 	private MqttServer? _mqttServer;
 
 	public async Task StartAsync (CancellationToken cancellationToken)
 	{
+		int port = _configuration.GetValue<int>("MqttSettings:Port");
+
 		MqttServerOptions options = new MqttServerOptionsBuilder()
 			.WithDefaultEndpoint()
-			.WithDefaultEndpointPort(1883)
+			.WithDefaultEndpointPort(port)
 			.Build();
 
 		_mqttServer = new MqttFactory().CreateMqttServer(options);

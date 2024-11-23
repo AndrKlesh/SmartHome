@@ -1,0 +1,38 @@
+@SmartHomeAPI_HostAddress = https://localhost:7098
+
+### Получение последних измерений
+GET {{SmartHomeAPI_HostAddress}}/api/Dashboard/latest
+Accept: application/json
+
+###
+
+### Обновление состояния "избранное" для топика
+POST {{SmartHomeAPI_HostAddress}}/api/Dashboard/toggleFavourite
+Content-Type: application/json
+
+{
+  "topicName": "home/door",
+  "isFavourite": true
+}
+
+### Обновление состояния "избранное" для топика
+POST {{SmartHomeAPI_HostAddress}}/api/Dashboard/toggleFavourite
+Content-Type: application/json
+
+{
+  "topicName": "home/door",
+  "isFavourite": false
+}
+
+### Получение измерений по топику и диапазону дат
+GET {{SmartHomeAPI_HostAddress}}/api/Dashboard/topicMeasurementsHistory?topicName=home/door&startDate=2000-01-01T00:00:00&endDate=2100-01-01T00:00:00
+Accept: application/json
+
+### Запрос на получение токена
+POST {{SmartHomeAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user"
+}

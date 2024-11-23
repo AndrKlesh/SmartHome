@@ -1,4 +1,3 @@
-
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
 
@@ -47,8 +46,6 @@ public class Program
 		_ = app.UseHttpsRedirection();
 
 		_ = app.UseCors("AllowAll");
-
-		_ = app.UseAuthorization();
 
 		_ = app.MapControllers();
 

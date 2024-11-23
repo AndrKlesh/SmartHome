@@ -6,10 +6,9 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DashboardController (MeasuresStorageService measuresStorageService, SubscriptionsService subscriptionsService) : ControllerBase
+public class DashboardController (MeasuresStorageService measuresStorageService) : ControllerBase
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
-	private readonly SubscriptionsService _subscriptionsService = subscriptionsService;
 
 	[HttpGet("latest")]
 	public async Task<ActionResult<List<MeasureWithFavouriteFlagDTO>>> GetLatestMeasurements ()

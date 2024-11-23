@@ -1,4 +1,5 @@
 
+using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
 
 namespace SmartHomeAPI;
@@ -12,7 +13,10 @@ public class Program
 		// Add services to the container.
 
 		_ = builder.Services.AddSingleton<MeasuresStorageService>();
-		_ = builder.Services.AddSingleton<SubscriptionsService>();
+		_ = builder.Services.AddSingleton<SubscriptionService>();
+		_ = builder.Services.AddSingleton<SubscriptionRepository>();
+		_ = builder.Services.AddSingleton<MeasurementRepository>();
+		_ = builder.Services.AddSingleton<TopicRepository>();
 		_ = builder.Services.AddHostedService<MeasuresReceiverService>();
 
 		_ = builder.Services.AddCors(options =>

@@ -6,9 +6,10 @@ using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
 
-public class MeasuresReceiverService (MeasuresStorageService measuresStorageService) : IHostedService
+public class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService) : IHostedService
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
+	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
 	private IMqttClient? _mqttClient;
 	private readonly MqttFactory _mqttFactory = new();
 
@@ -39,24 +40,10 @@ public class MeasuresReceiverService (MeasuresStorageService measuresStorageServ
 				.Build();
 			_ = await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
 		}
-		catch (OperationCanceledException ex)
+		catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
 		{
-			Console.WriteLine($"Операция была отменена: {ex.Message}");
-		}
-		catch (MqttCommunicationTimedOutException ex)
-		{
-			Console.WriteLine($"Тайм-аут при подключении к MQTT брокеру: {ex.Message}");
-			// TODO: повторное подключение
-		}
-		catch (MqttCommunicationException ex)
-		{
-			Console.WriteLine($"Ошибка коммуникации с MQTT брокером: {ex.Message}");
-			// TODO: восстановить подключение
-		}
-		catch (TimeoutException ex)
-		{
-			Console.WriteLine($"Произошел тайм-аут операции: {ex.Message}");
-			// TODO: повторное подключение
+			Console.WriteLine($"Ошибка подключения: {ex.Message}");
+			// TODO: Реализовать повторное подключение
 		}
 	}
 
@@ -78,6 +65,14 @@ public class MeasuresReceiverService (MeasuresStorageService measuresStorageServ
 		string topic = e.ApplicationMessage.Topic;
 		string payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
 		DateTime timestamp = DateTime.UtcNow;
+
+		// Проверка существования топика в подписках
+		SubscriptionDTO? subscription = await _subscriptionsService.GetSubscriptionByMqttTopicAsync(topic);
+		if (subscription is null)
+		{
+			Console.WriteLine($"Топик '{topic}' не добавлен пользователем. Игнорирование сообщения.");
+			return;
+		}
 
 		MeasureDTO measurementDto = new()
 		{

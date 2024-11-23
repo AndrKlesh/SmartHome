@@ -1,15 +1,23 @@
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
+using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
 
-public class SubscriptionsService
+public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 {
-	private readonly List<SubscriptionDomain> _subscriptions = new();
+	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
 
-	public async Task<List<SubscriptionDomain>> GetAllSubscriptionsAsync ()
+	public async Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync ()
 	{
-		return await Task.FromResult(_subscriptions);
+		List<SubscriptionDomain> subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
+		return subscriptions.Select(s => new SubscriptionDTO
+		{
+			MeasurementId = s.MeasurementId,
+			MeasurementName = s.MeasurementName,
+			Unit = s.Unit,
+			MqttTopic = s.MqttTopic
+		}).ToList();
 	}
 
 	public async Task AddSubscriptionAsync (SubscriptionDTO subscriptionDto)
@@ -20,48 +28,52 @@ public class SubscriptionsService
 			MeasurementName = subscriptionDto.MeasurementName,
 			Unit = subscriptionDto.Unit,
 			MqttTopic = subscriptionDto.MqttTopic,
-			ConverterName = subscriptionDto.ConverterName
+			ConverterName = "default" // всегда "default"
 		};
 
-		_subscriptions.Add(subscription);
-		await Task.CompletedTask;
+		await _subscriptionRepository.AddSubscriptionAsync(subscription);
 	}
 
-	public async Task<SubscriptionDomain?> GetSubscriptionByMeasurementIdAsync (string measurementId)
+	public async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (string measurementId)
 	{
-		return await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId));
+		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId);
+		return subscription != null ? new SubscriptionDTO
+		{
+			MeasurementId = subscription.MeasurementId,
+			MeasurementName = subscription.MeasurementName,
+			Unit = subscription.Unit,
+			MqttTopic = subscription.MqttTopic
+		} : null;
 	}
 
-	public async Task<SubscriptionDomain?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
+	public async Task<SubscriptionDTO?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
 	{
-		return await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MqttTopic == mqttTopic));
+		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic);
+		return subscription != null ? new SubscriptionDTO
+		{
+			MeasurementId = subscription.MeasurementId,
+			MeasurementName = subscription.MeasurementName,
+			Unit = subscription.Unit,
+			MqttTopic = subscription.MqttTopic
+		} : null;
 	}
 
 	public async Task UpdateSubscriptionAsync (string measurementId, SubscriptionDTO updatedSubscription)
 	{
-		SubscriptionDomain? existingSubscription = _subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId);
-		if (existingSubscription == null)
+		SubscriptionDomain subscription = new()
 		{
-			throw new ArgumentException($"Subscription with measurement ID '{measurementId}' not found.");
-		}
+			MeasurementId = measurementId,
+			MeasurementName = updatedSubscription.MeasurementName,
+			Unit = updatedSubscription.Unit,
+			MqttTopic = updatedSubscription.MqttTopic,
+			ConverterName = "default"
+		};
 
-		existingSubscription.MeasurementName = updatedSubscription.MeasurementName;
-		existingSubscription.Unit = updatedSubscription.Unit;
-		existingSubscription.MqttTopic = updatedSubscription.MqttTopic;
-		existingSubscription.ConverterName = updatedSubscription.ConverterName;
-
-		await Task.CompletedTask;
+		await _subscriptionRepository.UpdateSubscriptionAsync(subscription);
 	}
 
 	public async Task DeleteSubscriptionAsync (string measurementId)
 	{
-		SubscriptionDomain? subscription = _subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId);
-		if (subscription == null)
-		{
-			throw new ArgumentException($"Subscription with measurement ID '{measurementId}' not found.");
-		}
-
-		_ = _subscriptions.Remove(subscription);
-		await Task.CompletedTask;
+		await _subscriptionRepository.DeleteSubscriptionAsync(measurementId);
 	}
 }

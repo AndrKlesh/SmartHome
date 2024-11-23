@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;

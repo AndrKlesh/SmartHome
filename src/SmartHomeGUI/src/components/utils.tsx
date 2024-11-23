@@ -1,4 +1,4 @@
-import { topicTranslations } from './Types'
+import { topicTranslations } from './types'
 
 export const formatValue = (topic: string, value: string): string =>
 {

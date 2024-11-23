@@ -1,4 +1,3 @@
-
 namespace AuthService;
 
 public class Program

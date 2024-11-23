@@ -13,6 +13,7 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 	[HttpGet("latest")]
 	public async Task<ActionResult<List<MeasureWithFavouriteFlagDTO>>> GetLatestMeasurements ()
 	{
+
 		List<MeasureWithFavouriteFlagDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync();
 		return Ok(latestMeasurements);
 	}
@@ -37,9 +38,9 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 
 	[HttpGet("topicMeasurementsHistory")]
 	public async Task<ActionResult<List<MeasuresHistoryDTO>>> GetMeasurementsByTopicAndDateRange (
-	[FromQuery] string topicName,
-	[FromQuery] DateTime startDate,
-	[FromQuery] DateTime endDate)
+		[FromQuery] string topicName,
+		[FromQuery] DateTime startDate,
+		[FromQuery] DateTime endDate)
 	{
 		try
 		{

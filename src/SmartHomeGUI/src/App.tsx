@@ -12,7 +12,7 @@ function App ()
 			<Routes>
 				<Route path="/" element={ <Home /> } />
 				<Route path="/dashboard" element={ <Dashboard /> } />
-				<Route path="/history/:topicName" element={ <MeasurementHistory /> } />
+				<Route path="/history/:topicName" element={ <MeasurementHistory />} />
 			</Routes>
 		</Router>
 	)

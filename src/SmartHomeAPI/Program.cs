@@ -47,8 +47,6 @@ public class Program
 
 		_ = app.UseCors("AllowAll");
 
-		_ = app.UseAuthorization();
-
 		_ = app.MapControllers();
 
 		app.Urls.Add("https://*:7098");

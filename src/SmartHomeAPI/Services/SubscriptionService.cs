@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
@@ -28,7 +29,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 			MeasurementName = subscriptionDto.MeasurementName,
 			Unit = subscriptionDto.Unit,
 			MqttTopic = subscriptionDto.MqttTopic,
-			ConverterName = "default" // всегда "default"
+			ConverterName = "default" // ������ "default"
 		};
 
 		await _subscriptionRepository.AddSubscriptionAsync(subscription);

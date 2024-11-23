@@ -2,13 +2,15 @@ using System.Text;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Exceptions;
+using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
 
-public class MeasuresReceiverService (MeasuresStorageService measuresStorageService) : IHostedService
+public class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionsService subscriptionsService) : IHostedService
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
+	private readonly SubscriptionsService _subscriptionsService = subscriptionsService;
 	private IMqttClient? _mqttClient;
 	private readonly MqttFactory _mqttFactory = new();
 
@@ -79,6 +81,14 @@ public class MeasuresReceiverService (MeasuresStorageService measuresStorageServ
 		string payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
 		DateTime timestamp = DateTime.UtcNow;
 
+		// Проверяем, существует ли подписка для данного топика
+		SubscriptionDomain? subscription = await _subscriptionsService.GetSubscriptionByMqttTopicAsync(topic);
+		if (subscription == null)
+		{
+			Console.WriteLine($"Topic {topic} not found in subscription list");
+			return;
+		}
+
 		MeasureDTO measurementDto = new()
 		{
 			TopicName = topic,
@@ -86,7 +96,7 @@ public class MeasuresReceiverService (MeasuresStorageService measuresStorageServ
 			Timestamp = timestamp
 		};
 
-		// Сохранение данных через сервис
-		await _measuresStorageService.AddMeasureAsync(measurementDto);
+		// Передаем идентификатор измерения в метод добавления
+		await _measuresStorageService.AddMeasureAsync(measurementDto, subscription.MeasurementId);
 	}
 }

@@ -3,24 +3,23 @@ using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
 
-public class MeasuresStorageService (SubscriptionsService subscriptionsService)
+public class MeasuresStorageService
 {
 	private readonly List<TopicDomain> _topics = new();
 	private readonly List<MeasureDomain> _measurements = new();
 	private const int MaxMeasurementsPerTopic = 100;
 
-	private readonly SubscriptionsService _subscriptionsService = subscriptionsService;
-
-	public async Task AddMeasureAsync (MeasureDTO measurementDto)
+	public async Task AddMeasureAsync (MeasureDTO measurementDto, string measurementId)
 	{
 		// Проверяем, существует ли топик в оперативной памяти
-		TopicDomain? topic = _topics.FirstOrDefault(t => t.Name == measurementDto.TopicName);
+		TopicDomain? topic = _topics.FirstOrDefault(t => t.Id.ToString() == measurementId);
 
 		if (topic == null)
 		{
 			// Если топик не найден, создаем новый
-			topic = new TopicDomain { Id = Guid.NewGuid(), Name = measurementDto.TopicName };
+			topic = new TopicDomain { Id = Guid.Parse(measurementId), Name = measurementDto.TopicName };
 			_topics.Add(topic);
+			Console.WriteLine($"topic added: {topic.Name}");
 		}
 
 		// Создаем новое измерение на основе DTO
@@ -34,6 +33,28 @@ public class MeasuresStorageService (SubscriptionsService subscriptionsService)
 
 		// Добавляем новое измерение в память
 		_measurements.Add(measurement);
+
+		// Выводим содержимое _topics
+		Console.WriteLine("Topics:");
+		if (_topics.Count != 0)
+		{
+			Console.WriteLine(string.Join(", ", _topics.Select(t => t.Name)));
+		}
+		else
+		{
+			Console.WriteLine("No topics found");
+		}
+
+		// Выводим содержимое _measurements
+		Console.WriteLine("Measurements:");
+		if (_measurements.Count != 0)
+		{
+			Console.WriteLine(string.Join(", ", _measurements.Select(m => $"[Value: {m.Value}, Timestamp: {m.Timestamp}]")));
+		}
+		else
+		{
+			Console.WriteLine("No measurements found");
+		}
 
 		// Ограничиваем количество измерений до 100 для каждого топика
 		List<MeasureDomain> measurementsForTopic = _measurements.Where(m => m.TopicId == topic.Id).ToList();
@@ -68,14 +89,14 @@ public class MeasuresStorageService (SubscriptionsService subscriptionsService)
 		}).ToList());
 	}
 
-	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
+	public async Task ToggleFavouriteAsync (string measurementId, bool isFavourite)
 	{
-		// Находим топик по имени
-		TopicDomain? topic = _topics.FirstOrDefault(t => t.Name == topicName);
+		// Находим топик по идентификатору
+		TopicDomain? topic = _topics.FirstOrDefault(t => t.Id.ToString() == measurementId);
 
 		if (topic == null)
 		{
-			throw new ArgumentNullException($"Topic with name '{topicName}' not found.");
+			throw new ArgumentNullException($"Topic with ID '{measurementId}' not found.");
 		}
 
 		// Обновляем значение поля IsFavourite
@@ -83,11 +104,11 @@ public class MeasuresStorageService (SubscriptionsService subscriptionsService)
 		await Task.CompletedTask;
 	}
 
-	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
+	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string measurementId, DateTime startDate, DateTime endDate)
 	{
-		// Получаем измерения для указанного топика и диапазона дат
+		// Получаем измерения для указанного идентификатора и диапазона дат
 		List<MeasureDomain> measurements = _measurements
-			.Where(m => m.Topic?.Name == topicName && m.Timestamp >= startDate && m.Timestamp <= endDate)
+			.Where(m => m.Topic?.Id.ToString() == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
 			.OrderBy(m => m.Timestamp)
 			.ToList();
 
@@ -97,12 +118,6 @@ public class MeasuresStorageService (SubscriptionsService subscriptionsService)
 			Value = m.Value,
 			Timestamp = m.Timestamp
 		}).ToList());
-	}
-
-	public async Task<bool> IsTopicSubscribedAsync (string mqttTopic)
-	{
-		SubscriptionDomain? subscription = await _subscriptionsService.GetSubscriptionByMqttTopicAsync(mqttTopic);
-		return subscription != null;
 	}
 }
 

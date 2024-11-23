@@ -1,4 +1,3 @@
-
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
 

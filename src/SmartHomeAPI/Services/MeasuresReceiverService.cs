@@ -2,7 +2,6 @@ using System.Text;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Exceptions;
-using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
@@ -83,6 +82,6 @@ public class MeasuresReceiverService (MeasuresStorageService measuresStorageServ
 		};
 
 		// Передаем идентификатор измерения в метод добавления
-		await _measuresStorageService.AddMeasureAsync(measurementDto, subscription.MeasurementId);
+		await _measuresStorageService.AddMeasureAsync(measurementDto);
 	}
 }

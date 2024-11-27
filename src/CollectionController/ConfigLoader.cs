@@ -2,7 +2,7 @@ using System.Text.Json;
 using CollectionController.Models;
 
 namespace CollectionController;
-public static class ConfigLoader
+internal static class ConfigLoader
 {
 	public static async Task<List<SchedulerConfig>?> LoadConfigAsync (string filePath)
 	{

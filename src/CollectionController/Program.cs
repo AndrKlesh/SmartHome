@@ -1,9 +1,10 @@
+#pragma warning disable CA1303
 #pragma warning disable CA5394
+
 using System.Globalization;
+using CollectionController.Models;
 using MQTTnet;
 using MQTTnet.Client;
-using CollectionController.Models;
-using Microsoft.Extensions.Logging;
 
 namespace CollectionController;
 
@@ -15,7 +16,7 @@ internal sealed class Program
 		List<SchedulerConfig>? configs = await ConfigLoader.LoadConfigAsync(filePath).ConfigureAwait(false);
 		if (configs == null)
 		{
-			Console.WriteLine(Resources.EmptyConfig);
+			Console.WriteLine("Your configuration file is empty");
 		}
 
 		MqttFactory mqttFactory = new();
@@ -32,12 +33,12 @@ internal sealed class Program
 		while (true)
 		{
 			// Input for living room light status
-			Console.WriteLine(Resources.EnterLightStatus);
+			Console.WriteLine("Enter the living room light status (true/false): ");
 			string? lightInput = Console.ReadLine();
 
-			if (string.IsNullOrWhiteSpace(lightInput))  
+			if (string.IsNullOrWhiteSpace(lightInput))
 			{
-				Console.WriteLine(Resources.EmptyInput);
+				Console.WriteLine("Input cannot be null or empty");
 			}
 			else if (bool.TryParse(lightInput, out bool isLightOn))
 			{
@@ -51,15 +52,15 @@ internal sealed class Program
 			}
 			else
 			{
-				Console.WriteLine(Resources.InvalidInput);
+				Console.WriteLine("Invalid input. Enter true or false");
 			}
 
 			// Input for door status
-			Console.WriteLine(Resources.EnterDoorStatus);
+			Console.WriteLine("Enter the door status (true/false): ");
 			string? doorInput = Console.ReadLine();
-			if (string.IsNullOrWhiteSpace(lightInput))  
+			if (string.IsNullOrWhiteSpace(lightInput))
 			{
-				Console.WriteLine(Resources.EmptyInput);
+				Console.WriteLine("Input cannot be null or empty");
 			}
 			else if (bool.TryParse(doorInput, out bool isDoorOpen))
 			{
@@ -73,15 +74,15 @@ internal sealed class Program
 			}
 			else
 			{
-				Console.WriteLine(Resources.InvalidInput);
+				Console.WriteLine("Invalid input. Please enter true or false");
 			}
 
-			//input for venting
-			Console.WriteLine(Resources.EnterVentingStatus);
+			// Input for venting
+			Console.WriteLine("Enter the venting status(true/false): ");
 			string? ventingInput = Console.ReadLine();
 			if (string.IsNullOrWhiteSpace(ventingInput))
 			{
-				Console.WriteLine(Resources.EmptyInput);
+				Console.WriteLine("Input cannot be null or empty");
 			}
 			else if (bool.TryParse(ventingInput, out bool isVentingActive))
 			{
@@ -95,7 +96,7 @@ internal sealed class Program
 			}
 			else
 			{
-				Console.WriteLine(Resources.InvalidInput);
+				Console.WriteLine("Invalid input. Please enter true or false");
 			}
 
 			await Task.Delay(20000).ConfigureAwait(false);

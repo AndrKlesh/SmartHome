@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+#pragma warning disable CA1812
 
 namespace CollectionController.Models;
-public class SchedulerConfig
+
+internal sealed class SchedulerConfig
 {
 	public required string MqttTopic { get; set; }
 	public int StartValue { get; set; }

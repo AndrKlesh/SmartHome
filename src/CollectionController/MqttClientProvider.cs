@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MQTTnet.Client;
 
 namespace CollectionController;
-public static class MqttClientProvider
+internal static class MqttClientProvider
 {
 	public static IMqttClient? Client { get; set; }
-	public static void Dispose()
+	public static void Dispose ()
 	{
 		Client?.Dispose();
 	}

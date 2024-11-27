@@ -11,8 +11,6 @@ public class Program
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-		// Add services to the container.
-
 		_ = builder.Services.AddSingleton<MeasuresStorageService>();
 		_ = builder.Services.AddSingleton<SubscriptionService>();
 		_ = builder.Services.AddSingleton<SubscriptionRepository>();
@@ -32,13 +30,11 @@ public class Program
 		});
 
 		_ = builder.Services.AddControllers();
-		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		_ = builder.Services.AddEndpointsApiExplorer();
 		_ = builder.Services.AddSwaggerGen();
 
 		WebApplication app = builder.Build();
 
-		// Configure the HTTP request pipeline.
 		if (app.Environment.IsDevelopment())
 		{
 			_ = app.UseSwagger();

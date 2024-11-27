@@ -12,14 +12,20 @@ public sealed class AuthController : ControllerBase
 	[HttpPost("login")]
 	public IActionResult Login ([FromBody] User user)
 	{
-		if (user.Username == "user" && user.Password == "user")
+		if (user is null || user.Username is null || user.Password is null)
+		{
+			return BadRequest();
+		}
+		else if (user.Username == "user" && user.Password == "user")
 		{
 			string token = "test-token";
 
 			Response.Cookies.Append("jwt", token);
 			return Ok(token);
 		}
-
-		return Unauthorized();
+		else
+		{
+			return Unauthorized();
+		}
 	}
 }

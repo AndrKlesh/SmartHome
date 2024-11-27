@@ -1,7 +1,7 @@
 namespace SmartHomeAPI.Models;
 
-public class TopicDTO
+internal class TopicDTO
 {
-	public required string TopicName { get; set; }
-	public required bool IsFavourite { get; set; }
+	internal required string TopicName { get; set; }
+	internal required bool IsFavourite { get; set; }
 }

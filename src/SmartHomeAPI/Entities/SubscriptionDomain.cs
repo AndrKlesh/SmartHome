@@ -1,6 +1,6 @@
 namespace SmartHomeAPI.Entities;
 
-public class SubscriptionDomain
+internal class SubscriptionDomain
 {
 	public string MeasurementId { get; set; } = string.Empty;
 	public string MeasurementName { get; set; } = string.Empty;

@@ -6,7 +6,7 @@ using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
 
-public class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService) : IHostedService
+internal class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService) : IHostedService
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 	private readonly SubscriptionService _subscriptionsService = subscriptionsService;

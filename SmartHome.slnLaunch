@@ -1,6 +1,6 @@
 [
   {
-    "Name": "Новый профиль",
+    "Name": "Default",
     "Projects": [
       {
         "Path": "src\\CollectionController\\CollectionController.csproj",

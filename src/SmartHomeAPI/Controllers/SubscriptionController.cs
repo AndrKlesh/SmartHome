@@ -7,7 +7,7 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SubscriptionsController (SubscriptionService subscriptionsService) : ControllerBase
+internal class SubscriptionsController (SubscriptionService subscriptionsService) : ControllerBase
 {
 	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
 

@@ -4,11 +4,11 @@ using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
 
-public class SubscriptionService (SubscriptionRepository subscriptionRepository)
+internal class SubscriptionService (SubscriptionRepository subscriptionRepository)
 {
 	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
 
-	public async Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync ()
+	internal async Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync ()
 	{
 		List<SubscriptionDomain> subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
 		return subscriptions.Select(s => new SubscriptionDTO
@@ -20,7 +20,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 		}).ToList();
 	}
 
-	public async Task AddSubscriptionAsync (SubscriptionDTO subscriptionDto)
+	internal async Task AddSubscriptionAsync (SubscriptionDTO subscriptionDto)
 	{
 		SubscriptionDomain subscription = new()
 		{
@@ -28,13 +28,13 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 			MeasurementName = subscriptionDto.MeasurementName,
 			Unit = subscriptionDto.Unit,
 			MqttTopic = subscriptionDto.MqttTopic,
-			ConverterName = "default" // ������ "default"
+			ConverterName = "default" // по умолчанию "default"
 		};
 
 		await _subscriptionRepository.AddSubscriptionAsync(subscription);
 	}
 
-	public async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (string measurementId)
+	internal async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (string measurementId)
 	{
 		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId);
 		return subscription != null ? new SubscriptionDTO
@@ -46,7 +46,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 		} : null;
 	}
 
-	public async Task<SubscriptionDTO?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
+	internal async Task<SubscriptionDTO?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
 	{
 		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic);
 		return subscription != null ? new SubscriptionDTO
@@ -58,7 +58,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 		} : null;
 	}
 
-	public async Task UpdateSubscriptionAsync (string measurementId, SubscriptionDTO updatedSubscription)
+	internal async Task UpdateSubscriptionAsync (string measurementId, SubscriptionDTO updatedSubscription)
 	{
 		SubscriptionDomain subscription = new()
 		{
@@ -72,7 +72,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 		await _subscriptionRepository.UpdateSubscriptionAsync(subscription);
 	}
 
-	public async Task DeleteSubscriptionAsync (string measurementId)
+	internal async Task DeleteSubscriptionAsync (string measurementId)
 	{
 		await _subscriptionRepository.DeleteSubscriptionAsync(measurementId);
 	}

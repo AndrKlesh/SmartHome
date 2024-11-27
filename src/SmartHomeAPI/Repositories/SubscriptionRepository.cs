@@ -1,12 +1,12 @@
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
-public class SubscriptionRepository
+internal class SubscriptionRepository
 {
 	private readonly List<SubscriptionDomain> _subscriptions = new();
 	private readonly ReaderWriterLockSlim _lock = new();
 
-	public async Task<List<SubscriptionDomain>> GetAllSubscriptionsAsync ()
+	internal async Task<List<SubscriptionDomain>> GetAllSubscriptionsAsync ()
 	{
 		_lock.EnterReadLock();
 		try
@@ -19,7 +19,7 @@ public class SubscriptionRepository
 		}
 	}
 
-	public async Task AddSubscriptionAsync (SubscriptionDomain subscription)
+	internal async Task AddSubscriptionAsync (SubscriptionDomain subscription)
 	{
 		_lock.EnterWriteLock();
 		try
@@ -34,7 +34,7 @@ public class SubscriptionRepository
 		await Task.CompletedTask;
 	}
 
-	public async Task<SubscriptionDomain?> GetSubscriptionByMeasurementIdAsync (string measurementId)
+	internal async Task<SubscriptionDomain?> GetSubscriptionByMeasurementIdAsync (string measurementId)
 	{
 		_lock.EnterReadLock();
 		try
@@ -47,7 +47,7 @@ public class SubscriptionRepository
 		}
 	}
 
-	public async Task<SubscriptionDomain?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
+	internal async Task<SubscriptionDomain?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
 	{
 		_lock.EnterReadLock();
 		try
@@ -60,7 +60,7 @@ public class SubscriptionRepository
 		}
 	}
 
-	public async Task UpdateSubscriptionAsync (SubscriptionDomain subscription)
+	internal async Task UpdateSubscriptionAsync (SubscriptionDomain subscription)
 	{
 		_lock.EnterUpgradeableReadLock();
 		try
@@ -90,7 +90,7 @@ public class SubscriptionRepository
 		await Task.CompletedTask;
 	}
 
-	public async Task DeleteSubscriptionAsync (string measurementId)
+	internal async Task DeleteSubscriptionAsync (string measurementId)
 	{
 		_lock.EnterUpgradeableReadLock();
 		try

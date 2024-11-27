@@ -1,9 +1,9 @@
 namespace SmartHomeAPI.Entities;
 
-public class TopicDomain
+internal class TopicDomain
 {
-	public Guid Id { get; set; }
-	public string Name { get; set; } = string.Empty;
-	public bool IsFavourite { get; set; } = false;
-	public ICollection<MeasureDomain> Measurements { get; set; } = new List<MeasureDomain>();
+	internal Guid Id { get; set; }
+	internal string Name { get; set; } = string.Empty;
+	internal bool IsFavourite { get; set; }
+	internal ICollection<MeasureDomain> Measurements { get; set; } = new List<MeasureDomain>();
 }

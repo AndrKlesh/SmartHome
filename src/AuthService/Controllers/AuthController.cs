@@ -5,7 +5,7 @@ namespace AuthService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+internal class AuthController : ControllerBase
 {
 	[HttpPost("login")]
 	public IActionResult Login ([FromBody] User user)

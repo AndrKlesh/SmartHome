@@ -1,6 +1,6 @@
 namespace SmartHomeAPI.Entities;
 
-public class MeasureDomain
+internal class MeasureDomain
 {
 	public Guid Id { get; set; }
 	public Guid TopicId { get; set; }

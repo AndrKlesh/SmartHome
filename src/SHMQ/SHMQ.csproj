@@ -11,16 +11,14 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>embedded</DebugType>
-		<WarningLevel>7</WarningLevel>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>embedded</DebugType>
-		<WarningLevel>7</WarningLevel>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
@@ -21,12 +23,12 @@ public class MeasurementRepository
 			}
 		}
 
-		await Task.CompletedTask;
+		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
 	public async Task<List<MeasureDomain>> GetMeasurementsByTopicIdAsync (Guid topicId)
 	{
-		return await Task.FromResult(_measurements.Where(m => m.TopicId == topicId).ToList());
+		return await Task.FromResult(_measurements.Where(m => m.TopicId == topicId).ToList()).ConfigureAwait(false);
 	}
 
 	public async Task<List<MeasureDomain>> GetLatestMeasurementsAsync ()
@@ -36,7 +38,7 @@ public class MeasurementRepository
 				.GroupBy(m => m.TopicId)
 				.Select(g => g.OrderByDescending(m => m.Timestamp).First())
 				.ToList()
-		);
+		).ConfigureAwait(false);
 	}
 
 	public async Task<List<MeasureDomain>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
@@ -46,6 +48,6 @@ public class MeasurementRepository
 				.Where(m => m.Topic?.Name == topicName && m.Timestamp >= startDate && m.Timestamp <= endDate)
 				.OrderBy(m => m.Timestamp)
 				.ToList()
-		);
+		).ConfigureAwait(false);
 	}
 }

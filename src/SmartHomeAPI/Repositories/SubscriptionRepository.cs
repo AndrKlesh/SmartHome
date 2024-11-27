@@ -1,6 +1,9 @@
+#pragma warning disable CA1515
+
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
+
 public class SubscriptionRepository
 {
 	private readonly List<SubscriptionDomain> _subscriptions = new();
@@ -11,7 +14,7 @@ public class SubscriptionRepository
 		_lock.EnterReadLock();
 		try
 		{
-			return await Task.FromResult(_subscriptions.ToList());
+			return await Task.FromResult(_subscriptions.ToList()).ConfigureAwait(false);
 		}
 		finally
 		{
@@ -31,7 +34,7 @@ public class SubscriptionRepository
 			_lock.ExitWriteLock();
 		}
 
-		await Task.CompletedTask;
+		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
 	internal async Task<SubscriptionDomain?> GetSubscriptionByMeasurementIdAsync (string measurementId)
@@ -39,7 +42,7 @@ public class SubscriptionRepository
 		_lock.EnterReadLock();
 		try
 		{
-			return await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId));
+			return await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId)).ConfigureAwait(false);
 		}
 		finally
 		{
@@ -52,7 +55,7 @@ public class SubscriptionRepository
 		_lock.EnterReadLock();
 		try
 		{
-			return await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MqttTopic == mqttTopic));
+			return await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MqttTopic == mqttTopic)).ConfigureAwait(false);
 		}
 		finally
 		{
@@ -87,7 +90,7 @@ public class SubscriptionRepository
 			_lock.ExitUpgradeableReadLock();
 		}
 
-		await Task.CompletedTask;
+		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
 	internal async Task DeleteSubscriptionAsync (string measurementId)
@@ -114,6 +117,6 @@ public class SubscriptionRepository
 			_lock.ExitUpgradeableReadLock();
 		}
 
-		await Task.CompletedTask;
+		await Task.CompletedTask.ConfigureAwait(false);
 	}
 }

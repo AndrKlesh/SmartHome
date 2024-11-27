@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 namespace SmartHomeAPI.Models;
 
 public class MeasureDTO

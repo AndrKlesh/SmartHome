@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
@@ -8,13 +10,13 @@ public class TopicRepository
 
 	public async Task<TopicDomain?> GetTopicByNameAsync (string topicName)
 	{
-		return await Task.FromResult(_topics.FirstOrDefault(t => t.Name == topicName));
+		return await Task.FromResult(_topics.FirstOrDefault(t => t.Name == topicName)).ConfigureAwait(false);
 	}
 
 	public async Task AddTopicAsync (TopicDomain topic)
 	{
 		_topics.Add(topic);
-		await Task.CompletedTask;
+		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
 	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
@@ -26,6 +28,6 @@ public class TopicRepository
 		}
 
 		topic.IsFavourite = isFavourite;
-		await Task.CompletedTask;
+		await Task.CompletedTask.ConfigureAwait(false);
 	}
 }

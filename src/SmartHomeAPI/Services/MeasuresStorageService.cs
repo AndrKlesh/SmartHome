@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
@@ -11,11 +13,11 @@ public class MeasuresStorageService (TopicRepository topicRepository, Measuremen
 
 	public async Task AddMeasureAsync (MeasureDTO measurementDto)
 	{
-		TopicDomain? topic = await _topicRepository.GetTopicByNameAsync(measurementDto.TopicName);
+		TopicDomain? topic = await _topicRepository.GetTopicByNameAsync(measurementDto.TopicName).ConfigureAwait(false);
 		if (topic == null)
 		{
 			topic = new TopicDomain { Id = Guid.NewGuid(), Name = measurementDto.TopicName };
-			await _topicRepository.AddTopicAsync(topic);
+			await _topicRepository.AddTopicAsync(topic).ConfigureAwait(false);
 		}
 
 		MeasureDomain measurement = new()
@@ -26,12 +28,12 @@ public class MeasuresStorageService (TopicRepository topicRepository, Measuremen
 			Topic = topic
 		};
 
-		await _measurementRepository.AddMeasurementAsync(measurement);
+		await _measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
 	}
 
 	public async Task<List<MeasureWithFavouriteFlagDTO>> GetLatestMeasurementsAsync ()
 	{
-		List<MeasureDomain> latestMeasurements = await _measurementRepository.GetLatestMeasurementsAsync();
+		List<MeasureDomain> latestMeasurements = await _measurementRepository.GetLatestMeasurementsAsync().ConfigureAwait(false);
 
 		return latestMeasurements.Select(m => new MeasureWithFavouriteFlagDTO
 		{
@@ -44,12 +46,12 @@ public class MeasuresStorageService (TopicRepository topicRepository, Measuremen
 
 	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
 	{
-		await _topicRepository.ToggleFavouriteAsync(topicName, isFavourite);
+		await _topicRepository.ToggleFavouriteAsync(topicName, isFavourite).ConfigureAwait(false);
 	}
 
 	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
 	{
-		List<MeasureDomain> measurements = await _measurementRepository.GetMeasurementsByTopicAndDateRangeAsync(topicName, startDate, endDate);
+		List<MeasureDomain> measurements = await _measurementRepository.GetMeasurementsByTopicAndDateRangeAsync(topicName, startDate, endDate).ConfigureAwait(false);
 
 		return measurements.Select(m => new MeasuresHistoryDTO
 		{

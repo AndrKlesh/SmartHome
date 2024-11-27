@@ -14,6 +14,6 @@ public class JwtMiddleware (RequestDelegate next)
 			context.Items ["User"] = "AuthenticatedUser";
 		}
 
-		await _next(context);
+		await _next(context).ConfigureAwait(false);
 	}
 }

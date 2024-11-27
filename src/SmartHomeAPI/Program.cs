@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
 

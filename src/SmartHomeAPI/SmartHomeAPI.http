@@ -36,3 +36,15 @@ Content-Type: application/json
   "username": "user",
   "password": "user"
 }
+
+### Подписываемся
+
+POST {{SmartHomeAPI_HostAddress}}/api/Subscriptions/addSubscription
+Content-Type: application/json
+
+{
+  "measurementId": "string",
+  "measurementName": "string",
+  "unit": "string",
+  "mqttTopic": "home/outside/temperature"
+}

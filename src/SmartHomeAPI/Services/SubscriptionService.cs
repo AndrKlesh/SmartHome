@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
@@ -10,7 +12,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 
 	public async Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync ()
 	{
-		List<SubscriptionDomain> subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
+		List<SubscriptionDomain> subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync().ConfigureAwait(false);
 		return subscriptions.Select(s => new SubscriptionDTO
 		{
 			MeasurementId = s.MeasurementId,
@@ -31,12 +33,12 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 			ConverterName = "default" // по умолчанию "default"
 		};
 
-		await _subscriptionRepository.AddSubscriptionAsync(subscription);
+		await _subscriptionRepository.AddSubscriptionAsync(subscription).ConfigureAwait(false);
 	}
 
 	public async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (string measurementId)
 	{
-		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId);
+		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
 		return subscription != null ? new SubscriptionDTO
 		{
 			MeasurementId = subscription.MeasurementId,
@@ -48,7 +50,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 
 	public async Task<SubscriptionDTO?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
 	{
-		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic);
+		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic).ConfigureAwait(false);
 		return subscription != null ? new SubscriptionDTO
 		{
 			MeasurementId = subscription.MeasurementId,
@@ -69,11 +71,11 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 			ConverterName = "default"
 		};
 
-		await _subscriptionRepository.UpdateSubscriptionAsync(subscription);
+		await _subscriptionRepository.UpdateSubscriptionAsync(subscription).ConfigureAwait(false);
 	}
 
 	public async Task DeleteSubscriptionAsync (string measurementId)
 	{
-		await _subscriptionRepository.DeleteSubscriptionAsync(measurementId);
+		await _subscriptionRepository.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
 	}
 }

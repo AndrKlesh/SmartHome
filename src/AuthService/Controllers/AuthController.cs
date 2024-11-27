@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using AuthService.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -5,7 +7,7 @@ namespace AuthService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-internal class AuthController : ControllerBase
+public sealed class AuthController : ControllerBase
 {
 	[HttpPost("login")]
 	public IActionResult Login ([FromBody] User user)

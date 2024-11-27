@@ -13,8 +13,8 @@ internal sealed class Program
 	private static async Task Main ()
 	{
 		string filePath = "configuration.json";
-		List<SchedulerConfig>? configs = await ConfigLoader.LoadConfigAsync(filePath).ConfigureAwait(false);
-		if (configs == null)
+		List<SchedulerConfig>? config = await ConfigLoader.LoadConfigAsync(filePath).ConfigureAwait(false);
+		if (config == null)
 		{
 			Console.WriteLine("Your configuration file is empty");
 		}
@@ -28,7 +28,7 @@ internal sealed class Program
 		MqttClientProvider.Client = mqttClient;
 
 		Scheduler scheduler = new();
-		await scheduler.Start(configs).ConfigureAwait(false);
+		await scheduler.Start(config).ConfigureAwait(false);
 
 		while (true)
 		{

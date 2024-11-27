@@ -1,3 +1,6 @@
+#pragma warning disable CA1062
+#pragma warning disable CA1515
+
 using Microsoft.AspNetCore.Mvc;
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
@@ -7,21 +10,21 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SubscriptionsController (SubscriptionService subscriptionsService) : ControllerBase
+public sealed class SubscriptionsController (SubscriptionService subscriptionsService) : ControllerBase
 {
 	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
 
 	[HttpGet("getAllSubscriptions")]
 	public async Task<ActionResult<List<SubscriptionDomain>>> GetAllSubscriptions ()
 	{
-		List<SubscriptionDTO> subscriptions = await _subscriptionsService.GetAllSubscriptionsAsync();
+		List<SubscriptionDTO> subscriptions = await _subscriptionsService.GetAllSubscriptionsAsync().ConfigureAwait(false);
 		return Ok(subscriptions);
 	}
 
 	[HttpGet("getSubscriptionByMeasurementId/{measurementId}")]
 	public async Task<ActionResult<SubscriptionDomain>> GetSubscriptionByMeasurementId (string measurementId)
 	{
-		SubscriptionDTO? subscription = await _subscriptionsService.GetSubscriptionByMeasurementIdAsync(measurementId);
+		SubscriptionDTO? subscription = await _subscriptionsService.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
 		if (subscription == null)
 		{
 			return NotFound(new { message = $"Subscription with measurement ID '{measurementId}' not found." });
@@ -33,8 +36,8 @@ public class SubscriptionsController (SubscriptionService subscriptionsService) 
 	[HttpPost("addSubscription")]
 	public async Task<IActionResult> AddSubscription ([FromBody] SubscriptionDTO subscriptionDto)
 	{
-		await _subscriptionsService.AddSubscriptionAsync(subscriptionDto);
-		return Ok(new { message = "Subscription added successfully." });
+		await _subscriptionsService.AddSubscriptionAsync(subscriptionDto).ConfigureAwait(false);
+		return Ok(new { message = $"Subscription {subscriptionDto.MqttTopic} added" });
 	}
 
 	[HttpPut("updateSubscription/{measurementId}")]
@@ -42,7 +45,7 @@ public class SubscriptionsController (SubscriptionService subscriptionsService) 
 	{
 		try
 		{
-			await _subscriptionsService.UpdateSubscriptionAsync(measurementId, updatedSubscription);
+			await _subscriptionsService.UpdateSubscriptionAsync(measurementId, updatedSubscription).ConfigureAwait(false);
 			return Ok(new { message = "Subscription updated successfully." });
 		}
 		catch (ArgumentException ex)
@@ -56,7 +59,7 @@ public class SubscriptionsController (SubscriptionService subscriptionsService) 
 	{
 		try
 		{
-			await _subscriptionsService.DeleteSubscriptionAsync(measurementId);
+			await _subscriptionsService.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
 			return Ok(new { message = "Subscription deleted successfully." });
 		}
 		catch (ArgumentException ex)

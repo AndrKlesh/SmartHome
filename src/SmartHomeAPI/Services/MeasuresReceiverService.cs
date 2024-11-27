@@ -6,7 +6,7 @@ using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
 
-internal class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService) : IHostedService
+internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService) : IHostedService
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
@@ -15,12 +15,12 @@ internal class MeasuresReceiverService (MeasuresStorageService measuresStorageSe
 
 	public async Task StartAsync (CancellationToken cancellationToken)
 	{
-		await ConfigureSubscriptions(cancellationToken);
+		await ConfigureSubscriptions(cancellationToken).ConfigureAwait(false);
 	}
 
 	public async Task StopAsync (CancellationToken cancellationToken)
 	{
-		await UnconfigureSubscriptions(cancellationToken);
+		await UnconfigureSubscriptions(cancellationToken).ConfigureAwait(false);
 	}
 
 	private async Task ConfigureSubscriptions (CancellationToken cancellationToken)
@@ -67,7 +67,7 @@ internal class MeasuresReceiverService (MeasuresStorageService measuresStorageSe
 		DateTime timestamp = DateTime.UtcNow;
 
 		// Проверка существования топика в подписках
-		SubscriptionDTO? subscription = await _subscriptionsService.GetSubscriptionByMqttTopicAsync(topic);
+		SubscriptionDTO? subscription = await _subscriptionsService.GetSubscriptionByMqttTopicAsync(topic).ConfigureAwait(false);
 		if (subscription is null)
 		{
 			Console.WriteLine($"Топик '{topic}' не добавлен пользователем. Игнорирование сообщения.");
@@ -82,6 +82,6 @@ internal class MeasuresReceiverService (MeasuresStorageService measuresStorageSe
 		};
 
 		// Передаем идентификатор измерения в метод добавления
-		await _measuresStorageService.AddMeasureAsync(measurementDto);
+		await _measuresStorageService.AddMeasureAsync(measurementDto).ConfigureAwait(false);
 	}
 }

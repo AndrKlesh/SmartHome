@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using Microsoft.AspNetCore.Mvc;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Services;
@@ -14,7 +16,7 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 	public async Task<ActionResult<List<MeasureWithFavouriteFlagDTO>>> GetLatestMeasurements ()
 	{
 
-		List<MeasureWithFavouriteFlagDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync();
+		List<MeasureWithFavouriteFlagDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync().ConfigureAwait(false);
 		return Ok(latestMeasurements);
 	}
 
@@ -23,7 +25,7 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 	{
 		try
 		{
-			await _measuresStorageService.ToggleFavouriteAsync(toggleFavouriteDto.TopicName, toggleFavouriteDto.IsFavourite);
+			await _measuresStorageService.ToggleFavouriteAsync(toggleFavouriteDto.TopicName, toggleFavouriteDto.IsFavourite).ConfigureAwait(false);
 			return Ok(new { message = "Favourite state updated successfully." });
 		}
 		catch (ArgumentException ex)
@@ -46,7 +48,7 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 		{
 			startDate = startDate.ToUniversalTime();
 			endDate = endDate.ToUniversalTime();
-			List<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementsByTopicAndDateRangeAsync(topicName, startDate, endDate);
+			List<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementsByTopicAndDateRangeAsync(topicName, startDate, endDate).ConfigureAwait(false);
 
 			if (measurements == null || measurements.Count == 0)
 			{

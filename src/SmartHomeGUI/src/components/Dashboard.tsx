@@ -105,7 +105,7 @@ const Dashboard = () =>
 							className={ `favourite-star ${ item.isFavourite ? 'active' : '' }` }
 							onClick={ (e) =>
 							{
-								e.stopPropagation() 
+								e.stopPropagation()
 								toggleFavourite(item.topicName, item.isFavourite)
 							} }
 						>

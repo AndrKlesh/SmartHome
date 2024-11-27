@@ -1,21 +1,21 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 
 const LogoutButton: React.FC = () =>
 {
-	const navigate = useNavigate();
+	const navigate = useNavigate()
 
 	const handleLogout = () =>
 	{
-		navigate("/login"); // Перенаправляем на страницу входа
-	};
+		navigate("/login") // Перенаправляем на страницу входа
+	}
 
 	return (
-		<div onClick={handleLogout}>
+		<div onClick={ handleLogout }>
 			Logout
 		</div>
-	);
-};
+	)
+}
 
-export default LogoutButton;
+export default LogoutButton

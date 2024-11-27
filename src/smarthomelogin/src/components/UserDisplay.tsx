@@ -1,14 +1,15 @@
-import React from 'react';
-import { useUser } from './UserContext';
+import React from 'react'
+import { useUser } from './UserContext'
 
-const UserDisplay: React.FC = () => {
-	const { user } = useUser();
+const UserDisplay: React.FC = () =>
+{
+	const { user } = useUser()
 
 	return (
 		<div>
-			{user ? <a>{user.username}</a> : <a></a>}
+			{ user ? <a>{ user.username }</a> : <a></a> }
 		</div>
-	);
-};
+	)
+}
 
-export default UserDisplay;
+export default UserDisplay

@@ -4,11 +4,11 @@ using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
 
-internal class SubscriptionService (SubscriptionRepository subscriptionRepository)
+public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 {
 	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
 
-	internal async Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync ()
+	public async Task<List<SubscriptionDTO>> GetAllSubscriptionsAsync ()
 	{
 		List<SubscriptionDomain> subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
 		return subscriptions.Select(s => new SubscriptionDTO
@@ -20,7 +20,7 @@ internal class SubscriptionService (SubscriptionRepository subscriptionRepositor
 		}).ToList();
 	}
 
-	internal async Task AddSubscriptionAsync (SubscriptionDTO subscriptionDto)
+	public async Task AddSubscriptionAsync (SubscriptionDTO subscriptionDto)
 	{
 		SubscriptionDomain subscription = new()
 		{
@@ -34,7 +34,7 @@ internal class SubscriptionService (SubscriptionRepository subscriptionRepositor
 		await _subscriptionRepository.AddSubscriptionAsync(subscription);
 	}
 
-	internal async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (string measurementId)
+	public async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (string measurementId)
 	{
 		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId);
 		return subscription != null ? new SubscriptionDTO
@@ -46,7 +46,7 @@ internal class SubscriptionService (SubscriptionRepository subscriptionRepositor
 		} : null;
 	}
 
-	internal async Task<SubscriptionDTO?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
+	public async Task<SubscriptionDTO?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
 	{
 		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic);
 		return subscription != null ? new SubscriptionDTO
@@ -58,7 +58,7 @@ internal class SubscriptionService (SubscriptionRepository subscriptionRepositor
 		} : null;
 	}
 
-	internal async Task UpdateSubscriptionAsync (string measurementId, SubscriptionDTO updatedSubscription)
+	public async Task UpdateSubscriptionAsync (string measurementId, SubscriptionDTO updatedSubscription)
 	{
 		SubscriptionDomain subscription = new()
 		{
@@ -72,7 +72,7 @@ internal class SubscriptionService (SubscriptionRepository subscriptionRepositor
 		await _subscriptionRepository.UpdateSubscriptionAsync(subscription);
 	}
 
-	internal async Task DeleteSubscriptionAsync (string measurementId)
+	public async Task DeleteSubscriptionAsync (string measurementId)
 	{
 		await _subscriptionRepository.DeleteSubscriptionAsync(measurementId);
 	}

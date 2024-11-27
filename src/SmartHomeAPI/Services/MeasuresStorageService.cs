@@ -4,12 +4,12 @@ using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
 
-internal class MeasuresStorageService (TopicRepository topicRepository, MeasurementRepository measurementRepository)
+public class MeasuresStorageService (TopicRepository topicRepository, MeasurementRepository measurementRepository)
 {
 	private readonly TopicRepository _topicRepository = topicRepository;
 	private readonly MeasurementRepository _measurementRepository = measurementRepository;
 
-	internal async Task AddMeasureAsync (MeasureDTO measurementDto)
+	public async Task AddMeasureAsync (MeasureDTO measurementDto)
 	{
 		TopicDomain? topic = await _topicRepository.GetTopicByNameAsync(measurementDto.TopicName);
 		if (topic == null)
@@ -29,7 +29,7 @@ internal class MeasuresStorageService (TopicRepository topicRepository, Measurem
 		await _measurementRepository.AddMeasurementAsync(measurement);
 	}
 
-	internal async Task<List<MeasureWithFavouriteFlagDTO>> GetLatestMeasurementsAsync ()
+	public async Task<List<MeasureWithFavouriteFlagDTO>> GetLatestMeasurementsAsync ()
 	{
 		List<MeasureDomain> latestMeasurements = await _measurementRepository.GetLatestMeasurementsAsync();
 
@@ -42,12 +42,12 @@ internal class MeasuresStorageService (TopicRepository topicRepository, Measurem
 		}).ToList();
 	}
 
-	internal async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
+	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
 	{
 		await _topicRepository.ToggleFavouriteAsync(topicName, isFavourite);
 	}
 
-	internal async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
+	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
 	{
 		List<MeasureDomain> measurements = await _measurementRepository.GetMeasurementsByTopicAndDateRangeAsync(topicName, startDate, endDate);
 

@@ -2,7 +2,7 @@ using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
 
-internal class MeasurementRepository
+public class MeasurementRepository
 {
 	private readonly List<MeasureDomain> _measurements = new();
 	private const int MaxMeasurementsPerTopic = 100;

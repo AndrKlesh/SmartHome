@@ -6,7 +6,7 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-internal class DashboardController (MeasuresStorageService measuresStorageService) : ControllerBase
+public class DashboardController (MeasuresStorageService measuresStorageService) : ControllerBase
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 

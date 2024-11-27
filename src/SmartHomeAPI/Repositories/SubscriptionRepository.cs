@@ -1,7 +1,7 @@
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
-internal class SubscriptionRepository
+public class SubscriptionRepository
 {
 	private readonly List<SubscriptionDomain> _subscriptions = new();
 	private readonly ReaderWriterLockSlim _lock = new();

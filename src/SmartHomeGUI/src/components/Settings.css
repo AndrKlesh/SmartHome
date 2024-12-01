@@ -1,0 +1,79 @@
+.dark-table-container {
+    background-color: #121212;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: Verdana, sans-serif;
+}
+
+    .dark-table-container table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .dark-table-container th,
+    .dark-table-container td {
+        border: 1px solid #3a3a3a;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .dark-table-container th {
+        background-color: #262626;
+        color: #a6a6a6;
+    }
+
+    .dark-table-container td {
+        background-color: #1f1f1a;
+        color: #ffffff;
+    }
+
+    .dark-table-container tr:hover td {
+        background-color: #262626;
+        color: #ffffff;
+        transition: background-color 0.3s ease;
+    }
+
+.add-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+    .add-button:hover {
+        background-color: #0056b3;
+    }
+
+    .add-button:disabled {
+        background-color: #666;
+        cursor: not-allowed;
+    }
+
+/* Стили для полей ввода */
+.dark-table-container input[type="text"] {
+    background-color: #1f1f1a; /* Тёмный фон */
+    color: #ffffff; /* Светлый текст */
+    border: 1px solid #3a3a3a; /* Граница */
+    padding: 8px 10px;
+    border-radius: 4px; /* Скруглённые углы */
+    width: calc(100% - 20px); /* Автоширина с учётом паддинга */
+    box-sizing: border-box; /* Учитываем границы в ширине */
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+    .dark-table-container input[type="text"]:focus {
+        outline: none; /* Убираем стандартное выделение */
+        border-color: #007bff; /* Цвет границы при фокусе */
+        background-color: #2b2b2b; /* Чуть светлее фон */
+    }
+
+    .dark-table-container input[type="text"]::placeholder {
+        color: #a6a6a6; /* Светлый текст для плейсхолдера */
+        opacity: 0.8;
+    }

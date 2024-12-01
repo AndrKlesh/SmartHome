@@ -22,6 +22,10 @@ function Header ()
 					<li>
 						<Link to="/login"><LogoutButton /></Link>
 					</li>
+
+					<li>
+						<Link to="/settings">Settings</Link>
+					</li>
 				</ul>
 			</nav>
 		</header>

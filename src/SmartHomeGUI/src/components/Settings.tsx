@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Settings.css';
 
 interface TopicData {
     key: string;
     name: string;
-    units: string;
+    unit: string;
     mqttTopic: string;
     converterName: string;
 }
@@ -13,6 +13,23 @@ const SubscribeToMqttTopics: React.FC = () => {
     const [data, setData] = useState<TopicData[]>([]);
     const [editingKey, setEditingKey] = useState<string | null>(null);
     const [formValues, setFormValues] = useState<Partial<TopicData>>({});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Загружаем данные из localStorage при монтировании компонента
+    useEffect(() => {
+        const savedData = localStorage.getItem('mqttTopics');
+        if (savedData) {
+            setData(JSON.parse(savedData));
+        }
+    }, []);
+
+    // Сохраняем данные в localStorage при изменении состояния data
+    useEffect(() => {
+        if (data.length > 0) {
+            localStorage.setItem('mqttTopics', JSON.stringify(data));
+        }
+    }, [data]);
 
     const isEditing = (record: TopicData): boolean => record.key === editingKey;
 
@@ -27,6 +44,11 @@ const SubscribeToMqttTopics: React.FC = () => {
     };
 
     const handleSave = (key: string): void => {
+        if (!formValues.name || !formValues.mqttTopic) {
+            alert("Name and MQTT Topic are required");
+            return;
+        }
+
         setData((prevData) =>
             prevData.map((item) =>
                 item.key === key ? { ...item, ...formValues } : item
@@ -37,20 +59,51 @@ const SubscribeToMqttTopics: React.FC = () => {
     };
 
     const handleDelete = (key: string): void => {
-        setData((prevData) => prevData.filter((item) => item.key !== key));
+        setData((prevData) => {
+            const updatedData = prevData.filter((item) => item.key !== key);
+            return updatedData;
+        });
     };
 
-    const handleAdd = (): void => {
-        const newKey = `new-${data.length + 1}`;
+    const handleAdd = async (): Promise<void> => {
+        setLoading(true);
+        setError(null);
+
+        const newKey = `new-${Date.now()}`;
         const newRecord: TopicData = {
             key: newKey,
-            name: '',
-            units: '',
-            mqttTopic: '',
+            name: formValues.name || '',
+            unit: formValues.unit || '',
+            mqttTopic: formValues.mqttTopic || '',
             converterName: 'DefaultConverter',
         };
-        setData((prevData) => [...prevData, newRecord]);
-        handleEdit(newRecord);
+
+        try {
+            const response = await fetch('https://localhost:7098/api/Subscriptions/addSubscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    measurementId: newKey,
+                    measurementName: formValues.name,
+                    unit: formValues.unit,
+                    mqttTopic: formValues.mqttTopic,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add topic');
+            }
+
+            setData((prevData) => [...prevData, newRecord]);
+            setEditingKey(newKey);
+            setFormValues({});
+        } catch {
+            setError('Failed to add topic. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleInputChange = (
@@ -66,6 +119,7 @@ const SubscribeToMqttTopics: React.FC = () => {
     return (
         <div className="dark-table-container">
             <h2>Subscribe to MQTT Topics</h2>
+            {error && <div className="error-message">{error}</div>}
             <table>
                 <thead>
                     <tr>
@@ -91,8 +145,8 @@ const SubscribeToMqttTopics: React.FC = () => {
                                     <td>
                                         <input
                                             type="text"
-                                            value={formValues.units || ''}
-                                            onChange={(e) => handleInputChange(e, 'units')}
+                                            value={formValues.unit || ''}
+                                            onChange={(e) => handleInputChange(e, 'unit')}
                                         />
                                     </td>
                                     <td>
@@ -102,7 +156,13 @@ const SubscribeToMqttTopics: React.FC = () => {
                                             onChange={(e) => handleInputChange(e, 'mqttTopic')}
                                         />
                                     </td>
-                                    <td>{record.converterName}</td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            value={formValues.converterName || 'DefaultConverter'}
+                                            onChange={(e) => handleInputChange(e, 'converterName')}
+                                        />
+                                    </td>
                                     <td>
                                         <button onClick={() => handleSave(record.key)}>Save</button>
                                         <button onClick={handleCancel}>Cancel</button>
@@ -111,7 +171,7 @@ const SubscribeToMqttTopics: React.FC = () => {
                             ) : (
                                 <>
                                     <td>{record.name}</td>
-                                    <td>{record.units}</td>
+                                    <td>{record.unit}</td>
                                     <td>{record.mqttTopic}</td>
                                     <td>{record.converterName}</td>
                                     <td>
@@ -126,8 +186,8 @@ const SubscribeToMqttTopics: React.FC = () => {
                     ))}
                 </tbody>
             </table>
-            <button onClick={handleAdd} className="add-button">
-                Add Topic
+            <button onClick={handleAdd} className="add-button" disabled={loading}>
+                {loading ? 'Adding...' : 'Add Topic'}
             </button>
         </div>
     );

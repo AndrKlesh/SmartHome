@@ -43,10 +43,36 @@ const SubscribeToMqttTopics: React.FC = () => {
         setFormValues({});
     };
 
-    const handleSave = (key: string): void => {
+    const handleSave = async (key: string): Promise<void> => {
         if (!formValues.name || !formValues.mqttTopic) {
             alert("Name and MQTT Topic are required");
             return;
+        }
+
+        try {
+            const response = await fetch('https://localhost:7098/api/Subscriptions/addSubscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    measurementId: formValues.key,
+                    measurementName: formValues.name,
+                    unit: formValues.unit,
+                    mqttTopic: formValues.mqttTopic,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add topic');
+            }
+
+
+
+        } catch {
+            setError('Failed to add topic. Please try again.');
+        } finally {
+            setLoading(false);
         }
 
         setData((prevData) =>
@@ -65,45 +91,22 @@ const SubscribeToMqttTopics: React.FC = () => {
         });
     };
 
-    const handleAdd = async (): Promise<void> => {
-        setLoading(true);
+    const handleAdd = (): void => {
+        //setLoading(true);
         setError(null);
-
         const newKey = `new-${Date.now()}`;
         const newRecord: TopicData = {
-            key: newKey,
+            key: formValues.key || '',
             name: formValues.name || '',
             unit: formValues.unit || '',
             mqttTopic: formValues.mqttTopic || '',
             converterName: 'DefaultConverter',
         };
+        setData((prevData) => [...prevData, newRecord]);
 
-        try {
-            const response = await fetch('https://localhost:7098/api/Subscriptions/addSubscription', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    measurementId: newKey,
-                    measurementName: formValues.name,
-                    unit: formValues.unit,
-                    mqttTopic: formValues.mqttTopic,
-                }),
-            });
+        setEditingKey(newKey);
+        setFormValues({});
 
-            if (!response.ok) {
-                throw new Error('Failed to add topic');
-            }
-
-            setData((prevData) => [...prevData, newRecord]);
-            setEditingKey(newKey);
-            setFormValues({});
-        } catch {
-            setError('Failed to add topic. Please try again.');
-        } finally {
-            setLoading(false);
-        }
     };
 
     const handleInputChange = (
@@ -123,6 +126,7 @@ const SubscribeToMqttTopics: React.FC = () => {
             <table>
                 <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Name</th>
                         <th>Units</th>
                         <th>MQTT Topic</th>
@@ -135,6 +139,13 @@ const SubscribeToMqttTopics: React.FC = () => {
                         <tr key={record.key}>
                             {isEditing(record) ? (
                                 <>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            value={formValues.key || ''}
+                                            onChange={(e) => handleInputChange(e, 'key')}
+                                        />
+                                    </td>
                                     <td>
                                         <input
                                             type="text"
@@ -170,6 +181,7 @@ const SubscribeToMqttTopics: React.FC = () => {
                                 </>
                             ) : (
                                 <>
+                                    <td>{record.key}</td>
                                     <td>{record.name}</td>
                                     <td>{record.unit}</td>
                                     <td>{record.mqttTopic}</td>

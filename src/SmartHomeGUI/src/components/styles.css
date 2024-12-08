@@ -6,10 +6,24 @@
 	--text-light: #e0e0e0;
 	--text-gray: #888;
 	--accent-color: #bb86fc;
-	--primary-blue: #007bff;
+	--primary-blue: #81baf6;
 	--border-gray: #3a3a3a;
 	--placeholder-gray: #a6a6a6;
-	--hover-accent: #0056b3;
+	--hover-accent: #656b71;
+}
+
+/* Светлая тема (сине-белые тона) */
+body.light-theme
+{
+	--background-dark: #d3d8dd; 
+	--background-light: #429dff; 
+	--text-light: #1a1a1a; 
+	--text-gray: #4a4a4a; 
+	--accent-color: #89c2d9; 
+	--primary-blue: #309bdb; 
+	--border-gray: #35393e; 
+	--placeholder-gray: #3e434b; 
+	--hover-accent: #4699c8; 
 }
 
 /* Общий стиль для страницы */
@@ -53,7 +67,6 @@ body
 		transition: transform 0.2s;
 	}
 
-/* Стили для хедера и меню */
 header
 {
 	background-color: var(--background-light);
@@ -65,21 +78,35 @@ header
 	z-index: 100;
 }
 
-nav ul
+nav
 {
 	display: flex;
-	justify-content: center;
-	list-style: none;
-	margin: 0;
-	padding: 0;
+	align-items: center; /* Выравнивание по вертикали */
+	justify-content: space-between; /* Разделение элементов по краям */
+	width: 100%;
 }
 
-	nav ul li
+.nav-links
+{
+	display: flex;
+	justify-content: center; /* Центрируем ссылки */
+	flex-grow: 1; /* Растягиваем блок с ссылками */
+}
+
+	.nav-links ul
+	{
+		display: flex;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.nav-links li
 	{
 		margin: 0 20px;
 	}
 
-		nav ul li a
+		.nav-links li a
 		{
 			color: var(--text-light);
 			text-decoration: none;
@@ -87,7 +114,7 @@ nav ul
 			transition: color 0.3s;
 		}
 
-			nav ul li a:hover
+			.nav-links li a:hover
 			{
 				color: var(--accent-color);
 			}
@@ -111,7 +138,7 @@ nav ul
 	.table th
 	{
 		background-color: var(--background-light);
-		color: var(--placeholder-gray);
+		color: var(--placeholder-black);
 	}
 
 	.table tr:hover td
@@ -143,6 +170,24 @@ nav ul
 		background-color: #666;
 		cursor: not-allowed;
 	}
+
+/* Кнопка переключения темы */
+.theme-toggle-button
+{
+	background: none;
+	border: none;
+	font-size: 24px;
+	cursor: pointer;
+	color: var(--text-light);
+	transition: transform 0.2s, color 0.3s;
+}
+
+	.theme-toggle-button:hover
+	{
+		transform: scale(1.1);
+		color: var(--accent-color);
+	}
+
 
 /* Иконка избранного */
 .favourite-star

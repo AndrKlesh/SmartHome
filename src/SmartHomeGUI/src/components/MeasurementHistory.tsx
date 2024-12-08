@@ -1,20 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Measurement } from './types'
 import './MeasurementHistory.css'
-import { topicTranslations } from './types'
 
-interface Measurement
-{
-	value: string
-	timestamp: string
-}
+
 
 const periods = {
-	'hour': 1,
+	hour: 1,
 	'24hours': 24,
-	'week': 7 * 24,
-	'month': 30 * 24,
+	week: 7 * 24,
+	month: 30 * 24,
 	'3months': 90 * 24,
 }
 
@@ -33,8 +29,15 @@ const MeasurementHistory = () =>
 		try
 		{
 			const endDate = new Date().toISOString()
-			const startDate = new Date(Date.now() - periods[selectedPeriod] * 60 * 60 * 1000).toISOString()
-			const response = await fetch(`https://localhost:7098/api/Dashboard/topicMeasurementsHistory?topicName=${ encodeURIComponent(decodedTopicName) }&startDate=${ startDate }&endDate=${ endDate }`)
+			const startDate = new Date(
+				Date.now() - periods[selectedPeriod] * 60 * 60 * 1000
+			).toISOString()
+
+			const response = await fetch(
+				`https://localhost:7098/api/Dashboard/topicMeasurementsHistory?topicName=${ encodeURIComponent(
+					decodedTopicName
+				) }&startDate=${ startDate }&endDate=${ endDate }`
+			)
 
 			if (!response.ok)
 			{
@@ -47,7 +50,9 @@ const MeasurementHistory = () =>
 			const filteredData = filterMeasurementsByMinute(json, selectedPeriod)
 
 			setData(filteredData)
-			setLatestMeasurement(filteredData.length > 0 ? filteredData[filteredData.length - 1] : null)
+			setLatestMeasurement(
+				filteredData.length > 0 ? filteredData[filteredData.length - 1] : null
+			)
 			setLoading(false)
 		} catch (err)
 		{
@@ -68,10 +73,10 @@ const MeasurementHistory = () =>
 	const filterMeasurementsByMinute = (measurements: Measurement[], period: string): Measurement[] =>
 	{
 		const intervalMinutes = {
-			'hour': 1,       // оставляем все данные (обновление каждую минуту)
-			'24hours': 5,    // выбираем данные каждые 5 минут
-			'week': 60,      // выбираем данные каждый час
-			'month': 240,    // выбираем данные каждые 4 часа
+			hour: 1, // оставляем все данные (обновление каждую минуту)
+			'24hours': 5, // выбираем данные каждые 5 минут
+			week: 60, // выбираем данные каждый час
+			month: 240, // выбираем данные каждые 4 часа
 			'3months': 1440, // выбираем данные каждый день
 		}[period] || 1
 
@@ -107,18 +112,27 @@ const MeasurementHistory = () =>
 		return <p className="error">Error: { error }</p>
 	}
 
-	const translation = topicTranslations[decodedTopicName]
-
 	return (
 		<div className="measurement-history">
 			{ latestMeasurement && (
 				<div className="sensor-info">
-					<p><strong>История измерений для:</strong> { translation?.name || decodedTopicName }</p>
-					<p><strong>Последнее значение:</strong> { latestMeasurement.value } { translation?.unit }</p>
-					<p><strong>Время последнего обновления:</strong> { new Date(latestMeasurement.timestamp).toLocaleString() }</p>
+					<p>
+						<strong>История измерений для:</strong> { decodedTopicName }
+					</p>
+					<p>
+						<strong>Последнее значение:</strong> { latestMeasurement.value }{ ' ' }
+						{ latestMeasurement.unit || '' }
+					</p>
+					<p>
+						<strong>Время последнего обновления:</strong>{ ' ' }
+						{ new Date(latestMeasurement.timestamp).toLocaleString() }
+					</p>
 					<div className="period-selector">
 						<label>Выберите период: </label>
-						<select value={ selectedPeriod } onChange={ (e) => setSelectedPeriod(e.target.value as keyof typeof periods) }>
+						<select
+							value={ selectedPeriod }
+							onChange={ (e) => setSelectedPeriod(e.target.value as keyof typeof periods) }
+						>
 							<option value="hour">Последний час</option>
 							<option value="24hours">Последние 24 часа</option>
 							<option value="week">Последняя неделя</option>
@@ -130,20 +144,34 @@ const MeasurementHistory = () =>
 			) }
 			<div className="chart-container">
 				<ResponsiveContainer width="100%" height={ getChartHeight() }>
-					<LineChart data={ data } margin={ { top: 20, right: 20, left: 0, bottom: 20 } }>
+					<LineChart
+						data={ data }
+						margin={ { top: 20, right: 20, left: 0, bottom: 20 } }
+					>
 						<CartesianGrid stroke="#f5f5f5" />
 						<XAxis
 							dataKey="timestamp"
-							tickFormatter={ (tick) => new Date(tick).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) }
+							tickFormatter={ (tick) =>
+								new Date(tick).toLocaleString([], {
+									month: '2-digit',
+									day: '2-digit',
+									hour: '2-digit',
+									minute: '2-digit',
+								})
+							}
 							angle={ -45 }
 							textAnchor="end"
 							height={ 80 }
 						/>
-						<YAxis
-							tickFormatter={ (tick) => `${ tick } ${ translation?.unit }` }
-						/>
+						<YAxis />
 						<Tooltip labelFormatter={ (label) => new Date(label).toLocaleString() } />
-						<Line type="monotone" dataKey="value" stroke="#8884d8" dot={ false } strokeWidth={ 2 } />
+						<Line
+							type="monotone"
+							dataKey="value"
+							stroke="#8884d8"
+							dot={ false }
+							strokeWidth={ 2 }
+						/>
 					</LineChart>
 				</ResponsiveContainer>
 			</div>

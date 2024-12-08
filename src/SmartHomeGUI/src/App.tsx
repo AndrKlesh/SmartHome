@@ -13,8 +13,8 @@ function App ()
 			<Routes>
 				<Route path="/" element={ <Home /> } />
 				<Route path="/dashboard" element={ <Dashboard /> } />
-				<Route path="/history/:topicName" element={<MeasurementHistory />} />
-				<Route path="/settings" element={<Settings />} />
+				<Route path="/history/:topicName" element={ <MeasurementHistory /> } />
+				<Route path="/settings" element={ <Settings /> } />
 			</Routes>
 		</Router>
 	)

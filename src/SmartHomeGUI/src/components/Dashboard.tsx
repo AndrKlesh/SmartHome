@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './CommonContainersStyles.css';
+import './styles.css';
 import { DashboardData } from './types';
 import { formatValue } from './utils';
 
@@ -71,11 +71,11 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="dashboard">
+        <div className="container">
             {data.map((item, index) => (
                 <div
                     key={index}
-                    className="dashboard-item"
+                    className="box"
                     onClick={() => handleItemClick(item.topicName)}
                 >
                     <h2>{item.topicName}</h2> {/* Используем topicName как имя измерения */}

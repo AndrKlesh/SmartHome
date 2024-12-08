@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import './Header.css'
 import LogoutButton from './LogoutButton'
+import './styles.css'
 
 function Header ()
 {

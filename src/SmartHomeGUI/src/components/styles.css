@@ -1,0 +1,228 @@
+/* Общие переменные */
+:root
+{
+	--background-dark: #121212;
+	--background-light: #1e1e1e;
+	--text-light: #e0e0e0;
+	--text-gray: #888;
+	--accent-color: #bb86fc;
+	--primary-blue: #007bff;
+	--border-gray: #3a3a3a;
+	--placeholder-gray: #a6a6a6;
+	--hover-accent: #0056b3;
+}
+
+/* Общий стиль для страницы */
+body
+{
+	background-color: var(--background-dark);
+	color: var(--text-light);
+	font-family: Verdana, sans-serif;
+	margin: 0;
+}
+
+/* Стили для контейнеров */
+.container
+{
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	grid-auto-rows: minmax(100px, auto);
+	gap: 15px;
+	padding: 20px;
+	margin-top: 75px;
+}
+
+.box
+{
+	background-color: var(--background-light);
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+	padding: 15px;
+	color: var(--text-light);
+	cursor: pointer;
+	flex: 1 1 100%;
+	max-width: 100%;
+	position: relative;
+	opacity: 0;
+	animation: fadeIn 0.5s ease forwards;
+}
+
+	.box:hover
+	{
+		transform: translateY(-5px);
+		transition: transform 0.2s;
+	}
+
+/* Стили для хедера и меню */
+header
+{
+	background-color: var(--background-light);
+	padding: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 100;
+}
+
+nav ul
+{
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+	nav ul li
+	{
+		margin: 0 20px;
+	}
+
+		nav ul li a
+		{
+			color: var(--text-light);
+			text-decoration: none;
+			font-size: 16px;
+			transition: color 0.3s;
+		}
+
+			nav ul li a:hover
+			{
+				color: var(--accent-color);
+			}
+
+/* Стили для таблиц */
+.table
+{
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 50px;
+	table-layout: auto;
+}
+
+	.table th, .table td
+	{
+		border: 1px solid var(--border-gray);
+		padding: 10px;
+		text-align: center;
+	}
+
+	.table th
+	{
+		background-color: var(--background-light);
+		color: var(--placeholder-gray);
+	}
+
+	.table tr:hover td
+	{
+		background-color: var(--background-light);
+		color: var(--text-light);
+		transition: background-color 0.3s;
+	}
+
+/* Кнопки */
+.button
+{
+	background-color: var(--primary-blue);
+	color: #fff;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+	.button:hover
+	{
+		background-color: var(--hover-accent);
+	}
+
+	.button:disabled
+	{
+		background-color: #666;
+		cursor: not-allowed;
+	}
+
+/* Иконка избранного */
+.favourite-star
+{
+	cursor: pointer;
+	font-size: 25px;
+	color: grey;
+	transition: color 0.3s, transform 0.3s;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+	.favourite-star.active
+	{
+		color: gold;
+		animation: spin 0.5s ease;
+	}
+
+/* Всплывающее сообщение об ошибке */
+.error-message
+{
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	background-color: #f44336;
+	color: #fff;
+	padding: 10px 20px;
+	border-radius: 5px;
+	font-size: 16px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	opacity: 0;
+	animation: showError 2s forwards;
+}
+
+/* Анимации */
+@keyframes fadeIn
+{
+	from
+	{
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	to
+	{
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.fade-in
+{
+	animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes showError
+{
+	0%
+	{
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	100%
+	{
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes spin
+{
+	from
+	{
+		transform: rotate(0deg);
+	}
+
+	to
+	{
+		transform: rotate(360deg);
+	}
+}

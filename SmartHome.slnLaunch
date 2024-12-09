@@ -15,7 +15,7 @@
         "Action": "Start"
       },
       {
-        "Path": "src\\SmartHomeGUI\\smarthomegui.esproj",
+        "Path": "src\\SmartHomeGUI\\SmartHomeGUI.esproj",
         "Action": "Start"
       }
     ]

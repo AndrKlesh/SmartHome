@@ -5,9 +5,9 @@ using SmartHomeAPI.Services;
 
 namespace SmartHomeAPI;
 
-public class Program
+internal sealed class Program
 {
-	public static void Main (string [] args)
+	internal static void Main (string [] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +22,7 @@ public class Program
 			options.AddPolicy("AllowAll",
 				policy =>
 				{
-					_ = policy.AllowAnyOrigin()  // Разрешаем запросы с любых источников
+					_ = policy.AllowAnyOrigin()
 						  .AllowAnyMethod()
 						  .AllowAnyHeader();
 				});

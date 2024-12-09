@@ -13,7 +13,7 @@ public class MeasurementRepository
 	{
 		_measurements.Add(measurement);
 
-		List<MeasureDomain> measurementsForTopic = _measurements.Where(m => m.TopicId == measurement.TopicId).ToList();
+		List<MeasureDomain> measurementsForTopic = _measurements.Where(m => m.MeasurementId == measurement.MeasurementId).ToList();
 		if (measurementsForTopic.Count > MaxMeasurementsPerTopic)
 		{
 			MeasureDomain? oldestMeasurement = measurementsForTopic.OrderBy(m => m.Timestamp).FirstOrDefault();
@@ -26,26 +26,26 @@ public class MeasurementRepository
 		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
-	public async Task<List<MeasureDomain>> GetMeasurementsByTopicIdAsync (Guid topicId)
+	public async Task<List<MeasureDomain>> GetMeasurementsByTopicIdAsync (string measurementId)
 	{
-		return await Task.FromResult(_measurements.Where(m => m.TopicId == topicId).ToList()).ConfigureAwait(false);
+		return await Task.FromResult(_measurements.Where(m => m.MeasurementId == measurementId).ToList()).ConfigureAwait(false);
 	}
 
 	public async Task<List<MeasureDomain>> GetLatestMeasurementsAsync ()
 	{
 		return await Task.FromResult(
 			_measurements
-				.GroupBy(m => m.TopicId)
+				.GroupBy(m => m.MeasurementId)
 				.Select(g => g.OrderByDescending(m => m.Timestamp).First())
 				.ToList()
 		).ConfigureAwait(false);
 	}
 
-	public async Task<List<MeasureDomain>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
+	public async Task<List<MeasureDomain>> GetMeasurementsByTopicAndDateRangeAsync (string measurementId, DateTime startDate, DateTime endDate)
 	{
 		return await Task.FromResult(
 			_measurements
-				.Where(m => m.Topic?.Name == topicName && m.Timestamp >= startDate && m.Timestamp <= endDate)
+				.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
 				.OrderBy(m => m.Timestamp)
 				.ToList()
 		).ConfigureAwait(false);

@@ -15,7 +15,6 @@ public class Program
 		_ = builder.Services.AddSingleton<SubscriptionService>();
 		_ = builder.Services.AddSingleton<SubscriptionRepository>();
 		_ = builder.Services.AddSingleton<MeasurementRepository>();
-		_ = builder.Services.AddSingleton<TopicRepository>();
 		_ = builder.Services.AddHostedService<MeasuresReceiverService>();
 
 		_ = builder.Services.AddCors(options =>

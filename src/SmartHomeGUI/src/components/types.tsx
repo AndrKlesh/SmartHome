@@ -1,9 +1,9 @@
 export interface DashboardData
 {
-	topicName: string
+	measurementId: string
 	value: string
 	timestamp: string
-	isFavourite: boolean
+	//isFavourite: boolean
 }
 
 export const topicTranslations: { [key: string]: { name: string; unit: string; isBoolean?: boolean; isDoor?: boolean } } = {

@@ -39,13 +39,13 @@ const Dashboard = () =>
 		return () => clearInterval(intervalId)
 	}, [])
 
-	const handleItemClick = (topicName: string) =>
+	const handleItemClick = (measurementId: string) =>
 	{
-		const encodedTopicName = encodeURIComponent(topicName)
-		navigate(`/history/${ encodedTopicName }`)
+		const encodedMeasurementId = encodeURIComponent(measurementId)
+		navigate(`/history/${ encodedMeasurementId }`)
 	}
 
-	const toggleFavourite = async (topicName: string, currentFavouriteState: boolean) =>
+	/*const toggleFavourite = async (measurementId: string, currentFavouriteState: boolean) =>
 	{
 		try
 		{
@@ -54,14 +54,14 @@ const Dashboard = () =>
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ topicName, isFavourite: !currentFavouriteState }),
+				body: JSON.stringify({ measurementId, isFavourite: !currentFavouriteState }),
 			})
 
 			if (response.ok)
 			{
 				setData((prevData) =>
 					prevData.map((item) =>
-						item.topicName === topicName ? { ...item, isFavourite: !currentFavouriteState } : item
+						item.measurementId === measurementId ? { ...item, isFavourite: !currentFavouriteState } : item
 					)
 				)
 			} else
@@ -72,7 +72,7 @@ const Dashboard = () =>
 		{
 			console.error(`Произошла ошибка: ${ error }`)
 		}
-	}
+	}*/
 
 	if (loading)
 	{
@@ -88,29 +88,29 @@ const Dashboard = () =>
 		<div className="dashboard">
 			{ data.map((item, index) =>
 			{
-				const translation = topicTranslations[item.topicName]
+				const translation = topicTranslations[item.measurementId]
 				if (!translation) return null
 
 				return (
 					<div
 						key={ index }
 						className="dashboard-item"
-						onClick={ () => handleItemClick(item.topicName) }
+						onClick={ () => handleItemClick(item.measurementId) }
 					>
 						<h2>{ translation.name }</h2>
-						<p>Значение: { formatValue(item.topicName, item.value) } { translation.unit }</p>
+						<p>Значение: { formatValue(item.measurementId, item.value) } { translation.unit }</p>
 						<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
 
-						<div
+						{/*<div
 							className={ `favourite-star ${ item.isFavourite ? 'active' : '' }` }
 							onClick={ (e) =>
 							{
 								e.stopPropagation()
-								toggleFavourite(item.topicName, item.isFavourite)
+								toggleFavourite(item.measurementId, item.isFavourite)
 							} }
 						>
 							★
-						</div>
+						</div>*/}
 					</div>
 				)
 			}) }

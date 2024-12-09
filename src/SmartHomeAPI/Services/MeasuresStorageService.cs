@@ -6,48 +6,38 @@ using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
 
-public class MeasuresStorageService (TopicRepository topicRepository, MeasurementRepository measurementRepository)
+public class MeasuresStorageService (MeasurementRepository measurementRepository)
 {
-	private readonly TopicRepository _topicRepository = topicRepository;
 	private readonly MeasurementRepository _measurementRepository = measurementRepository;
 
 	public async Task AddMeasureAsync (MeasureDTO measurementDto)
 	{
-		TopicDomain? topic = await _topicRepository.GetTopicByNameAsync(measurementDto.TopicName).ConfigureAwait(false);
-		if (topic == null)
-		{
-			topic = new TopicDomain { Id = Guid.NewGuid(), Name = measurementDto.TopicName };
-			await _topicRepository.AddTopicAsync(topic).ConfigureAwait(false);
-		}
-
 		MeasureDomain measurement = new()
 		{
-			TopicId = topic.Id,
+			MeasurementId = measurementDto.MeasurementId,
 			Value = measurementDto.Value,
-			Timestamp = measurementDto.Timestamp,
-			Topic = topic
+			Timestamp = measurementDto.Timestamp
 		};
 
 		await _measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
 	}
 
-	public async Task<List<MeasureWithFavouriteFlagDTO>> GetLatestMeasurementsAsync ()
+	public async Task<List<MeasureDTO>> GetLatestMeasurementsAsync ()
 	{
 		List<MeasureDomain> latestMeasurements = await _measurementRepository.GetLatestMeasurementsAsync().ConfigureAwait(false);
 
-		return latestMeasurements.Select(m => new MeasureWithFavouriteFlagDTO
+		return latestMeasurements.Select(m => new MeasureDTO
 		{
-			TopicName = m.Topic?.Name ?? string.Empty,
+			MeasurementId = m.MeasurementId ?? string.Empty,
 			Value = m.Value,
-			Timestamp = m.Timestamp,
-			IsFavourite = m.Topic?.IsFavourite ?? false
+			Timestamp = m.Timestamp
 		}).ToList();
 	}
 
-	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
+/*	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
 	{
 		await _topicRepository.ToggleFavouriteAsync(topicName, isFavourite).ConfigureAwait(false);
-	}
+	}*/
 
 	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
 	{

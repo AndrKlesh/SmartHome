@@ -13,14 +13,14 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 
 	[HttpGet("latest")]
-	public async Task<ActionResult<List<MeasureWithFavouriteFlagDTO>>> GetLatestMeasurements ()
+	public async Task<ActionResult<List<MeasureDTO>>> GetLatestMeasurements ()
 	{
 
-		List<MeasureWithFavouriteFlagDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync().ConfigureAwait(false);
+		List<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync().ConfigureAwait(false);
 		return Ok(latestMeasurements);
 	}
 
-	[HttpPost("toggleFavourite")]
+/*	[HttpPost("toggleFavourite")]
 	public async Task<IActionResult> ToggleFavourite ([FromBody] TopicDTO toggleFavouriteDto)
 	{
 		try
@@ -37,10 +37,10 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 			return StatusCode(500, new { message = "An error occurred.", error = ex.Message });
 		}
 	}
-
+*/
 	[HttpGet("topicMeasurementsHistory")]
 	public async Task<ActionResult<List<MeasuresHistoryDTO>>> GetMeasurementsByTopicAndDateRange (
-		[FromQuery] string topicName,
+		[FromQuery] string measurementId,
 		[FromQuery] DateTime startDate,
 		[FromQuery] DateTime endDate)
 	{
@@ -48,7 +48,7 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 		{
 			startDate = startDate.ToUniversalTime();
 			endDate = endDate.ToUniversalTime();
-			List<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementsByTopicAndDateRangeAsync(topicName, startDate, endDate).ConfigureAwait(false);
+			List<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementsByTopicAndDateRangeAsync(measurementId, startDate, endDate).ConfigureAwait(false);
 
 			if (measurements == null || measurements.Count == 0)
 			{

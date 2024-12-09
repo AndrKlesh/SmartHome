@@ -76,7 +76,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 
 		MeasureDTO measurementDto = new()
 		{
-			TopicName = topic,
+			MeasurementId = subscription.MeasurementId,
 			Value = payload,
 			Timestamp = timestamp
 		};

@@ -8,15 +8,24 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DashboardController (MeasuresStorageService measuresStorageService) : ControllerBase
+public class DashboardController (MeasuresStorageService _measuresStorageService, SubscriptionService _subscriptionService) : ControllerBase
 {
-	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
-
 	[HttpGet("latest")]
 	public async Task<ActionResult<List<MeasureDTO>>> GetLatestMeasurements ()
 	{
 
 		List<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync().ConfigureAwait(false);
+		foreach (MeasureDTO item in latestMeasurements)
+		{
+			SubscriptionDTO? subscription = await _subscriptionService.GetSubscriptionByMeasurementIdAsync(item.MeasurementId)
+				                                                      .ConfigureAwait(false);
+			if (subscription is null)
+			{
+				continue;
+			}
+			item.Name = subscription.MeasurementName;
+			item.Units = subscription.Unit;
+		}
 		return Ok(latestMeasurements);
 	}
 
@@ -38,8 +47,8 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 		}
 	}
 */
-	[HttpGet("topicMeasurementsHistory")]
-	public async Task<ActionResult<List<MeasuresHistoryDTO>>> GetMeasurementsByTopicAndDateRange (
+	[HttpGet("MeasurementsHistory")]
+	public async Task<ActionResult<List<MeasuresHistoryDTO>>> GetMeasurementHistory (
 		[FromQuery] string measurementId,
 		[FromQuery] DateTime startDate,
 		[FromQuery] DateTime endDate)

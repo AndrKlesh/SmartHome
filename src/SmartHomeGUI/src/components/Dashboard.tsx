@@ -76,38 +76,33 @@ const Dashboard = () => {
         return <p>Error: {error}</p>;
     }
 
-	return (
-		<div className="dashboard">
-			{ data.map((item, index) =>
-			{
-				const translation = topicTranslations[item.measurementId]
-				if (!translation) return null
+    return (
+        <div className="container">
+            {data.map((item, index) => (
+                <div
+                    key={index}
+                    className="box"
+                    onClick={() => handleItemClick(item.measurementId)}
+                >
+                    <h2>{item.name}</h2> {/* Используем topicName как имя измерения */}
+                    <p>
+                        Значение: {formatValue(item.value, item.units)} {/* Используем только value и unit */}
+                    </p>
+                    <p>Время: {new Date(item.timestamp).toLocaleString()}</p>
 
-				return (
-					<div
-						key={ index }
-						className="dashboard-item"
-						onClick={ () => handleItemClick(item.measurementId) }
-					>
-						<h2>{ translation.name }</h2>
-						<p>Значение: { formatValue(item.measurementId, item.value) } { translation.unit }</p>
-						<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
-
-						{/*<div
-							className={ `favourite-star ${ item.isFavourite ? 'active' : '' }` }
-							onClick={ (e) =>
-							{
-								e.stopPropagation()
-								toggleFavourite(item.measurementId, item.isFavourite)
-							} }
-						>
-							★
-						</div>*/}
-					</div>
-				)
-			}) }
-		</div>
-	)
+                    {/*<div*/}
+                    {/*    className={`favourite-star ${item.isFavourite ? 'active' : ''}`}*/}
+                    {/*    onClick={(e) => {*/}
+                    {/*        e.stopPropagation();*/}
+                    {/*        toggleFavourite(item.topicName, item.isFavourite);*/}
+                    {/*    }}*/}
+                    {/*>*/}
+                    {/*    ★*/}
+                    {/*</div>*/}
+                </div>
+            ))}
+        </div>
+    );
 }
 
 export default Dashboard;

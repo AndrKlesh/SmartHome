@@ -1,7 +1,9 @@
 export interface DashboardData
 {
 	measurementId: string
+	name: string
 	value: string
+	units: string
 	timestamp: string
 	//isFavourite: boolean
 }

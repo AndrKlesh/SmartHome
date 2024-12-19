@@ -6,7 +6,34 @@ namespace SmartHomeAPI.Repositories;
 
 public class SubscriptionRepository
 {
-	private readonly List<SubscriptionDomain> _subscriptions = new();
+	//TODO: Убрать заглушки подписок
+	private readonly List<SubscriptionDomain> _subscriptions =
+	[
+		new SubscriptionDomain()
+		{
+			MeasurementId = "home/bathroom/hot_water_temp",
+			MeasurementName = "Температура горячей воды",
+			Unit = "°C",
+			MqttTopic = "home/bathroom/hot_water_temp",
+			ConverterName = "default",
+		},
+		new SubscriptionDomain()
+		{
+			MeasurementId = "home/living_room/temperature",
+			MeasurementName = "Температура в помещении",
+			Unit = "°C",
+			MqttTopic = "home/living_room/temperature",
+			ConverterName = "default",
+		},
+		new SubscriptionDomain()
+		{
+			MeasurementId = "home/outside/temperature",
+			MeasurementName = "Температура воздуха снаружи здания",
+			Unit = "°C",
+			MqttTopic = "home/outside/temperature",
+			ConverterName = "default",
+		},
+	];
 	private readonly ReaderWriterLockSlim _lock = new();
 
 	internal async Task<List<SubscriptionDomain>> GetAllSubscriptionsAsync ()

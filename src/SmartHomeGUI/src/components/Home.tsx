@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './CommonContainersStyles.css'
-import { DashboardData, topicTranslations } from './types'
+import './styles.css'
+import { DashboardData } from './types'
 import { formatValue } from './utils'
 
 const Home = () =>
@@ -21,7 +21,7 @@ const Home = () =>
 				throw new Error(`HTTP error! status: ${ response.status }`)
 			}
 			const json: DashboardData[] = await response.json()
-			setData(json.filter(item => item.isFavourite))
+			setData(json.filter((item) => item.isFavourite))
 			setLoading(false)
 		} catch (err)
 		{
@@ -63,8 +63,8 @@ const Home = () =>
 			if (response.ok)
 			{
 				setData((prevData) =>
-					prevData.filter(item =>
-						item.topicName !== topicName || !currentFavouriteState
+					prevData.map((item) =>
+						item.topicName === topicName ? { ...item, isFavourite: !currentFavouriteState } : item
 					)
 				)
 			} else
@@ -88,35 +88,31 @@ const Home = () =>
 	}
 
 	return (
-		<div className="dashboard">
-			{ data.map((item, index) =>
-			{
-				const translation = topicTranslations[item.topicName]
-				if (!translation) return null
+		<div className="container">
+			{ data.map((item, index) => (
+				<div
+					key={ index }
+					className="box"
+					onClick={ () => handleItemClick(item.topicName) }
+				>
+					<h2>{ item.topicName }</h2> {/* Используем пользовательское имя */ }
+					<p>
+						Значение: { formatValue(item.value, item.unit) } {/* Форматируем значение и единицу */ }
+					</p>
+					<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
 
-				return (
 					<div
-						key={ index }
-						className="dashboard-item"
-						onClick={ () => handleItemClick(item.topicName) }
+						className={ `favourite-star ${ item.isFavourite ? 'active' : '' }` }
+						onClick={ (e) =>
+						{
+							e.stopPropagation() // Предотвращаем переход при клике на звезду
+							toggleFavourite(item.topicName, item.isFavourite)
+						} }
 					>
-						<h2>{ translation.name }</h2>
-						<p>Значение: { formatValue(item.topicName, item.value) } { translation.unit }</p>
-						<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
-
-						<div
-							className={ `favourite-star ${ item.isFavourite ? 'active' : '' }` }
-							onClick={ (e) =>
-							{
-								e.stopPropagation() // Предотвращаем переход при клике на звезду
-								toggleFavourite(item.topicName, item.isFavourite)
-							} }
-						>
-							★
-						</div>
+						★
 					</div>
-				)
-			}) }
+				</div>
+			)) }
 		</div>
 	)
 }

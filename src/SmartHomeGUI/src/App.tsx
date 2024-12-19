@@ -3,6 +3,7 @@ import Dashboard from './components/Dashboard'
 import Header from './components/Header'
 import Home from './components/Home'
 import MeasurementHistory from './components/MeasurementHistory'
+import Settings from './components/Settings'
 
 function App ()
 {
@@ -13,6 +14,7 @@ function App ()
 				<Route path="/" element={ <Home /> } />
 				<Route path="/dashboard" element={ <Dashboard /> } />
 				<Route path="/history/:topicName" element={ <MeasurementHistory /> } />
+				<Route path="/settings" element={ <Settings /> } />
 			</Routes>
 		</Router>
 	)

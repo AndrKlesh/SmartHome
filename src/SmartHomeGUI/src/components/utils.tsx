@@ -1,15 +1,4 @@
-import { topicTranslations } from './types'
-
-export const formatValue = (topic: string, value: string): string =>
+export const formatValue = (value: string, unit: string): string =>
 {
-	const translation = topicTranslations[topic]
-	if (translation?.isDoor)
-	{
-		return value === "1" ? "Открыта" : "Закрыта"
-	}
-	if (translation?.isBoolean)
-	{
-		return value === "1" ? "Включено" : "Выключено"
-	}
-	return value
+	return `${ value } ${ unit }`
 }

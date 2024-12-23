@@ -5,7 +5,7 @@ export interface DashboardData
 	value: string
 	units: string
 	timestamp: string
-	//isFavourite: boolean
+	isFavourite: boolean
 }
 
 export interface TopicData

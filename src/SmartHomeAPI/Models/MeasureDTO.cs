@@ -9,4 +9,5 @@ public class MeasureDTO
 	public string Value { get; set; } = string.Empty;
 	public string Units { get; set; } = string.Empty;
 	public DateTime Timestamp { get; set; }
+	public bool IsFavourite { get; set; }
 }

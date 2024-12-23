@@ -15,13 +15,13 @@ const Home = () =>
 	{
 		try
 		{
-			const response = await fetch('https://localhost:7098/api/Dashboard/latest')
+			const response = await fetch('https://localhost:7098/api/Favourites/latest')
 			if (!response.ok)
 			{
 				throw new Error(`HTTP error! status: ${ response.status }`)
 			}
 			const json: DashboardData[] = await response.json()
-			setData(json.filter((item) => item.isFavourite))
+			setData(json)
 			setLoading(false)
 		} catch (err)
 		{
@@ -48,23 +48,23 @@ const Home = () =>
 		navigate(`/history/${ encodedTopicName }`)
 	}
 
-	const toggleFavourite = async (topicName: string, currentFavouriteState: boolean) =>
+	const toggleFavourite = async (measurementId: string, currentFavouriteState: boolean) =>
 	{
 		try
 		{
-			const response = await fetch('https://localhost:7098/api/Dashboard/toggleFavourite', {
+			const response = await fetch('https://localhost:7098/api/Favourites/toggleFavourite', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ topicName, isFavourite: !currentFavouriteState }),
+				body: JSON.stringify({ measurementId, isFavourite: !currentFavouriteState }),
 			})
 
 			if (response.ok)
 			{
 				setData((prevData) =>
 					prevData.map((item) =>
-						item.topicName === topicName ? { ...item, isFavourite: !currentFavouriteState } : item
+						item.measurementId === measurementId ? { ...item, isFavourite: !currentFavouriteState } : item
 					)
 				)
 			} else
@@ -93,11 +93,11 @@ const Home = () =>
 				<div
 					key={ index }
 					className="box"
-					onClick={ () => handleItemClick(item.topicName) }
+					onClick={() => handleItemClick(item.measurementId)}
 				>
-					<h2>{ item.topicName }</h2> {/* Используем пользовательское имя */ }
+					<h2>{item.name}</h2> {/* Используем пользовательское имя */}
 					<p>
-						Значение: { formatValue(item.value, item.unit) } {/* Форматируем значение и единицу */ }
+						Значение: { formatValue(item.value, item.units) } {/* Форматируем значение и единицу */ }
 					</p>
 					<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
 
@@ -106,7 +106,7 @@ const Home = () =>
 						onClick={ (e) =>
 						{
 							e.stopPropagation() // Предотвращаем переход при клике на звезду
-							toggleFavourite(item.topicName, item.isFavourite)
+							toggleFavourite(item.measurementId, true)
 						} }
 					>
 						★

@@ -10,27 +10,27 @@ internal sealed class Program
 	internal static void Main (string [] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
-		_ = builder.Services.AddSingleton<MeasuresStorageService>();
-		_ = builder.Services.AddSingleton<SubscriptionService>();
-		_ = builder.Services.AddSingleton<SubscriptionRepository>();
-		_ = builder.Services.AddSingleton<MeasurementRepository>();
-		_ = builder.Services.AddHostedService<MeasuresReceiverService>();
-
-		_ = builder.Services.AddCors(options =>
-		{
-			options.AddPolicy("AllowAll",
-				policy =>
-				{
-					_ = policy.AllowAnyOrigin()
-						  .AllowAnyMethod()
-						  .AllowAnyHeader();
-				});
-		});
-
-		_ = builder.Services.AddControllers();
-		_ = builder.Services.AddEndpointsApiExplorer();
-		_ = builder.Services.AddSwaggerGen();
+		_= builder.Services
+			.AddSingleton<MeasuresStorageService>()
+			.AddSingleton<SubscriptionService>()
+			.AddSingleton<SubscriptionRepository>()
+			.AddSingleton<MeasurementRepository>()
+			.AddSingleton<FavouritesMeasuresRepository>()
+			.AddSingleton<FavoritesMeasurementssService>()
+			.AddHostedService<MeasuresReceiverService>()
+			.AddCors(options =>
+			{
+				options.AddPolicy("AllowAll",
+					              policy =>
+								  {
+									  _ = policy.AllowAnyOrigin()
+				  					            .AllowAnyMethod()
+												.AllowAnyHeader();
+								  });
+			})
+			.AddEndpointsApiExplorer()
+			.AddSwaggerGen()
+			.AddControllers();
 
 		WebApplication app = builder.Build();
 

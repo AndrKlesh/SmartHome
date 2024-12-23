@@ -39,16 +39,16 @@ const Dashboard = () => {
 		navigate(`/history/${ encodedMeasurementId }`)
 	}
 
-	/*const toggleFavourite = async (measurementId: string, currentFavouriteState: boolean) =>
+	const toggleFavourite = async (measurementId: string, currentFavouriteState: boolean) =>
 	{
 		try
 		{
-			const response = await fetch('https://localhost:7098/api/Dashboard/toggleFavourite', {
+			const response = await fetch('https://localhost:7098/api/Favourites/toggleFavourite', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ measurementId, isFavourite: !currentFavouriteState }),
+				body: JSON.stringify({ measurementId/*, isFavourite: !currentFavouriteState*/ }),
 			})
 
 			if (response.ok)
@@ -66,7 +66,7 @@ const Dashboard = () => {
 		{
 			console.error(`Произошла ошибка: ${ error }`)
 		}
-	}*/
+	}
 
     if (loading) {
         return <p>Loading...</p>;
@@ -90,15 +90,15 @@ const Dashboard = () => {
                     </p>
                     <p>Время: {new Date(item.timestamp).toLocaleString()}</p>
 
-                    {/*<div*/}
-                    {/*    className={`favourite-star ${item.isFavourite ? 'active' : ''}`}*/}
-                    {/*    onClick={(e) => {*/}
-                    {/*        e.stopPropagation();*/}
-                    {/*        toggleFavourite(item.topicName, item.isFavourite);*/}
-                    {/*    }}*/}
-                    {/*>*/}
-                    {/*    ★*/}
-                    {/*</div>*/}
+                    <div
+                        className={`favourite-star ${item.isFavourite ? 'active' : ''}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavourite(item.measurementId, item.isFavourite);
+                        }}
+                    >
+                        ★
+                    </div>
                 </div>
             ))}
         </div>

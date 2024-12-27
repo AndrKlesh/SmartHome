@@ -34,7 +34,7 @@ const MeasurementHistory = () =>
 			).toISOString()
 
 			const response = await fetch(
-				`https://localhost:7098/api/MeasuresHistory?measurementId=${ encodeURIComponent(
+				`https://localhost:7098/api/MeasurementsHistory?measurementId=${ encodeURIComponent(
 					decodedTopicName
 				) }&startDate=${ startDate }&endDate=${ endDate }`
 			)

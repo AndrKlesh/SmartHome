@@ -10,7 +10,7 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "SmartHomeGUI", "src\SmartHo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartHomeAPI", "src\SmartHomeAPI\SmartHomeAPI.csproj", "{63FFBBD0-0727-4116-A086-476DC4D4F85E}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "SmartHomeLogin", "src\smarthomelogin\SmartHomeLogin.esproj", "{952AD33F-5DDF-4CCE-B897-1E2D61C27A68}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "SmartHomeLogin", "src\SmartHomeLogin\SmartHomeLogin.esproj", "{952AD33F-5DDF-4CCE-B897-1E2D61C27A68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "src\AuthService\AuthService.csproj", "{3064956A-3E0B-46B4-A4B8-FDBE46DF52F4}"
 EndProject

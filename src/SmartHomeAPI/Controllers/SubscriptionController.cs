@@ -22,7 +22,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	}
 
 	[HttpGet("getSubscriptionByMeasurementId/{measurementId}")]
-	public async Task<ActionResult<SubscriptionDomain>> GetSubscriptionByMeasurementId (string measurementId)
+	public async Task<ActionResult<SubscriptionDomain>> GetSubscriptionByMeasurementId (Guid measurementId)
 	{
 		SubscriptionDTO? subscription = await _subscriptionsService.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
 		if (subscription == null)
@@ -41,7 +41,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	}
 
 	[HttpPut("updateSubscription/{measurementId}")]
-	public async Task<IActionResult> UpdateSubscription (string measurementId, [FromBody] SubscriptionDTO updatedSubscription)
+	public async Task<IActionResult> UpdateSubscription (Guid measurementId, [FromBody] SubscriptionDTO updatedSubscription)
 	{
 		try
 		{
@@ -55,7 +55,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	}
 
 	[HttpDelete("deleteSubscription/{measurementId}")]
-	public async Task<IActionResult> DeleteSubscription (string measurementId)
+	public async Task<IActionResult> DeleteSubscription (Guid measurementId)
 	{
 		try
 		{

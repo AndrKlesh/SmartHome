@@ -1,6 +1,7 @@
 export interface DashboardData
 {
 	measurementId: string
+	measurementTag: string
 	name: string
 	value: string
 	units: string

@@ -36,7 +36,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 		await _subscriptionRepository.AddSubscriptionAsync(subscription).ConfigureAwait(false);
 	}
 
-	public async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (string measurementId)
+	public async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (Guid measurementId)
 	{
 		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
 		return subscription != null ? new SubscriptionDTO
@@ -60,7 +60,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 		} : null;
 	}
 
-	public async Task UpdateSubscriptionAsync (string measurementId, SubscriptionDTO updatedSubscription)
+	public async Task UpdateSubscriptionAsync (Guid measurementId, SubscriptionDTO updatedSubscription)
 	{
 		SubscriptionDomain subscription = new()
 		{
@@ -74,7 +74,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 		await _subscriptionRepository.UpdateSubscriptionAsync(subscription).ConfigureAwait(false);
 	}
 
-	public async Task DeleteSubscriptionAsync (string measurementId)
+	public async Task DeleteSubscriptionAsync (Guid measurementId)
 	{
 		await _subscriptionRepository.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
 	}

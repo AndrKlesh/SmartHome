@@ -1,16 +1,23 @@
 #pragma warning disable CA1515
 
+using System.Diagnostics.CodeAnalysis;
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
 
-public class MeasuresStorageService (MeasurementRepository measurementRepository)
+public class MeasuresStorageService (MeasurementRepository measurementRepository, 
+	                                 FavouritesMeasuresRepository favouritesRepository,
+									 SubscriptionRepository subscriptionRepository,
+									 MeasuresLinksRepository measuresLinksRepository)
 {
 	private readonly MeasurementRepository _measurementRepository = measurementRepository;
+	private readonly FavouritesMeasuresRepository _favouritesRepository = favouritesRepository;
+	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
+	private readonly MeasuresLinksRepository _measuresLinksRepository = measuresLinksRepository;
 
-	public async Task AddMeasureAsync (MeasureDTO measurementDto)
+	public async Task AddMeasureAsync ([NotNull]MeasureDTO measurementDto)
 	{
 		MeasureDomain measurement = new()
 		{
@@ -24,24 +31,42 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 
 	public async Task<List<MeasureDTO>> GetLatestMeasurementsAsync ()
 	{
-		List<MeasureDomain> latestMeasurements = await _measurementRepository.GetLatestMeasurementsAsync().ConfigureAwait(false);
+		IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await _measuresLinksRepository.FindLinksByMaskAsync("home/h1/*") //TODO Права доступа пользователей
+			                                                                                        .ConfigureAwait(false);
+		Task<List<MeasureDomain>> latestMeasuresTask = _measurementRepository.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value).ToArray());
+		Task<IReadOnlyList<FavoritesDomain>> favoritesTask = _favouritesRepository.GetFavoritesMeasuresIdsAsync();
 
-		return latestMeasurements.Select(m => new MeasureDTO
+		await Task.WhenAll(latestMeasuresTask, favoritesTask).ConfigureAwait(false);
+		List<MeasureDomain> latestMeasuresDomain = await latestMeasuresTask.ConfigureAwait(false);
+		IReadOnlyList<FavoritesDomain> favoritesDomain = await favoritesTask.ConfigureAwait(false);
+
+		List<MeasureDTO> latestMeasurementsDTO = new(latestMeasuresDomain.Count);
+		foreach (MeasureDomain measure in latestMeasuresDomain)
 		{
-			MeasurementId = m.MeasurementId ?? string.Empty,
-			Value = m.Value,
-			Timestamp = m.Timestamp
-		}).ToList();
+			SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measure.MeasurementId)
+				                                                            .ConfigureAwait(false);
+			if (subscription is null) 
+			{
+				continue;
+			}
+
+			latestMeasurementsDTO.Add(new MeasureDTO()
+			{
+				MeasurementId = measure.MeasurementId,
+				MeasurementTag = measurementsLinks.FirstOrDefault(l => l.Value == measure.MeasurementId).Key,
+				Name = subscription.MeasurementName,
+				Units = subscription.Unit,
+				Timestamp = measure.Timestamp,
+				Value = measure.Value,
+				IsFavourite = favoritesDomain.Any(f => f.MeasureId == measure.MeasurementId)
+			});
+		}
+		return latestMeasurementsDTO;
 	}
 
-/*	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
+	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
-		await _topicRepository.ToggleFavouriteAsync(topicName, isFavourite).ConfigureAwait(false);
-	}*/
-
-	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
-	{
-		List<MeasureDomain> measurements = await _measurementRepository.GetMeasurementsByTopicAndDateRangeAsync(topicName, startDate, endDate).ConfigureAwait(false);
+		List<MeasureDomain> measurements = await _measurementRepository.GetMeasurementsByTopicAndDateRangeAsync(measurementId, startDate, endDate).ConfigureAwait(false);
 
 		return measurements.Select(m => new MeasuresHistoryDTO
 		{

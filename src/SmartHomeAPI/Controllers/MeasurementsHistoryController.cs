@@ -10,7 +10,7 @@ public class MeasurementsHistoryController (MeasuresStorageService _measuresStor
 {
 	[HttpGet]
 	public async Task<ActionResult<List<MeasuresHistoryDTO>>> Get (
-			[FromQuery] string measurementId,
+			[FromQuery] Guid measurementId,
 			[FromQuery] DateTime startDate,
 			[FromQuery] DateTime endDate)
 	{

@@ -12,6 +12,7 @@ internal sealed class Program
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 		_= builder.Services
 			.AddSingleton<MeasuresStorageService>()
+			.AddSingleton<MeasuresLinksRepository>()
 			.AddSingleton<SubscriptionService>()
 			.AddSingleton<SubscriptionRepository>()
 			.AddSingleton<MeasurementRepository>()

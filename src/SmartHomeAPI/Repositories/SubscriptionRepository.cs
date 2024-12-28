@@ -11,7 +11,7 @@ public class SubscriptionRepository
 	[
 		new SubscriptionDomain()
 		{
-			MeasurementId = "home/bathroom/hot_water_temp",
+			MeasurementId = Guid.Parse("462F9446-ADFF-4EA4-8CA1-F1665268520F"),
 			MeasurementName = "Температура горячей воды",
 			Unit = "°C",
 			MqttTopic = "home/bathroom/hot_water_temp",
@@ -19,7 +19,7 @@ public class SubscriptionRepository
 		},
 		new SubscriptionDomain()
 		{
-			MeasurementId = "home/living_room/temperature",
+			MeasurementId = Guid.Parse("21274707-C7CA-4436-B191-9BAC91C473F5"),
 			MeasurementName = "Температура в помещении",
 			Unit = "°C",
 			MqttTopic = "home/living_room/temperature",
@@ -27,7 +27,7 @@ public class SubscriptionRepository
 		},
 		new SubscriptionDomain()
 		{
-			MeasurementId = "home/outside/temperature",
+			MeasurementId = Guid.Parse("24FE134B-4CBF-4EB9-A811-2720D4315146"),
 			MeasurementName = "Температура воздуха снаружи здания",
 			Unit = "°C",
 			MqttTopic = "home/outside/temperature",
@@ -64,7 +64,7 @@ public class SubscriptionRepository
 		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
-	internal async Task<SubscriptionDomain?> GetSubscriptionByMeasurementIdAsync (string measurementId)
+	internal async Task<SubscriptionDomain?> GetSubscriptionByMeasurementIdAsync (Guid measurementId)
 	{
 		_lock.EnterReadLock();
 		try
@@ -120,7 +120,7 @@ public class SubscriptionRepository
 		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
-	internal async Task DeleteSubscriptionAsync (string measurementId)
+	internal async Task DeleteSubscriptionAsync (Guid measurementId)
 	{
 		_lock.EnterUpgradeableReadLock();
 		try

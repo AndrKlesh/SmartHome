@@ -38,5 +38,5 @@ public class FavouritesMeasuresRepository
 		return Task.FromResult((IReadOnlyList<FavoritesDomain>) _favoritesMeasuresIds.Select(id => new FavoritesDomain() { MeasureId = id }).ToArray());
 	}
 
-	private ImmutableList<string> _favoritesMeasuresIds = ImmutableList<string>.Empty;
+	private ImmutableList<Guid> _favoritesMeasuresIds = ImmutableList<Guid>.Empty;
 }

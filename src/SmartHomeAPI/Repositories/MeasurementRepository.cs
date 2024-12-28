@@ -1,5 +1,6 @@
 #pragma warning disable CA1515
 
+using System.Globalization;
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
@@ -26,9 +27,20 @@ public class MeasurementRepository
 		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
-	public async Task<List<MeasureDomain>> GetMeasurementsByTopicIdAsync (string measurementId)
+	public async Task<List<MeasureDomain>> GetMeasurementsByTopicIdAsync (Guid measurementId)
 	{
 		return await Task.FromResult(_measurements.Where(m => m.MeasurementId == measurementId).ToList()).ConfigureAwait(false);
+	}
+
+	public async Task<List<MeasureDomain>> GetLatestMeasurementsAsync (IReadOnlyList<Guid> ids)
+	{
+		return await Task.FromResult(
+			_measurements
+			    .Where(m => ids.Contains(m.MeasurementId))
+				.GroupBy(m => m.MeasurementId)
+				.Select(g => g.OrderByDescending(m => m.Timestamp).First())
+				.ToList()
+		).ConfigureAwait(false);
 	}
 
 	public async Task<List<MeasureDomain>> GetLatestMeasurementsAsync ()
@@ -41,7 +53,7 @@ public class MeasurementRepository
 		).ConfigureAwait(false);
 	}
 
-	public async Task<List<MeasureDomain>> GetMeasurementsByTopicAndDateRangeAsync (string measurementId, DateTime startDate, DateTime endDate)
+	public async Task<List<MeasureDomain>> GetMeasurementsByTopicAndDateRangeAsync (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
 		return await Task.FromResult(
 			_measurements

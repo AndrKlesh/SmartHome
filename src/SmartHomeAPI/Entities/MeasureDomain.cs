@@ -4,7 +4,7 @@ namespace SmartHomeAPI.Entities;
 
 public class MeasureDomain
 {
-	public string MeasurementId { get; set; } = string.Empty;
+	public Guid MeasurementId { get; set; }
 	public string Value { get; set; } = string.Empty;
 	public DateTime Timestamp { get; set; }
 }

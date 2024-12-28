@@ -7,7 +7,6 @@ namespace SmartHomeAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class FavouritesController(MeasuresStorageService _measuresStorageService,
-								  SubscriptionService _subscriptionService,
 								  FavoritesMeasurementssService _favoritesMeasuresService) : Controller
 {
 	[HttpGet("latest")]
@@ -15,28 +14,7 @@ public class FavouritesController(MeasuresStorageService _measuresStorageService
 	{
 
 		List<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync().ConfigureAwait(false);
-		IReadOnlyList<FavoritesDTO> favorites = await _favoritesMeasuresService.GetFavoritesMeasuresAsync().ConfigureAwait(false);
-
-		List<MeasureDTO> res = new();
-		foreach (MeasureDTO item in latestMeasurements)
-		{
-			if (favorites.Any(f => f.MeasurementId == item.MeasurementId))
-			{
-				SubscriptionDTO? subscription = await _subscriptionService.GetSubscriptionByMeasurementIdAsync(item.MeasurementId)
-																		  .ConfigureAwait(false);
-				if (subscription is null)
-				{
-					continue;
-				}
-
-				item.Name = subscription.MeasurementName;
-				item.Units = subscription.Unit;
-				item.IsFavourite = true;
-				res.Add(item);
-			}
-		}
-
-		return Ok(res);
+		return Ok(latestMeasurements.Where(lm => lm.IsFavourite).ToList());
 	}
 
 	[HttpPost("toggleFavourite")]

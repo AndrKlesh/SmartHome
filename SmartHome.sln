@@ -1,7 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.10.35013.160
-MinimumVisualStudioVersion = 10.0.40219.1
+VisualStudioVersion = 17.12.3
+MinimumVisualStudioVersion = 17.12.3
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollectionController", "src\CollectionController\CollectionController.csproj", "{F32F0DC5-E380-4B95-A8EB-3E03CCDC0CF6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SHMQ", "src\SHMQ\SHMQ.csproj", "{49AE0B66-B87A-4681-9319-D71B1407C112}"

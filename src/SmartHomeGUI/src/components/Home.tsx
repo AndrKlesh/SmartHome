@@ -93,9 +93,9 @@ const Home = () =>
 				<div
 					key={ index }
 					className="box"
-					onClick={() => handleItemClick(item.measurementId)}
+					onClick={ () => handleItemClick(item.measurementId) }
 				>
-					<h2>{item.name}</h2> {/* Используем пользовательское имя */}
+					<h2>{ item.name }</h2> {/* Используем пользовательское имя */ }
 					<p>
 						Значение: { formatValue(item.value, item.units) } {/* Форматируем значение и единицу */ }
 					</p>

@@ -15,15 +15,15 @@
 /* Светлая тема (сине-белые тона) */
 body.light-theme
 {
-	--background-dark: #d3d8dd; 
-	--background-light: #429dff; 
-	--text-light: #1a1a1a; 
-	--text-gray: #4a4a4a; 
-	--accent-color: #89c2d9; 
-	--primary-blue: #309bdb; 
-	--border-gray: #35393e; 
-	--placeholder-gray: #3e434b; 
-	--hover-accent: #4699c8; 
+	--background-dark: #d3d8dd;
+	--background-light: #429dff;
+	--text-light: #1a1a1a;
+	--text-gray: #4a4a4a;
+	--accent-color: #89c2d9;
+	--primary-blue: #309bdb;
+	--border-gray: #35393e;
+	--placeholder-gray: #3e434b;
+	--hover-accent: #4699c8;
 }
 
 /* Общий стиль для страницы */

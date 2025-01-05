@@ -6,7 +6,7 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FavouritesController(MeasuresStorageService _measuresStorageService,
+public class FavouritesController (MeasuresStorageService _measuresStorageService,
 								  SubscriptionService _subscriptionService,
 								  FavoritesMeasurementssService _favoritesMeasuresService) : Controller
 {

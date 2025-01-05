@@ -34,10 +34,10 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 		}).ToList();
 	}
 
-/*	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
-	{
-		await _topicRepository.ToggleFavouriteAsync(topicName, isFavourite).ConfigureAwait(false);
-	}*/
+	/*	public async Task ToggleFavouriteAsync (string topicName, bool isFavourite)
+		{
+			await _topicRepository.ToggleFavouriteAsync(topicName, isFavourite).ConfigureAwait(false);
+		}*/
 
 	public async Task<List<MeasuresHistoryDTO>> GetMeasurementsByTopicAndDateRangeAsync (string topicName, DateTime startDate, DateTime endDate)
 	{

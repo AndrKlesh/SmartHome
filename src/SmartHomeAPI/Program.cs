@@ -10,7 +10,7 @@ internal sealed class Program
 	internal static void Main (string [] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-		_= builder.Services
+		_ = builder.Services
 			.AddSingleton<MeasuresStorageService>()
 			.AddSingleton<SubscriptionService>()
 			.AddSingleton<SubscriptionRepository>()
@@ -21,10 +21,10 @@ internal sealed class Program
 			.AddCors(options =>
 			{
 				options.AddPolicy("AllowAll",
-					              policy =>
+								  policy =>
 								  {
 									  _ = policy.AllowAnyOrigin()
-				  					            .AllowAnyMethod()
+												  .AllowAnyMethod()
 												.AllowAnyHeader();
 								  });
 			})

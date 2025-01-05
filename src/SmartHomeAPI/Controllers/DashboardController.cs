@@ -8,8 +8,8 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DashboardController (MeasuresStorageService _measuresStorageService, 
-	                              SubscriptionService _subscriptionService,
+public class DashboardController (MeasuresStorageService _measuresStorageService,
+								  SubscriptionService _subscriptionService,
 								  FavoritesMeasurementssService _favoritesMeasuresService) : ControllerBase
 {
 	[HttpGet("latest")]
@@ -21,7 +21,7 @@ public class DashboardController (MeasuresStorageService _measuresStorageService
 		foreach (MeasureDTO item in latestMeasurements)
 		{
 			SubscriptionDTO? subscription = await _subscriptionService.GetSubscriptionByMeasurementIdAsync(item.MeasurementId)
-				                                                      .ConfigureAwait(false);
+																	  .ConfigureAwait(false);
 			if (subscription is null)
 			{
 				continue;

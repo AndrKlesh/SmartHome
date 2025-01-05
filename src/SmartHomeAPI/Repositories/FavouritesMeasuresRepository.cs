@@ -22,18 +22,18 @@ public class FavouritesMeasuresRepository
 
 	public Task RemoveFavoriteMeasureAsync (FavoritesDomain favoritesMeasure)
 	{
-		_favoritesMeasuresIds = _favoritesMeasuresIds.Remove (favoritesMeasure.MeasureId);
+		_favoritesMeasuresIds = _favoritesMeasuresIds.Remove(favoritesMeasure.MeasureId);
 		return Task.CompletedTask;
 	}
 
 	public Task ClearFavoriteMeasureAsync ()
 	{
-		_favoritesMeasuresIds = _favoritesMeasuresIds.Clear ();
+		_favoritesMeasuresIds = _favoritesMeasuresIds.Clear();
 		return Task.CompletedTask;
 	}
 
 	//TODO: Убрать ToArray()
-	public Task<IReadOnlyList<FavoritesDomain>> GetFavoritesMeasuresIdsAsync () 
+	public Task<IReadOnlyList<FavoritesDomain>> GetFavoritesMeasuresIdsAsync ()
 	{
 		return Task.FromResult((IReadOnlyList<FavoritesDomain>) _favoritesMeasuresIds.Select(id => new FavoritesDomain() { MeasureId = id }).ToArray());
 	}

@@ -4,16 +4,16 @@ using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
 
-public class FavoritesMeasurementssService(FavouritesMeasuresRepository _favoritesMeasuresRepository)
+public class FavoritesMeasurementssService (FavouritesMeasuresRepository _favoritesMeasuresRepository)
 {
 	public Task AddFavoriteMeasureAsync (FavoritesDTO favoritesMeasure)
 	{
-		return _favoritesMeasuresRepository.AddFavoriteMeasureAsync (new Entities.FavoritesDomain() { MeasureId = favoritesMeasure.MeasurementId });
+		return _favoritesMeasuresRepository.AddFavoriteMeasureAsync(new Entities.FavoritesDomain() { MeasureId = favoritesMeasure.MeasurementId });
 	}
 
 	public Task RemoveFavoriteMeasure (FavoritesDTO favoritesMeasure)
 	{
-		return _favoritesMeasuresRepository.RemoveFavoriteMeasureAsync(new Entities.FavoritesDomain() { MeasureId = favoritesMeasure.MeasurementId});
+		return _favoritesMeasuresRepository.RemoveFavoriteMeasureAsync(new Entities.FavoritesDomain() { MeasureId = favoritesMeasure.MeasurementId });
 	}
 
 	public Task ClearFavoriteMeasure ()

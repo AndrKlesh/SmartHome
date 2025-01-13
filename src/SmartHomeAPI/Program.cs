@@ -10,7 +10,7 @@ internal sealed class Program
 	internal static void Main (string [] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-		_= builder.Services
+		_ = builder.Services
 			.AddSingleton<MeasuresStorageService>()
 			.AddSingleton<MeasuresLinksRepository>()
 			.AddSingleton<SubscriptionService>()
@@ -19,16 +19,7 @@ internal sealed class Program
 			.AddSingleton<FavouritesMeasuresRepository>()
 			.AddSingleton<FavoritesMeasurementssService>()
 			.AddHostedService<MeasuresReceiverService>()
-			.AddCors(options =>
-			{
-				options.AddPolicy("AllowAll",
-					              policy =>
-								  {
-									  _ = policy.AllowAnyOrigin()
-				  					            .AllowAnyMethod()
-												.AllowAnyHeader();
-								  });
-			})
+			.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
 			.AddEndpointsApiExplorer()
 			.AddSwaggerGen()
 			.AddControllers();
@@ -42,13 +33,9 @@ internal sealed class Program
 		}
 
 		_ = app.UseHttpsRedirection();
-
 		_ = app.UseCors("AllowAll");
-
 		_ = app.MapControllers();
-
 		app.Urls.Add("https://*:7098");
-
 		app.Run();
 	}
 }

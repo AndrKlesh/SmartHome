@@ -26,10 +26,12 @@ public class DashboardController (MeasuresStorageService _measuresStorageService
 			{
 				continue;
 			}
+
 			item.Name = subscription.MeasurementName;
 			item.Units = subscription.Unit;
 			item.IsFavourite = favourites.Any(f => f.MeasurementId == item.MeasurementId);
 		}
+
 		return Ok(latestMeasurements);
 	}
 }

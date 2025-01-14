@@ -7,7 +7,7 @@ public class FavouritesMeasuresRepository
 {
 	public Task AddFavoriteMeasureAsync (FavoritesDomain favoritesMeasure)
 	{
-		var temp = _favoritesMeasuresIds;
+		ImmutableList<string> temp = _favoritesMeasuresIds;
 		//TODO: убрать
 		if (temp.Contains(favoritesMeasure.MeasureId))
 		{
@@ -17,6 +17,7 @@ public class FavouritesMeasuresRepository
 		{
 			_favoritesMeasuresIds = temp.Add(favoritesMeasure.MeasureId);
 		}
+
 		return Task.CompletedTask;
 	}
 

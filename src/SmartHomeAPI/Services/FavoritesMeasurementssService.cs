@@ -1,4 +1,3 @@
-using System.Diagnostics.Metrics;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
 
@@ -24,7 +23,7 @@ public class FavoritesMeasurementssService (FavouritesMeasuresRepository _favori
 	//TODO: Убрать ToArray()
 	public async Task<IReadOnlyList<FavoritesDTO>> GetFavoritesMeasuresAsync ()
 	{
-		var fMeasures = await _favoritesMeasuresRepository.GetFavoritesMeasuresIdsAsync().ConfigureAwait(false);
+		IReadOnlyList<Entities.FavoritesDomain> fMeasures = await _favoritesMeasuresRepository.GetFavoritesMeasuresIdsAsync().ConfigureAwait(false);
 		return fMeasures.Select(fMeasure => new FavoritesDTO() { MeasurementId = fMeasure.MeasureId }).ToArray();
 	}
 }

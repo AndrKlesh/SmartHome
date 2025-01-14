@@ -1,11 +1,15 @@
 # Удалите строку ниже, если вы хотите наследовать параметры .editorconfig из каталогов, расположенных выше в иерархии
 root = true
 
+#### Основные параметры EditorConfig ####
 [*]
 charset = utf-8
-dotnet_style_operator_placement_when_wrapping = beginning_of_line
+indent_style = tab
 tab_width = 4
 indent_size = 4
+end_of_line = crlf
+trim_trailing_whitespace = true
+insert_final_newline = true
 dotnet_style_coalesce_expression = true:warning
 dotnet_style_null_propagation = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
@@ -22,27 +26,41 @@ dotnet_style_prefer_compound_assignment = true:warning
 dotnet_style_prefer_simplified_interpolation = true:warning
 dotnet_style_prefer_collection_expression = never:warning
 dotnet_style_namespace_match_folder = true:warning
-end_of_line = crlf
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+dotnet_code_quality_unused_parameters = all:warning
+dotnet_style_predefined_type_for_locals_parameters_members = true:warning
+dotnet_style_predefined_type_for_member_access = true:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_method = false:warning
+dotnet_style_qualification_for_event = false:warning
+dotnet_style_allow_multiple_blank_lines_experimental = false:warning
+dotnet_style_allow_statement_immediately_after_block_experimental = false:warning
+dotnet_style_readonly_field = true:warning
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:warning
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:warning
+dotnet_style_parentheses_in_other_operators = always_for_clarity:warning
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:warning
+dotnet_style_require_accessibility_modifiers = always:warning
 
 # Файлы C#
 [*.cs]
 
-#### Основные параметры EditorConfig ####
+#### Действия кода .NET ####
 
-# Отступы и интервалы
-indent_size = 4
-indent_style = tab
-tab_width = 4
+# Члены типа
+dotnet_hide_advanced_members = true
+dotnet_member_insertion_location = with_other_members_of_the_same_kind
+dotnet_property_generation_behavior = prefer_throwing_properties
 
-# Предпочтения для новых строк
-end_of_line = crlf
-insert_final_newline = true
+# Поиск символов
+dotnet_search_reference_assemblies = true
 
 #### Рекомендации по написанию кода .NET ####
 
 # Упорядочение Using
-dotnet_separate_import_directive_groups = false
-dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false:warning
+dotnet_sort_system_directives_first = true:warning
 file_header_template = unset
 
 # Предпочтения для this. и Me.
@@ -65,13 +83,14 @@ dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:war
 dotnet_style_require_accessibility_modifiers = always:warning
 
 # Выражения уровень предпочтения
+dotnet_prefer_system_hash_code = true:warning
 dotnet_style_coalesce_expression = true:warning
 dotnet_style_collection_initializer = false:warning
 dotnet_style_explicit_tuple_names = true:warning
 dotnet_style_namespace_match_folder = true:warning
 dotnet_style_null_propagation = true:warning
 dotnet_style_object_initializer = true:warning
-dotnet_style_operator_placement_when_wrapping = beginning_of_line:warning
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
 dotnet_style_prefer_auto_properties = true:warning
 dotnet_style_prefer_collection_expression = false:warning
 dotnet_style_prefer_compound_assignment = true:warning
@@ -91,7 +110,7 @@ dotnet_style_readonly_field = true:warning
 dotnet_code_quality_unused_parameters = all:warning
 
 # Параметры подавления
-dotnet_remove_unnecessary_suppression_exclusions = none:warning
+dotnet_remove_unnecessary_suppression_exclusions = none
 
 # Предпочтения для новых строк
 dotnet_style_allow_multiple_blank_lines_experimental = false:warning
@@ -126,14 +145,16 @@ csharp_style_prefer_switch_expression = false:warning
 csharp_style_conditional_delegate_call = true:warning
 
 # Предпочтения модификатора
+csharp_prefer_static_anonymous_function = true:warning
 csharp_prefer_static_local_function = true:warning
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async:warning
 csharp_style_prefer_readonly_struct = true:warning
 csharp_style_prefer_readonly_struct_member = true:warning
 
 # Предпочтения для блоков кода
 csharp_prefer_braces = true:warning
 csharp_prefer_simple_using_statement = true:warning
+csharp_prefer_system_threading_lock = true:warning
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_prefer_method_group_conversion = true:warning
 csharp_style_prefer_primary_constructors = true:warning
@@ -172,7 +193,7 @@ csharp_new_line_before_else = true
 csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_before_members_in_object_initializers = true
-csharp_new_line_before_open_brace = all
+csharp_new_line_before_open_brace = types,methods,anonymous_methods,control_blocks,anonymous_types,object_collection_array_initializers,lambdas,accessors
 csharp_new_line_between_query_expression_clauses = true
 
 # Предпочтения для отступов
@@ -180,7 +201,7 @@ csharp_indent_block_contents = true
 csharp_indent_braces = false
 csharp_indent_case_contents = false
 csharp_indent_case_contents_when_block = false
-csharp_indent_labels = one_less_than_current
+csharp_indent_labels = no_change
 csharp_indent_switch_labels = true
 
 # Предпочтения для интервалов
@@ -191,7 +212,7 @@ csharp_space_after_dot = false
 csharp_space_after_keywords_in_control_flow_statements = true
 csharp_space_after_semicolon_in_for_statement = true
 csharp_space_around_binary_operators = before_and_after
-csharp_space_around_declaration_statements = false
+csharp_space_around_declaration_statements = false:warning
 csharp_space_before_colon_in_inheritance_clause = true
 csharp_space_before_comma = false
 csharp_space_before_dot = false

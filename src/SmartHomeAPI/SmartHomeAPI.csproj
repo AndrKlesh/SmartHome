@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<AnalysisLevel>latest-all</AnalysisLevel>
-		<TypeScriptTarget>ESNext</TypeScriptTarget>
+		<OutputType>Library</OutputType>
 	</PropertyGroup>
 
 	<ItemGroup>

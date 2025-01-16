@@ -29,6 +29,8 @@
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<SourceLinkCreate>false</SourceLinkCreate>
 		<VisualStudioVersion>17.12</VisualStudioVersion>
+		<TypeScriptTarget>ESNext</TypeScriptTarget>
+		<ImplicitUsings>enable</ImplicitUsings>
 
 		<!-- Путь для выходных файлов -->
 		<OutputPath>bin\Release</OutputPath>

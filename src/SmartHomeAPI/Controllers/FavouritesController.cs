@@ -13,7 +13,6 @@ public class FavouritesController (MeasuresStorageService _measuresStorageServic
 	[HttpGet("latest")]
 	public async Task<ActionResult<List<MeasureDTO>>> GetLatestFavouriteMeasurements ()
 	{
-
 		List<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync().ConfigureAwait(false);
 		IReadOnlyList<FavoritesDTO> favorites = await _favoritesMeasuresService.GetFavoritesMeasuresAsync().ConfigureAwait(false);
 

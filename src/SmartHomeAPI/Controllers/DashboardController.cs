@@ -15,7 +15,6 @@ public class DashboardController (MeasuresStorageService _measuresStorageService
 	[HttpGet("latest")]
 	public async Task<ActionResult<List<MeasureDTO>>> GetLatestMeasurements ()
 	{
-
 		List<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync().ConfigureAwait(false);
 		IReadOnlyList<FavoritesDTO> favourites = await _favoritesMeasuresService.GetFavoritesMeasuresAsync().ConfigureAwait(false);
 		foreach (MeasureDTO item in latestMeasurements)

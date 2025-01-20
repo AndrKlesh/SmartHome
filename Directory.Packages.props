@@ -1,9 +1,12 @@
 <Project>
+
 	<PropertyGroup>
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+		<CentralPackageVersionOverrideEnabled>false</CentralPackageVersionOverrideEnabled>
 		<NoWarn>$(NoWarn);NU1507</NoWarn>
 	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.0" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
@@ -18,4 +21,5 @@
 		<PackageVersion Include="Quartz" Version="3.13.1" />
 		<PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
 	</ItemGroup>
+
 </Project>

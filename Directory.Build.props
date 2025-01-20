@@ -1,4 +1,5 @@
 <Project>
+
 	<PropertyGroup>
 		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 		<Deterministic>true</Deterministic>
@@ -53,4 +54,5 @@
 		<Optimize>true</Optimize>
 		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
+
 </Project>

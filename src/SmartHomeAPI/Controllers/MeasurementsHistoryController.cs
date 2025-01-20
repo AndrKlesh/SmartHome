@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using Microsoft.AspNetCore.Mvc;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Services;
@@ -6,8 +8,10 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MeasurementsHistoryController (MeasuresStorageService _measuresStorageService) : Controller
+public class MeasurementsHistoryController (MeasuresStorageService measuresStorageService) : Controller
 {
+	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
+
 	[HttpGet]
 	public async Task<ActionResult<List<MeasuresHistoryDTO>>> Get (
 			[FromQuery] Guid measurementId,
@@ -18,7 +22,7 @@ public class MeasurementsHistoryController (MeasuresStorageService _measuresStor
 		{
 			startDate = startDate.ToUniversalTime();
 			endDate = endDate.ToUniversalTime();
-			List<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementsByTopicAndDateRangeAsync(measurementId, startDate, endDate).ConfigureAwait(false);
+			List<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
 
 			if (measurements == null || measurements.Count == 0)
 			{

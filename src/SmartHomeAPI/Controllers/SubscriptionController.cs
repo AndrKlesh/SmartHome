@@ -1,4 +1,3 @@
-#pragma warning disable CA1062
 #pragma warning disable CA1515
 
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +36,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	public async Task<IActionResult> AddSubscription ([FromBody] SubscriptionDTO subscriptionDto)
 	{
 		await _subscriptionsService.AddSubscriptionAsync(subscriptionDto).ConfigureAwait(false);
-		return Ok(new { message = $"Subscription {subscriptionDto.MqttTopic} added" });
+		return Ok(new { message = $"Subscription {subscriptionDto?.MqttTopic} added" });
 	}
 
 	[HttpPut("updateSubscription/{measurementId}")]

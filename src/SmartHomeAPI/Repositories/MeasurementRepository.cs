@@ -53,7 +53,7 @@ public class MeasurementRepository
 		).ConfigureAwait(false);
 	}
 
-	public async Task<List<MeasureDomain>> GetMeasurementsByTopicAndDateRangeAsync (Guid measurementId, DateTime startDate, DateTime endDate)
+	public async Task<List<MeasureDomain>> GetMeasurementHistory (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
 		return await Task.FromResult(
 			_measurements

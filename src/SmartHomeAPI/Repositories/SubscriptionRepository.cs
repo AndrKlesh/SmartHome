@@ -33,6 +33,22 @@ public class SubscriptionRepository
 			MqttTopic = "home/outside/temperature",
 			ConverterName = "default",
 		},
+	    new SubscriptionDomain()
+		{
+			MeasurementId = Guid.Parse("421673E7-95EF-478C-912A-71F3158FF613"),
+			MeasurementName = "Входная дверь",
+			Unit = "",
+			MqttTopic = "home/door",
+			ConverterName = "default",
+		},
+		new SubscriptionDomain()
+		{
+			MeasurementId = Guid.Parse("40EAC794-65E5-432D-84E6-F1B04B14DB8A"),
+			MeasurementName = "Вентиляция",
+			Unit = "",
+			MqttTopic = "home/venting",
+			ConverterName = "default",
+		},
 	];
 	private readonly ReaderWriterLockSlim _lock = new();
 

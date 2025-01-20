@@ -11,6 +11,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
 	private IMqttClient? _mqttClient;
+	private static readonly TimeSpan _reconnectTimeout = TimeSpan.FromSeconds(5);
 	private readonly MqttFactory _mqttFactory = new();
 
 	public async Task StartAsync (CancellationToken cancellationToken)
@@ -30,21 +31,27 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 			.WithTcpServer("localhost", 1883)
 			.Build();
 
-		try
+		bool isNeedRetry;
+		do
 		{
-			_ = await _mqttClient.ConnectAsync(mqttClientOptions, cancellationToken).ConfigureAwait(false);
+			isNeedRetry = false;
+			try
+			{
+				_ = await _mqttClient.ConnectAsync(mqttClientOptions, cancellationToken).ConfigureAwait(false);
 
-			_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
-			MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
-				.WithTopicFilter("home/#")
-				.Build();
-			_ = await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
-		}
-		catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
-		{
-			Console.WriteLine($"Ошибка подключения: {ex.Message}");
-			// TODO: Реализовать повторное подключение
-		}
+				_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
+				MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
+					.WithTopicFilter("home/#")
+					.Build();
+				_ = await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
+			}
+			catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
+			{
+				isNeedRetry = true;
+				Console.WriteLine($"Ошибка подключения: {ex.Message}");
+				await Task.Delay(_reconnectTimeout, cancellationToken).ConfigureAwait(false);
+			}
+		} while (isNeedRetry);
 	}
 
 	private async Task UnconfigureSubscriptions (CancellationToken cancellationToken)

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import './styles.css'
 import { DashboardData } from './types'
 import { formatValue } from './utils'
 
 const Dashboard = () =>
 {
+	const { name } = useParams<{ name: string }>()
 	const [data, setData] = useState<DashboardData[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -17,7 +19,7 @@ const Dashboard = () =>
 		{
 			try
 			{
-				const response = await fetch('https://localhost:7098/api/Dashboard/latest')
+				const response = await fetch(`https://localhost:7098/api/Dashboard/latest/${name}`)
 				if (!response.ok)
 				{
 					throw new Error(`HTTP error! status: ${ response.status }`)
@@ -37,41 +39,12 @@ const Dashboard = () =>
 		const intervalId = setInterval(fetchData, 1000)
 
 		return () => clearInterval(intervalId)
-	}, [])
+	})
 
 	const handleItemClick = (measurementId: string) =>
 	{
 		const encodedMeasurementId = encodeURIComponent(measurementId)
 		navigate(`/history/${ encodedMeasurementId }`)
-	}
-
-	const toggleFavourite = async (measurementId: string, currentFavouriteState: boolean) =>
-	{
-		try
-		{
-			const response = await fetch('https://localhost:7098/api/Favourites/toggleFavourite', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ measurementId/*, isFavourite: !currentFavouriteState*/ }),
-			})
-
-			if (response.ok)
-			{
-				setData((prevData) =>
-					prevData.map((item) =>
-						item.measurementId === measurementId ? { ...item, isFavourite: !currentFavouriteState } : item
-					)
-				)
-			} else
-			{
-				console.error(`Ошибка при обновлении состояния: ${ response.status }`)
-			}
-		} catch (error)
-		{
-			console.error(`Произошла ошибка: ${ error }`)
-		}
 	}
 
 	if (loading)
@@ -86,6 +59,7 @@ const Dashboard = () =>
 
 	return (
 		<div className="container">
+			<p>{ name }</p>
 			{ data.map((item, index) => (
 				<div
 					key={ index }
@@ -97,17 +71,6 @@ const Dashboard = () =>
 						Значение: { formatValue(item.value, item.units) } {/* Используем только value и unit */ }
 					</p>
 					<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
-
-					<div
-						className={ `favourite-star ${ item.isFavourite ? 'active' : '' }` }
-						onClick={ (e) =>
-						{
-							e.stopPropagation()
-							toggleFavourite(item.measurementId, item.isFavourite)
-						} }
-					>
-						★
-					</div>
 				</div>
 			)) }
 		</div>

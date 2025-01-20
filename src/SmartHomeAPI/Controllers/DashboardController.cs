@@ -8,13 +8,16 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DashboardController (MeasuresStorageService _measuresStorageService) : ControllerBase
+public class DashboardController (MeasuresStorageService measuresStorageService) : ControllerBase
 {
-	[HttpGet("latest")]
-	public async Task<ActionResult<List<MeasureDTO>>> GetLatestMeasurements ()
+	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
+
+	[HttpGet("latest/{mask}")]
+	public async Task<ActionResult<List<MeasureDTO>>> GetLatestMeasurements (string mask)
 	{
 
-		List<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync().ConfigureAwait(false);
+		List<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync($"{mask}*").ConfigureAwait(false);
 		return Ok(latestMeasurements);
 	}
 }
+

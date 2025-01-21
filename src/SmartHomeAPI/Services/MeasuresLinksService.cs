@@ -1,4 +1,5 @@
 #pragma warning disable CA1515
+using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
@@ -15,19 +16,34 @@ public class MeasuresLinksService(MeasuresLinksRepository measuresLinksRepositor
 	/// <param name="path">Предыдущий путь.
 	/// Если путь пустой - вернутся корневые ссылки</param>
 	/// <returns></returns>
-	public async Task<string []> LoadNextMeasurementsLayer (string? path)
+	public async Task<IReadOnlyList<LinkDTO>> LoadNextMeasurementsLayer (string? path)
 	{
 		path ??= string.Empty;
 		string mask = string.IsNullOrWhiteSpace(path) ? AllMask : path + MoreMask;
 		IReadOnlyList<KeyValuePair<string, Guid>> links = await _measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
-		string [] sublayer = links.Select(l =>
+		LinkDTO [] sublayer = links.Select(l =>
 		{
 			int index = l.Key.IndexOf(path, StringComparison.Ordinal);
 			string subpath = index < 0 ? l.Key : l.Key.Remove(index, path.Length);
 			subpath = subpath.TrimStart('/');
 			index = subpath.IndexOf('/', StringComparison.InvariantCultureIgnoreCase);
-			return index < 0 ? subpath : subpath.Substring(0, index);
-		}).Distinct()
+			if (index > 0)
+			{
+				return new LinkDTO()
+				{
+					Path = subpath.Substring(0, index),
+					Mode = "d"
+				};
+			}
+			else
+			{
+				return new LinkDTO()
+				{
+					Path = subpath,
+					Mode = string.Empty
+				};
+			}
+		}).DistinctBy(l => l.Path)
 		  .ToArray();
 		return sublayer;
 	}

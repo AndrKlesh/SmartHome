@@ -19,7 +19,7 @@ const Dashboard = () =>
 		{
 			try
 			{
-				const response = await fetch(`https://localhost:7098/api/Dashboard/latest/${name}`)
+				const response = await fetch(`https://localhost:7098/api/Dashboard/latest/${name}*`)
 				if (!response.ok)
 				{
 					throw new Error(`HTTP error! status: ${ response.status }`)

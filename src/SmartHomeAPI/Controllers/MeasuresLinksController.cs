@@ -1,6 +1,7 @@
 #pragma warning disable CA1515
 
 using Microsoft.AspNetCore.Mvc;
+using SmartHomeAPI.Models;
 using SmartHomeAPI.Services;
 
 namespace SmartHomeAPI.Controllers;
@@ -26,7 +27,7 @@ public class MeasuresLinksController(MeasuresLinksService measuresLinksService) 
 	[HttpGet("nextLayer")]
 	public async Task<ActionResult<string []>> GetNextMeasurementsLayer ([FromQuery]string? path)
 	{
-		string[] layer = await _measuresLinksService.LoadNextMeasurementsLayer(path).ConfigureAwait(false);
+		IReadOnlyList<LinkDTO> layer = await _measuresLinksService.LoadNextMeasurementsLayer(path).ConfigureAwait(false);
 		return Ok(layer);
 	}
 }

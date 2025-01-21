@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 //import LogoutButton from './LogoutButton'
 import './styles.css'
+import { MeasurementLink } from './types'
 
 function Header() {
     const [isDarkTheme, setIsDarkTheme] = useState(true)
-    const [menu, setData] = useState<string[]>([])
+    const [menu, setData] = useState<MeasurementLink[]>([])
 
     useEffect(() => {
         const getMenu = async () => {
@@ -14,6 +15,7 @@ function Header() {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
             const json = await response.json()
+            
             setData(json)
         }
         getMenu()
@@ -38,9 +40,9 @@ function Header() {
                 <div className="nav-links">
                     <ul>
                         {
-                            menu.map((item, index) => (
-                                <li>
-                                    <Link key={index} to={{ pathname: `/dashboard/${item}` }}>{item}</Link>
+                            menu.filter((item) => (item.mode.includes('d'))).map((item, index) => (
+                                <li key={index}>
+                                    <Link to={{ pathname: `/dashboard/${item.path}` }}>{item.path}</Link>
                                 </li>
                             ))
                         }

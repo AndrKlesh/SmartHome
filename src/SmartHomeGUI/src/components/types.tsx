@@ -22,3 +22,9 @@ export interface Measurement
 	timestamp: string
 	unit: string
 }
+
+export interface MeasurementLink
+{
+	path: string
+	mode: string
+}

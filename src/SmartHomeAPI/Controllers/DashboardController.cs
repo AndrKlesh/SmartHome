@@ -24,7 +24,7 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 	public async Task<ActionResult<IReadOnlyList<MeasureDTO>>> GetLatestMeasurements (string mask)
 	{
 
-		IReadOnlyList<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync($"{mask}*").ConfigureAwait(false);
+		IReadOnlyList<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
 		return Ok(latestMeasurements);
 	}
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;

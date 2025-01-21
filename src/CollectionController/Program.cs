@@ -4,7 +4,6 @@
 using System.Globalization;
 using CollectionController.Models;
 using MQTTnet;
-using MQTTnet.Client;
 
 namespace CollectionController;
 
@@ -19,7 +18,7 @@ internal sealed class Program
 			Console.WriteLine("Your configuration file is empty");
 		}
 
-		MqttFactory mqttFactory = new();
+		MqttClientFactory mqttFactory = new();
 		using IMqttClient mqttClient = mqttFactory.CreateMqttClient();
 		MqttClientOptions mqttClientOptions = new MqttClientOptionsBuilder()
 			.WithTcpServer("localhost", 1883)

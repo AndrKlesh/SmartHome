@@ -1,6 +1,5 @@
 using System.Text;
 using MQTTnet;
-using MQTTnet.Client;
 using MQTTnet.Exceptions;
 using SmartHomeAPI.Models;
 
@@ -18,7 +17,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
 	private IMqttClient? _mqttClient;
 	private static readonly TimeSpan _reconnectTimeout = TimeSpan.FromSeconds(5);
-	private readonly MqttFactory _mqttFactory = new();
+	private readonly MqttClientFactory _mqttFactory = new();
 
 	public async Task StartAsync (CancellationToken cancellationToken)
 	{
@@ -82,7 +81,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 	private async Task OnApplicationMessageReceivedAsync (MqttApplicationMessageReceivedEventArgs e)
 	{
 		string topic = e.ApplicationMessage.Topic;
-		string payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+		string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 		DateTime timestamp = DateTime.UtcNow;
 
 		// Проверка существования топика в подписках

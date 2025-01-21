@@ -21,7 +21,7 @@ public class MqttHostedService (IConfiguration configuration) : IHostedService
 			.WithDefaultEndpointPort(port)
 			.Build();
 
-		_mqttServer = new MqttFactory().CreateMqttServer(options);
+		_mqttServer = new MqttServerFactory().CreateMqttServer(options);
 
 		await _mqttServer.StartAsync().ConfigureAwait(false);
 	}

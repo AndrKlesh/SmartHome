@@ -5,7 +5,6 @@
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
-using MQTTnet.Client;
 using Quartz;
 
 namespace CollectionController;
@@ -45,9 +44,10 @@ internal sealed class SendTopicJob () : IJob
 		  .Build();
 		_ = await _mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
-		string payloadString = System.Text.Encoding.UTF8.GetString(applicationMessage.PayloadSegment);
-#pragma warning disable CA1848 // Использовать делегаты LoggerMessage
-#pragma warning disable CA2254 // Шаблон должен быть статическим выражением
-		logger.LogInformation($"Published to {topic}: {payloadString}");
+#pragma warning disable CA1848
+#pragma warning disable CA2253
+		logger.LogInformation("Published to {0}: {1}", topic, currentValue);
+#pragma warning restore CA2253
+#pragma warning restore CA1848
 	}
 }

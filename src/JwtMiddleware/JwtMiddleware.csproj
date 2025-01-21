@@ -1,18 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<MinimumVisualStudioVersion>17.12</MinimumVisualStudioVersion>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<ErrorReport>none</ErrorReport>
-		<AnalysisLevel>latest-all</AnalysisLevel>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' or '$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DebugType>embedded</DebugType>
-		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+		<OutputType>Library</OutputType>
 	</PropertyGroup>
 
 	<ItemGroup>

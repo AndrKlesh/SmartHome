@@ -7,7 +7,7 @@ using SmartHomeAPI.Services;
 namespace SmartHomeAPI.Controllers;
 
 /// <summary>
-/// Контроллер Dashboard'ов
+/// ���������� Dashboard'��
 /// </summary>
 /// <param name="measuresStorageService"></param>
 [ApiController]
@@ -15,10 +15,10 @@ namespace SmartHomeAPI.Controllers;
 public class DashboardController (MeasuresStorageService measuresStorageService) : ControllerBase
 {
 	/// <summary>
-	/// Получить последние измерения
+	/// �������� ��������� ���������
 	/// </summary>
-	/// <param name="mask">Маска ссылок на измерения
-	/// Например, получить измерения из группы Общие: mask = "Общие/*"</param>
+	/// <param name="mask">����� ������ �� ���������
+	/// ��������, �������� ��������� �� ������ �����: mask = "�����/*"</param>
 	/// <returns></returns>
 	[HttpGet("latest/{mask}")]
 	public async Task<ActionResult<IReadOnlyList<MeasureDTO>>> GetLatestMeasurements (string mask)

@@ -11,7 +11,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryBranch>main</RepositoryBranch>
 		<RepositoryType>Git</RepositoryType>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
 		<RollForward>LatestMajor</RollForward>
 		<MinimumVisualStudioVersion>17.12</MinimumVisualStudioVersion>
@@ -34,10 +34,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 
 		<!-- Путь для выходных файлов -->
-		<OutputPath>bin\Release</OutputPath>
+		<OutputPath>bin\$(Configuration)</OutputPath>
 
 		<!-- Путь для промежуточных файлов -->
-		<IntermediateOutputPath>obj\Release</IntermediateOutputPath>
+		<IntermediateOutputPath>obj\$(Configuration)</IntermediateOutputPath>
 
 		<!-- Автоматическая генерация сборок сериализации -->
 		<GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>

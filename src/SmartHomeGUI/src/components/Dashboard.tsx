@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
+import {useEffect, useState} from 'react'
+import {useNavigate, useParams} from 'react-router-dom'
 import './styles.css'
-import { DashboardData } from './types'
-import { formatValue } from './utils'
+import {DashboardData} from './types'
+import {formatValue} from './utils'
 
 const Dashboard = () =>
 {
-	const { name } = useParams<{ name: string }>()
+	const {name} = useParams<{name: string}>()
 	const [data, setData] = useState<DashboardData[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -19,7 +18,7 @@ const Dashboard = () =>
 		{
 			try
 			{
-				const response = await fetch(`https://localhost:7098/api/Dashboard/latest/${name}*`)
+				const response = await fetch(`https://localhost:7098/api/Dashboard/latest/${ name }*`)
 				if (!response.ok)
 				{
 					throw new Error(`HTTP error! status: ${ response.status }`)
@@ -54,25 +53,25 @@ const Dashboard = () =>
 
 	if (error)
 	{
-		return <p>Error: { error }</p>
+		return <p>Error: {error}</p>
 	}
 
 	return (
 		<div className="container">
-			<p>{ name }</p>
-			{ data.map((item, index) => (
+			<p>{name}</p>
+			{data.map((item, index) => (
 				<div
-					key={ index }
+					key={index}
 					className="box"
-					onClick={ () => handleItemClick(item.measurementId) }
+					onClick={() => handleItemClick(item.measurementId)}
 				>
-					<h2>{ item.name }</h2> {/* Используем topicName как имя измерения */ }
+					<h2>{item.name}</h2> {/* Используем topicName как имя измерения */}
 					<p>
-						Значение: { formatValue(item.value, item.units) } {/* Используем только value и unit */ }
+						Значение: {formatValue(item.value, item.units)} {/* Используем только value и unit */}
 					</p>
-					<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
+					<p>Время: {new Date(item.timestamp).toLocaleString()}</p>
 				</div>
-			)) }
+			))}
 		</div>
 	)
 }

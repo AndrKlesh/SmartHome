@@ -33,7 +33,7 @@ public class SubscriptionRepository
 			MqttTopic = "home/outside/temperature",
 			ConverterName = "default",
 		},
-	    new SubscriptionDomain()
+		new SubscriptionDomain()
 		{
 			MeasurementId = Guid.Parse("421673E7-95EF-478C-912A-71F3158FF613"),
 			Description = "Входная дверь",

@@ -10,8 +10,8 @@ namespace SmartHomeAPI.Services;
 /// </summary>
 /// <param name="measuresStorageService">Сервис измерений</param>
 /// <param name="subscriptionsService">Сервис подписок на измерения</param>
-internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, 
-	                                           SubscriptionService subscriptionsService) : IHostedService
+internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService,
+											   SubscriptionService subscriptionsService) : IHostedService
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 	private readonly SubscriptionService _subscriptionsService = subscriptionsService;

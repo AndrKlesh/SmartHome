@@ -2,7 +2,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using MQTTnet;
 using MQTTnet.Server;
 
 namespace SHMQ;

@@ -12,7 +12,7 @@ public class SubscriptionRepository
 		new SubscriptionDomain()
 		{
 			MeasurementId = Guid.Parse("462F9446-ADFF-4EA4-8CA1-F1665268520F"),
-			MeasurementName = "Температура горячей воды",
+			Description = "Температура горячей воды",
 			Unit = "°C",
 			MqttTopic = "home/bathroom/hot_water_temp",
 			ConverterName = "default",
@@ -20,7 +20,7 @@ public class SubscriptionRepository
 		new SubscriptionDomain()
 		{
 			MeasurementId = Guid.Parse("21274707-C7CA-4436-B191-9BAC91C473F5"),
-			MeasurementName = "Температура в помещении",
+			Description = "Температура в помещении",
 			Unit = "°C",
 			MqttTopic = "home/living_room/temperature",
 			ConverterName = "default",
@@ -28,7 +28,7 @@ public class SubscriptionRepository
 		new SubscriptionDomain()
 		{
 			MeasurementId = Guid.Parse("24FE134B-4CBF-4EB9-A811-2720D4315146"),
-			MeasurementName = "Температура воздуха снаружи здания",
+			Description = "Температура воздуха снаружи здания",
 			Unit = "°C",
 			MqttTopic = "home/outside/temperature",
 			ConverterName = "default",
@@ -36,7 +36,7 @@ public class SubscriptionRepository
 	    new SubscriptionDomain()
 		{
 			MeasurementId = Guid.Parse("421673E7-95EF-478C-912A-71F3158FF613"),
-			MeasurementName = "Входная дверь",
+			Description = "Входная дверь",
 			Unit = "",
 			MqttTopic = "home/door",
 			ConverterName = "default",
@@ -44,7 +44,7 @@ public class SubscriptionRepository
 		new SubscriptionDomain()
 		{
 			MeasurementId = Guid.Parse("40EAC794-65E5-432D-84E6-F1B04B14DB8A"),
-			MeasurementName = "Вентиляция",
+			Description = "Вентиляция",
 			Unit = "",
 			MqttTopic = "home/venting",
 			ConverterName = "default",
@@ -117,7 +117,7 @@ public class SubscriptionRepository
 				_lock.EnterWriteLock();
 				try
 				{
-					existingSubscription.MeasurementName = subscription.MeasurementName;
+					existingSubscription.Description = subscription.Description;
 					existingSubscription.Unit = subscription.Unit;
 					existingSubscription.MqttTopic = subscription.MqttTopic;
 					existingSubscription.ConverterName = "default";

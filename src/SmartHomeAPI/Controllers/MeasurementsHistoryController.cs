@@ -6,12 +6,21 @@ using SmartHomeAPI.Services;
 
 namespace SmartHomeAPI.Controllers;
 
+/// <summary>
+/// Контроллер истории измерений
+/// </summary>
+/// <param name="measuresStorageService"></param>
 [ApiController]
 [Route("api/[controller]")]
 public class MeasurementsHistoryController (MeasuresStorageService measuresStorageService) : Controller
 {
-	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
-
+	/// <summary>
+	/// Получить историю измерения
+	/// </summary>
+	/// <param name="measurementId">Ид. типа измерения</param>
+	/// <param name="startDate">Дата начала</param>
+	/// <param name="endDate">Дата колнца</param>
+	/// <returns></returns>
 	[HttpGet]
 	public async Task<ActionResult<List<MeasuresHistoryDTO>>> Get (
 			[FromQuery] Guid measurementId,
@@ -22,7 +31,7 @@ public class MeasurementsHistoryController (MeasuresStorageService measuresStora
 		{
 			startDate = startDate.ToUniversalTime();
 			endDate = endDate.ToUniversalTime();
-			List<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
+			IReadOnlyList<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
 
 			if (measurements == null || measurements.Count == 0)
 			{
@@ -36,4 +45,6 @@ public class MeasurementsHistoryController (MeasuresStorageService measuresStora
 			return StatusCode(500, new { message = "An error occurred.", error = ex.Message });
 		}
 	}
+
+	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 }

@@ -6,7 +6,13 @@ using SmartHomeAPI.Models;
 
 namespace SmartHomeAPI.Services;
 
-internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService) : IHostedService
+/// <summary>
+/// Сервис приема измерений из mqtt-брокера
+/// </summary>
+/// <param name="measuresStorageService">Сервис измерений</param>
+/// <param name="subscriptionsService">Сервис подписок на измерения</param>
+internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, 
+	                                           SubscriptionService subscriptionsService) : IHostedService
 {
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
@@ -24,34 +30,40 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 		await UnconfigureSubscriptions(cancellationToken).ConfigureAwait(false);
 	}
 
-	private async Task ConfigureSubscriptions (CancellationToken cancellationToken)
+	private Task ConfigureSubscriptions (CancellationToken cancellationToken)
 	{
 		_mqttClient = _mqttFactory.CreateMqttClient();
 		MqttClientOptions mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder()
 			.WithTcpServer("localhost", 1883)
 			.Build();
 
-		bool isNeedRetry;
-		do
+		_ = Task.Run(async () =>
 		{
-			isNeedRetry = false;
-			try
+			bool isNeedRetry;
+			do
 			{
-				_ = await _mqttClient.ConnectAsync(mqttClientOptions, cancellationToken).ConfigureAwait(false);
+				isNeedRetry = false;
+				try
+				{
+					_ = await _mqttClient.ConnectAsync(mqttClientOptions, cancellationToken).ConfigureAwait(false);
 
-				_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
-				MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
-					.WithTopicFilter("home/#")
-					.Build();
-				_ = await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
-			}
-			catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
-			{
-				isNeedRetry = true;
-				Console.WriteLine($"Ошибка подключения: {ex.Message}");
-				await Task.Delay(_reconnectTimeout, cancellationToken).ConfigureAwait(false);
-			}
-		} while (isNeedRetry);
+					_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
+					MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
+						.WithTopicFilter("home/#")
+						.Build();
+					_ = await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
+				}
+				catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
+				{
+					isNeedRetry = true;
+					Console.WriteLine($"Ошибка подключения к брокеру mqtt: {ex.Message}");
+					await Task.Delay(_reconnectTimeout, cancellationToken).ConfigureAwait(false);
+				}
+			} while (isNeedRetry);
+			Console.WriteLine($"Подключение к брокеру mqtt успешно выполнено.");
+		}, cancellationToken);
+
+		return Task.CompletedTask;
 	}
 
 	private async Task UnconfigureSubscriptions (CancellationToken cancellationToken)

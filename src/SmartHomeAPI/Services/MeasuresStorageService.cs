@@ -7,16 +7,24 @@ using SmartHomeAPI.Repositories;
 
 namespace SmartHomeAPI.Services;
 
+/// <summary>
+/// Сервис измерениц
+/// </summary>
+/// <param name="measurementRepository">Репозиторий измерений</param>
+/// <param name="subscriptionRepository">Репозиторий подписок</param>
+/// <param name="measuresLinksRepository">Репозиторий ссылок на измерения</param>
 public class MeasuresStorageService (MeasurementRepository measurementRepository, 
 									 SubscriptionRepository subscriptionRepository,
 									 MeasuresLinksRepository measuresLinksRepository)
 {
-	private readonly MeasurementRepository _measurementRepository = measurementRepository;
-	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
-	private readonly MeasuresLinksRepository _measuresLinksRepository = measuresLinksRepository;
-
-	public async Task AddMeasureAsync ([NotNull]MeasureDTO measurementDto)
+	/// <summary>
+	/// Добавить новое измерений
+	/// </summary>
+	/// <param name="measurementDto">Измерениц</param>
+	/// <returns></returns>
+	public async Task AddMeasureAsync (MeasureDTO measurementDto)
 	{
+		ArgumentNullException.ThrowIfNull(measurementDto);
 		MeasureDomain measurement = new()
 		{
 			MeasurementId = measurementDto.MeasurementId,
@@ -27,11 +35,17 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 		await _measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
 	}
 
-	public async Task<List<MeasureDTO>> GetLatestMeasurementsAsync (string mask)
+	/// <summary>
+	/// Получить последние измерения по маске.
+	/// Например, получение последних измерений по маске Общие/*
+	/// </summary>
+	/// <param name="mask">Маска ссылок на типы измерений</param>
+	/// <returns>Список последних измерений</returns>
+	public async Task<IReadOnlyList<MeasureDTO>> GetLatestMeasurementsAsync (string mask)
 	{
 		IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await _measuresLinksRepository.FindLinksByMaskAsync(mask)
 			                                                                                        .ConfigureAwait(false);
-		List<MeasureDomain> latestMeasuresDomain = await _measurementRepository.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value)
+		IReadOnlyList<MeasureDomain> latestMeasuresDomain = await _measurementRepository.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value)
 			                                                                                                                .ToArray())
 			                                                                   .ConfigureAwait(false);
 
@@ -61,14 +75,25 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 		return latestMeasurementsDTO;
 	}
 
-	public async Task<List<MeasuresHistoryDTO>> GetMeasurementHistory (Guid measurementId, DateTime startDate, DateTime endDate)
+	/// <summary>
+	/// Получить историю измерения
+	/// </summary>
+	/// <param name="measurementId">Ид. измерения</param>
+	/// <param name="startDate">Дата начала</param>
+	/// <param name="endDate">Дата конца</param>
+	/// <returns></returns>
+	public async Task<IReadOnlyList<MeasuresHistoryDTO>> GetMeasurementHistory (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
-		List<MeasureDomain> measurements = await _measurementRepository.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
+		IReadOnlyList<MeasureDomain> measurements = await _measurementRepository.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
 
 		return measurements.Select(m => new MeasuresHistoryDTO
 		{
 			Value = m.Value,
 			Timestamp = m.Timestamp
-		}).ToList();
+		}).ToArray();
 	}
+
+	private readonly MeasurementRepository _measurementRepository = measurementRepository;
+	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
+	private readonly MeasuresLinksRepository _measuresLinksRepository = measuresLinksRepository;
 }

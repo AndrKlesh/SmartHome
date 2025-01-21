@@ -4,34 +4,66 @@ using System.Text.RegularExpressions;
 
 namespace SmartHomeAPI.Repositories;
 
+/// <summary>
+/// Репозиторий ссылок на типы измерений
+/// </summary>
 public class MeasuresLinksRepository
 {
-	public Task AddMeasureLinkAsync (string linkName, Guid MeasurementId)
+	/// <summary>
+	/// Добавить ссылку
+	/// (Путь <-> Guid). Например, (Общие/Температура воздуха <-> 24FE134B-4CBF-4EB9-A811-2720D4315146)
+	/// </summary>
+	/// <param name="path">Путь ссылки. Представляет собой путь, как в файловой системе</param>
+	/// <param name="measurementId">Ид. типа измерения</param>
+	/// <returns></returns>
+	/// <exception cref="NotImplementedException"></exception>
+	public Task AddMeasureLinkAsync (string path, Guid measurementId)
 	{
 		throw new NotImplementedException();
 	}
 
-	public Task<Guid> GetMeasureIdAsync (string linkName)
+	/// <summary>
+	/// Получить ид. типа измерения по ссылке на него.
+	/// </summary>
+	/// <param name="path">Путь ссылки</param>
+	/// <returns></returns>
+	public Task<Guid> GetMeasureIdAsync (string path)
 	{
-		return Task.FromResult(_storage [linkName]);
+		return Task.FromResult(_storage [path]);
 	}
 
+	/// <summary>
+	/// Поиск связи (Путь <-> Guid) по маске.
+	/// Например, 
+	///1) Общие/Температура воздуха/*
+	///2) */Температура*
+	/// </summary>
+	/// <param name="mask">Маска/регулярное выражение ссылок</param>
+	/// <returns></returns>
 	public Task<IReadOnlyList<KeyValuePair<string, Guid>>> FindLinksByMaskAsync (string mask) 
 	{
 		return Task.FromResult((IReadOnlyList<KeyValuePair<string, Guid>>) _storage.Where(item => Regex.IsMatch(item.Key, mask)).ToArray());
 	}
 
-	public Task<IReadOnlyList<Guid>> FindMeasuresIdByMaskAsync (string mask) 
-	{
-		return Task.FromResult((IReadOnlyList<Guid>)_storage.Where(item => Regex.IsMatch(item.Key, mask)).Select(item => item.Value).ToArray());
-	}
-
-	public Task RemoveMeasureLinkAsync (string linkName, Guid MeasurementId)
+	/// <summary>
+	/// Удалить ссылку на тип измерения по пути
+	/// </summary>
+	/// <param name="path">Путь/Ссылка</param>
+	/// <returns></returns>
+	/// <exception cref="NotImplementedException"></exception>
+	public Task RemoveMeasureLinkAsync (string path)
 	{
 		throw new NotImplementedException();
 	}
 
-	public Task RemoveMeasureLinkAsync (Guid MeasurementId)
+	/// <summary>
+	/// Удалить ссылки на измерения по ид. типа измерения
+	/// Внимание, удаляются все ссылки на ид. типа измерения
+	/// </summary>
+	/// <param name="measurementId">Ид. типа измерения</param>
+	/// <returns></returns>
+	/// <exception cref="NotImplementedException"></exception>
+	public Task RemoveMeasureLinkAsync (Guid measurementId)
 	{
 		throw new NotImplementedException();
 	}

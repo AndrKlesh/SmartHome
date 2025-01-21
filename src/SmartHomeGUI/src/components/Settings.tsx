@@ -84,7 +84,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 
 		try
 		{
-			const response = await fetch(`https://localhost:7098/api/Subscriptions/deleteSubscription/${ measurementId }`, {
+			const response = await fetch(`https://localhost:7098/api/Subscriptions/deleteSubscription`, {
 				method: 'DELETE',
 			})
 

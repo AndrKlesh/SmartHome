@@ -7,19 +7,30 @@ using SmartHomeAPI.Services;
 
 namespace SmartHomeAPI.Controllers;
 
+/// <summary>
+/// Контроллер подписки на mqtt-топики
+/// </summary>
+/// <param name="subscriptionsService"></param>
 [ApiController]
 [Route("api/[controller]")]
 public sealed class SubscriptionsController (SubscriptionService subscriptionsService) : ControllerBase
 {
-	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
-
+	/// <summary>
+	/// Получить все подписки
+	/// </summary>
+	/// <returns></returns>
 	[HttpGet("getAllSubscriptions")]
-	public async Task<ActionResult<List<SubscriptionDomain>>> GetAllSubscriptions ()
+	public async Task<ActionResult<IReadOnlyList<SubscriptionDomain>>> GetAllSubscriptions ()
 	{
-		List<SubscriptionDTO> subscriptions = await _subscriptionsService.GetAllSubscriptionsAsync().ConfigureAwait(false);
+		IReadOnlyList<SubscriptionDTO> subscriptions = await _subscriptionsService.GetAllSubscriptionsAsync().ConfigureAwait(false);
 		return Ok(subscriptions);
 	}
 
+	/// <summary>
+	/// Получить подписку
+	/// </summary>
+	/// <param name="measurementId">Ид. типа измерения</param>
+	/// <returns></returns>
 	[HttpGet("getSubscriptionByMeasurementId/{measurementId}")]
 	public async Task<ActionResult<SubscriptionDomain>> GetSubscriptionByMeasurementId (Guid measurementId)
 	{
@@ -32,6 +43,11 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 		return Ok(subscription);
 	}
 
+	/// <summary>
+	/// Добавить подписку
+	/// </summary>
+	/// <param name="subscriptionDto"></param>
+	/// <returns></returns>
 	[HttpPost("addSubscription")]
 	public async Task<IActionResult> AddSubscription ([FromBody] SubscriptionDTO subscriptionDto)
 	{
@@ -39,12 +55,17 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 		return Ok(new { message = $"Subscription {subscriptionDto?.MqttTopic} added" });
 	}
 
-	[HttpPut("updateSubscription/{measurementId}")]
-	public async Task<IActionResult> UpdateSubscription (Guid measurementId, [FromBody] SubscriptionDTO updatedSubscription)
+	/// <summary>
+	/// Обновить подписку
+	/// </summary>
+	/// <param name="updatedSubscription"></param>
+	/// <returns></returns>
+	[HttpPut("updateSubscription")]
+	public async Task<IActionResult> UpdateSubscription ([FromBody] SubscriptionDTO updatedSubscription)
 	{
 		try
 		{
-			await _subscriptionsService.UpdateSubscriptionAsync(measurementId, updatedSubscription).ConfigureAwait(false);
+			await _subscriptionsService.UpdateSubscriptionAsync(updatedSubscription).ConfigureAwait(false);
 			return Ok(new { message = "Subscription updated successfully." });
 		}
 		catch (ArgumentException ex)
@@ -52,7 +73,11 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 			return NotFound(new { message = ex.Message });
 		}
 	}
-
+	/// <summary>
+	/// Удалить подписку
+	/// </summary>
+	/// <param name="measurementId"></param>
+	/// <returns></returns>
 	[HttpDelete("deleteSubscription/{measurementId}")]
 	public async Task<IActionResult> DeleteSubscription (Guid measurementId)
 	{
@@ -66,4 +91,6 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 			return NotFound(new { message = ex.Message });
 		}
 	}
+
+	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
 }

@@ -122,7 +122,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 
 		try
 		{
-			const response = await fetch(`https://localhost:7098/api/Subscriptions/updateSubscription/${ measurementId }`, {
+			const response = await fetch(`https://localhost:7098/api/Subscriptions/updateSubscription/${measurementId}`, {
 				method: 'PUT',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({

@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
-//import LogoutButton from './LogoutButton'
 import './styles.css'
 import {MeasurementLink} from './types'
 
@@ -16,7 +15,7 @@ function Header ()
 			const response = await fetch('https://localhost:7098/api/MeasuresLinks/nextLayer/')
 			if (!response.ok)
 			{
-				throw new Error(`HTTP error! status: ${ response.status }`)
+				throw new Error(`HTTP error! status: ${response.status}`)
 			}
 			const json = await response.json()
 
@@ -50,7 +49,7 @@ function Header ()
 						{
 							menu.filter((item) => (item.mode.includes('d'))).map((item, index) => (
 								<li key={index}>
-									<Link to={{pathname: `/dashboard/${ item.path }`}}>{item.path}</Link>
+									<Link to={{pathname: `/dashboard/${item.path}`}}>{item.path}</Link>
 								</li>
 							))
 						}

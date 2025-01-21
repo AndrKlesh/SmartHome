@@ -104,6 +104,6 @@ public class MeasurementRepository
 	}
 
 	private readonly List<MeasureDomain> _measurements = new();
-	private readonly object _guard = new();
+	private readonly Lock _guard = new();
 	private const int MaxMeasurementsPerTopic = 100;
 }

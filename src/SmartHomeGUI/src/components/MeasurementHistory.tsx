@@ -4,8 +4,6 @@ import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAx
 import './styles.css'
 import {Measurement} from './types'
 
-
-
 const periods = {
 	hour: 1,
 	'24hours': 24,
@@ -34,14 +32,14 @@ const MeasurementHistory = () =>
 			).toISOString()
 
 			const response = await fetch(
-				`https://localhost:7098/api/MeasurementsHistory?measurementId=${ encodeURIComponent(
+				`https://localhost:7098/api/MeasurementsHistory?measurementId=${encodeURIComponent(
 					decodedTopicName
-				) }&startDate=${ startDate }&endDate=${ endDate }`
+				)}&startDate=${startDate}&endDate=${endDate}`
 			)
 
 			if (!response.ok)
 			{
-				throw new Error(`HTTP error! status: ${ response.status }`)
+				throw new Error(`HTTP error! status: ${response.status}`)
 			}
 
 			const json: Measurement[] = await response.json()
@@ -84,7 +82,7 @@ const MeasurementHistory = () =>
 		return measurements.filter((measurement) =>
 		{
 			const minute = new Date(measurement.timestamp).toISOString().substring(0, 16)
-			const timeKey = `${ Math.floor(new Date(measurement.timestamp).getMinutes() / intervalMinutes) }-${ minute }`
+			const timeKey = `${Math.floor(new Date(measurement.timestamp).getMinutes() / intervalMinutes)}-${minute}`
 
 			if (!seenMinutes.has(timeKey))
 			{

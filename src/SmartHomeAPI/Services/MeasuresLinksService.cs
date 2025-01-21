@@ -1,4 +1,5 @@
 #pragma warning disable CA1515
+
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
 

@@ -40,7 +40,7 @@ public class MeasuresLinksRepository
 	/// </summary>
 	/// <param name="mask">Маска/регулярное выражение ссылок</param>
 	/// <returns></returns>
-	public Task<IReadOnlyList<KeyValuePair<string, Guid>>> FindLinksByMaskAsync (string mask) 
+	public Task<IReadOnlyList<KeyValuePair<string, Guid>>> FindLinksByMaskAsync (string mask)
 	{
 		return Task.FromResult((IReadOnlyList<KeyValuePair<string, Guid>>) _storage.Where(item => Regex.IsMatch(item.Key, mask)).ToArray());
 	}

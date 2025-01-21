@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 
 
 const LogoutButton: React.FC = () =>
@@ -12,7 +12,7 @@ const LogoutButton: React.FC = () =>
 	}
 
 	return (
-		<div onClick={ handleLogout }>
+		<div onClick={handleLogout}>
 			Logout
 		</div>
 	)

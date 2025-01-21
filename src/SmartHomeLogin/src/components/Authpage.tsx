@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import {useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 import './Authpage.css'
-import { useUser } from './UserContext'
+import {useUser} from './UserContext'
 
 interface FormData
 {
@@ -19,7 +19,7 @@ const Authpage: React.FC = () =>
 
 	const [errors, setErrors] = useState<string | null>(null)
 	const navigate = useNavigate()
-	const { setUser } = useUser()
+	const {setUser} = useUser()
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
 	{
@@ -46,7 +46,7 @@ const Authpage: React.FC = () =>
 		}
 
 		setErrors(null)
-		setUser({ username: formData.username })
+		setUser({username: formData.username})
 		navigate("/")
 		console.log("Form submitted successfully", formData)
 	}
@@ -54,15 +54,15 @@ const Authpage: React.FC = () =>
 	return (
 		<div className="registration-form">
 			<h2>Login</h2>
-			<form onSubmit={ handleSubmit }>
+			<form onSubmit={handleSubmit}>
 				<div>
 					<label htmlFor="username">Username</label>
 					<input
 						type="text"
 						id="username"
 						name="username"
-						value={ formData.username }
-						onChange={ handleChange }
+						value={formData.username}
+						onChange={handleChange}
 						required
 					/>
 				</div>
@@ -73,13 +73,13 @@ const Authpage: React.FC = () =>
 						type="password"
 						id="password"
 						name="password"
-						value={ formData.password }
-						onChange={ handleChange }
+						value={formData.password}
+						onChange={handleChange}
 						required
 					/>
 				</div>
 
-				{ errors && <p style={ { color: 'red' } }>{ errors }</p> }
+				{errors && <p style={{color: 'red'}}>{errors}</p>}
 
 				<button type="submit">
 					Login

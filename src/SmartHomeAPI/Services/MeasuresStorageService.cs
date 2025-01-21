@@ -1,6 +1,5 @@
 #pragma warning disable CA1515
 
-using System.Diagnostics.CodeAnalysis;
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
@@ -13,7 +12,7 @@ namespace SmartHomeAPI.Services;
 /// <param name="measurementRepository">Репозиторий измерений</param>
 /// <param name="subscriptionRepository">Репозиторий подписок</param>
 /// <param name="measuresLinksRepository">Репозиторий ссылок на измерения</param>
-public class MeasuresStorageService (MeasurementRepository measurementRepository, 
+public class MeasuresStorageService (MeasurementRepository measurementRepository,
 									 SubscriptionRepository subscriptionRepository,
 									 MeasuresLinksRepository measuresLinksRepository)
 {
@@ -44,17 +43,17 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 	public async Task<IReadOnlyList<MeasureDTO>> GetLatestMeasurementsAsync (string mask)
 	{
 		IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await _measuresLinksRepository.FindLinksByMaskAsync(mask)
-			                                                                                        .ConfigureAwait(false);
+																									.ConfigureAwait(false);
 		IReadOnlyList<MeasureDomain> latestMeasuresDomain = await _measurementRepository.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value)
-			                                                                                                                .ToArray())
-			                                                                   .ConfigureAwait(false);
+																															.ToArray())
+																			   .ConfigureAwait(false);
 
 		List<MeasureDTO> latestMeasurementsDTO = new(latestMeasuresDomain.Count);
 		foreach (MeasureDomain measure in latestMeasuresDomain)
 		{
 			SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measure.MeasurementId)
-				                                                            .ConfigureAwait(false);
-			if (subscription is null) 
+																			.ConfigureAwait(false);
+			if (subscription is null)
 			{
 				continue;
 			}
@@ -72,6 +71,7 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 				Value = measure.Value,
 			});
 		}
+
 		return latestMeasurementsDTO;
 	}
 

@@ -14,7 +14,7 @@ namespace SmartHomeAPI.Controllers;
 /// <param name="measuresLinksRepository">Репозиторий связи id_измерения:ссылка</param>
 [ApiController]
 [Route("api/[controller]")]
-public class MeasuresLinksController(MeasuresLinksService measuresLinksService) : Controller
+public class MeasuresLinksController (MeasuresLinksService measuresLinksService) : Controller
 {
 	private readonly MeasuresLinksService _measuresLinksService = measuresLinksService;
 
@@ -25,7 +25,7 @@ public class MeasuresLinksController(MeasuresLinksService measuresLinksService) 
 	/// <param name="path">Предыдущий путь</param>
 	/// <returns></returns>
 	[HttpGet("nextLayer")]
-	public async Task<ActionResult<string []>> GetNextMeasurementsLayer ([FromQuery]string? path)
+	public async Task<ActionResult<string []>> GetNextMeasurementsLayer ([FromQuery] string? path)
 	{
 		IReadOnlyList<LinkDTO> layer = await _measuresLinksService.LoadNextMeasurementsLayer(path).ConfigureAwait(false);
 		return Ok(layer);

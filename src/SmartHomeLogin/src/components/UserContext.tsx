@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react'
+import React, {createContext, ReactNode, useContext, useState} from 'react'
 
 interface User
 {
@@ -13,13 +13,13 @@ interface UserContextType
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
 
-export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
+export const UserProvider: React.FC<{children: ReactNode}> = ({children}) =>
 {
 	const [user, setUser] = useState<User | null>(null)
 
 	return (
-		<UserContext.Provider value={ { user, setUser } }>
-			{ children }
+		<UserContext.Provider value={{user, setUser}}>
+			{children}
 		</UserContext.Provider>
 	)
 }

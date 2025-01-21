@@ -1,7 +1,5 @@
 #pragma warning disable CA1515
 
-using System.Collections.Generic;
-using System.Globalization;
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
@@ -32,6 +30,7 @@ public class MeasurementRepository
 				}
 			}
 		}
+
 		return Task.CompletedTask;
 	}
 

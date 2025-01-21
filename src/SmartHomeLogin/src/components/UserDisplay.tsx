@@ -1,13 +1,13 @@
 import React from 'react'
-import { useUser } from './UserContext'
+import {useUser} from './UserContext'
 
 const UserDisplay: React.FC = () =>
 {
-	const { user } = useUser()
+	const {user} = useUser()
 
 	return (
 		<div>
-			{ user ? <a>{ user.username }</a> : <a></a> }
+			{user ? <a>{user.username}</a> : <a></a>}
 		</div>
 	)
 }

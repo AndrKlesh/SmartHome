@@ -10,14 +10,18 @@ namespace SmartHomeAPI.Services;
 /// </summary>
 /// <param name="measuresStorageService">Сервис измерений</param>
 /// <param name="subscriptionsService">Сервис подписок на измерения</param>
-internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, 
-	                                           SubscriptionService subscriptionsService) : IHostedService
+internal sealed class MeasuresReceiverService : IHostedService
 {
-	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
-	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
-	private IMqttClient? _mqttClient;
-	private static readonly TimeSpan _reconnectTimeout = TimeSpan.FromSeconds(5);
-	private readonly MqttClientFactory _mqttFactory = new();
+	public MeasuresReceiverService (MeasuresStorageService measuresStorageService,
+									SubscriptionService subscriptionsService)
+	{
+		_mqttFactory = new();
+		_measuresStorageService = measuresStorageService;
+		_subscriptionsService = subscriptionsService;
+		_mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder()
+	                                     .WithTcpServer("localhost", 1883)
+										 .Build();
+	}
 
 	public async Task StartAsync (CancellationToken cancellationToken)
 	{
@@ -31,38 +35,48 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 
 	private Task ConfigureSubscriptions (CancellationToken cancellationToken)
 	{
-		_mqttClient = _mqttFactory.CreateMqttClient();
-		MqttClientOptions mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder()
-			.WithTcpServer("localhost", 1883)
-			.Build();
+		IMqttClient mqttClient = _mqttFactory.CreateMqttClient();
+		mqttClient.DisconnectedAsync += OnDisconnectedAsync;
 
-		_ = Task.Run(async () =>
-		{
-			bool isNeedRetry;
-			do
-			{
-				isNeedRetry = false;
-				try
-				{
-					_ = await _mqttClient.ConnectAsync(mqttClientOptions, cancellationToken).ConfigureAwait(false);
 
-					_mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
-					MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
-						.WithTopicFilter("home/#")
-						.Build();
-					_ = await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
-				}
-				catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
-				{
-					isNeedRetry = true;
-					Console.WriteLine($"Ошибка подключения к брокеру mqtt: {ex.Message}");
-					await Task.Delay(_reconnectTimeout, cancellationToken).ConfigureAwait(false);
-				}
-			} while (isNeedRetry);
-			Console.WriteLine($"Подключение к брокеру mqtt успешно выполнено.");
-		}, cancellationToken);
+		_ = TryConnectAsync(mqttClient, cancellationToken);
 
+		_mqttClient = mqttClient;
 		return Task.CompletedTask;
+	}
+
+	private async Task OnDisconnectedAsync (MqttClientDisconnectedEventArgs arg)
+	{
+		Console.WriteLine("Подключение с mqtt-брокером разорвано");
+		IMqttClient? mqttClient = _mqttClient;
+		if (mqttClient is null)
+		{
+			return;
+		}
+
+		await Task.Delay(_reconnectTimeout).ConfigureAwait(false);
+		await TryConnectAsync(mqttClient, default).ConfigureAwait(false);
+	}
+	private async Task TryConnectAsync (IMqttClient mqttClient, CancellationToken cancellationToken)
+	{
+		try
+		{
+			Console.WriteLine("Выполняется попытка подключения к mqtt-брокеру");
+			_ = await mqttClient.ConnectAsync(_mqttClientOptions, cancellationToken).ConfigureAwait(false);
+
+			mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
+			MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
+				.WithTopicFilter("home/#")
+				.Build();
+			_ = await mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
+			_ = Interlocked.Exchange(ref _mqttClient, mqttClient);
+			Console.WriteLine("Подключение к брокеру mqtt успешно выполнено.");
+		}
+		catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
+		{
+			Console.WriteLine($"Ошибка подключения к брокеру mqtt: {ex.Message}");
+		}
+		
 	}
 
 	private async Task UnconfigureSubscriptions (CancellationToken cancellationToken)
@@ -73,6 +87,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 			return;
 		}
 
+		mqttClient.DisconnectedAsync -= OnDisconnectedAsync;
 		mqttClient.ApplicationMessageReceivedAsync -= OnApplicationMessageReceivedAsync;
 		await mqttClient.DisconnectAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 		mqttClient.Dispose();
@@ -102,4 +117,13 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 		// Передаем идентификатор измерения в метод добавления
 		await _measuresStorageService.AddMeasureAsync(measurementDto).ConfigureAwait(false);
 	}
+
+	private readonly MeasuresStorageService _measuresStorageService;
+	private readonly SubscriptionService _subscriptionsService;
+
+	private IMqttClient? _mqttClient;
+	private readonly MqttClientFactory _mqttFactory;
+	private readonly MqttClientOptions _mqttClientOptions;
+
+	private static readonly TimeSpan _reconnectTimeout = TimeSpan.FromSeconds(5);
 }

@@ -4,12 +4,9 @@
 GET {{SmartHomeAPI_HostAddress}}/api/Dashboard/latest
 Accept: application/json
 
-###
-
 ### Обновление состояния "избранное" для топика
 POST {{SmartHomeAPI_HostAddress}}/api/Dashboard/toggleFavourite
 Content-Type: application/json
-
 {
   "topicName": "home/door",
   "isFavourite": true
@@ -18,7 +15,6 @@ Content-Type: application/json
 ### Обновление состояния "избранное" для топика
 POST {{SmartHomeAPI_HostAddress}}/api/Dashboard/toggleFavourite
 Content-Type: application/json
-
 {
   "topicName": "home/door",
   "isFavourite": false
@@ -31,17 +27,14 @@ Accept: application/json
 ### Запрос на получение токена
 POST {{SmartHomeAPI_HostAddress}}/api/auth/login
 Content-Type: application/json
-
 {
   "username": "user",
   "password": "user"
 }
 
 ### Подписываемся
-
 POST {{SmartHomeAPI_HostAddress}}/api/Subscriptions/addSubscription
 Content-Type: application/json
-
 {
   "measurementId": "string",
   "measurementName": "string",

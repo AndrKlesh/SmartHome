@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
+import {useEffect, useState} from 'react'
+import {useNavigate, useParams} from 'react-router-dom'
 import './styles.css'
-import { DashboardData } from './types'
-import { formatValue } from './utils'
+import {DashboardData} from './types'
+import {formatValue} from './utils'
 
 const Dashboard = () => {
 	const { name } = useParams<{ name: string }>()

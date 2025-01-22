@@ -5,6 +5,7 @@ body
 	font-family: Verdana, sans-serif;
 	margin: 0; /* Убираем отступы по умолчанию */
 }
+
 /* Общий контейнер формы */
 .registration-form
 {

@@ -8,6 +8,7 @@ using MQTTnet;
 using Quartz;
 
 namespace CollectionController;
+
 internal sealed class SendTopicJob () : IJob
 {
 	private readonly IMqttClient? _mqttClient = MqttClientProvider.Client;

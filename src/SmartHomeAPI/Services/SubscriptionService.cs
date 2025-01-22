@@ -1,6 +1,5 @@
 #pragma warning disable CA1515
 
-using System.Diagnostics.CodeAnalysis;
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
@@ -79,7 +78,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 	{
 		if (string.IsNullOrWhiteSpace(mqttTopic))
 		{
-			throw new ArgumentNullException(nameof(mqttTopic));	
+			throw new ArgumentNullException(nameof(mqttTopic));
 		}
 
 		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic).ConfigureAwait(false);

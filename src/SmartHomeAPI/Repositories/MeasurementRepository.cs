@@ -1,7 +1,5 @@
 #pragma warning disable CA1515
 
-using System.Collections.Generic;
-using System.Globalization;
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
@@ -32,6 +30,7 @@ public class MeasurementRepository
 				}
 			}
 		}
+
 		return Task.CompletedTask;
 	}
 
@@ -105,6 +104,6 @@ public class MeasurementRepository
 	}
 
 	private readonly List<MeasureDomain> _measurements = new();
-	private readonly object _guard = new();
+	private readonly Lock _guard = new();
 	private const int MaxMeasurementsPerTopic = 100;
 }

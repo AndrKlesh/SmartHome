@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import ErrorMessage from './ErrorMessage'
 import './styles.css'
-import { TopicData } from './types'
+import {TopicData} from './types'
 
 const SubscribeToMqttTopics: React.FC = () =>
 {
@@ -57,7 +57,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 		{
 			const response = await fetch('https://localhost:7098/api/Subscriptions/addSubscription', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					measurementId: newRecord.measurementId,
 					measurementName: newRecord.measurementName,
@@ -122,9 +122,9 @@ const SubscribeToMqttTopics: React.FC = () =>
 
 		try
 		{
-			const response = await fetch(`https://localhost:7098/api/Subscriptions/updateSubscription/${ measurementId }`, {
+			const response = await fetch(`https://localhost:7098/api/Subscriptions/updateSubscription/${measurementId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					measurementId: formValues.measurementId,
 					measurementName: formValues.measurementName,
@@ -140,7 +140,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 
 			setData((prevData) =>
 				prevData.map((item) =>
-					item.measurementId === measurementId ? { ...item, ...formValues } : item
+					item.measurementId === measurementId ? {...item, ...formValues} : item
 				)
 			)
 		} catch
@@ -176,65 +176,65 @@ const SubscribeToMqttTopics: React.FC = () =>
 					</tr>
 				</thead>
 				<tbody>
-					{ data.map((record) => (
-						<tr key={ record.measurementId }>
-							{ isEditing(record) ? (
+					{data.map((record) => (
+						<tr key={record.measurementId}>
+							{isEditing(record) ? (
 								<>
-									<td>{ record.measurementId }</td>
+									<td>{record.measurementId}</td>
 									<td>
 										<input
 											type="text"
-											value={ formValues.measurementName || '' }
-											onChange={ (e) => handleInputChange(e, 'measurementName') }
+											value={formValues.measurementName || ''}
+											onChange={(e) => handleInputChange(e, 'measurementName')}
 										/>
 									</td>
 									<td>
 										<input
 											type="text"
-											value={ formValues.unit || '' }
-											onChange={ (e) => handleInputChange(e, 'unit') }
+											value={formValues.unit || ''}
+											onChange={(e) => handleInputChange(e, 'unit')}
 										/>
 									</td>
 									<td>
 										<input
 											type="text"
-											value={ formValues.mqttTopic || '' }
-											onChange={ (e) => handleInputChange(e, 'mqttTopic') }
+											value={formValues.mqttTopic || ''}
+											onChange={(e) => handleInputChange(e, 'mqttTopic')}
 										/>
 									</td>
 									<td>
 										<input
 											type="text"
-											value={ formValues.converterName || '' }
-											onChange={ (e) => handleInputChange(e, 'converterName') }
+											value={formValues.converterName || ''}
+											onChange={(e) => handleInputChange(e, 'converterName')}
 										/>
 									</td>
 									<td>
-										<button onClick={ () => handleSave(record.measurementId) } className="button">Save</button>
-										<button onClick={ handleCancel } className="button">Cancel</button>
+										<button onClick={() => handleSave(record.measurementId)} className="button">Save</button>
+										<button onClick={handleCancel} className="button">Cancel</button>
 									</td>
 								</>
 							) : (
 								<>
-									<td>{ record.measurementId }</td>
-									<td>{ record.measurementName }</td>
-									<td>{ record.unit }</td>
-									<td>{ record.mqttTopic }</td>
-									<td>{ record.converterName }</td>
+									<td>{record.measurementId}</td>
+									<td>{record.measurementName}</td>
+									<td>{record.unit}</td>
+									<td>{record.mqttTopic}</td>
+									<td>{record.converterName}</td>
 									<td>
-										<button onClick={ () => handleEdit(record) } className="button">Edit</button>
-										<button onClick={ () => handleDelete(record.measurementId) } className="button">Delete</button>
+										<button onClick={() => handleEdit(record)} className="button">Edit</button>
+										<button onClick={() => handleDelete(record.measurementId)} className="button">Delete</button>
 									</td>
 								</>
-							) }
+							)}
 						</tr>
-					)) }
+					))}
 				</tbody>
 			</table>
-			<button onClick={ handleAdd } className="button" disabled={ loading }>
-				{ loading ? 'Adding...' : 'Add Topic' }
+			<button onClick={handleAdd} className="button" disabled={loading}>
+				{loading ? 'Adding...' : 'Add Topic'}
 			</button>
-			{ error && <ErrorMessage message={ error } /> }
+			{error && <ErrorMessage message={error} />}
 		</div>
 	)
 }

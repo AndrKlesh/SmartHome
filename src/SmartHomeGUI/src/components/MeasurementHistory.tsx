@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import {useEffect, useState} from 'react'
+import {useParams} from 'react-router-dom'
+import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts'
 import './styles.css'
-import { Measurement } from './types'
-
-
+import {Measurement} from './types'
 
 const periods = {
 	hour: 1,
@@ -16,7 +14,7 @@ const periods = {
 
 const MeasurementHistory = () =>
 {
-	const { topicName } = useParams<{ topicName: string }>()
+	const {topicName} = useParams<{topicName: string}>()
 	const decodedTopicName = decodeURIComponent(topicName || '')
 	const [data, setData] = useState<Measurement[]>([])
 	const [loading, setLoading] = useState(true)
@@ -34,14 +32,14 @@ const MeasurementHistory = () =>
 			).toISOString()
 
 			const response = await fetch(
-				`https://localhost:7098/api/MeasurementsHistory?measurementId=${ encodeURIComponent(
+				`https://localhost:7098/api/MeasurementsHistory?measurementId=${encodeURIComponent(
 					decodedTopicName
-				) }&startDate=${ startDate }&endDate=${ endDate }`
+				)}&startDate=${startDate}&endDate=${endDate}`
 			)
 
 			if (!response.ok)
 			{
-				throw new Error(`HTTP error! status: ${ response.status }`)
+				throw new Error(`HTTP error! status: ${response.status}`)
 			}
 
 			const json: Measurement[] = await response.json()
@@ -84,7 +82,7 @@ const MeasurementHistory = () =>
 		return measurements.filter((measurement) =>
 		{
 			const minute = new Date(measurement.timestamp).toISOString().substring(0, 16)
-			const timeKey = `${ Math.floor(new Date(measurement.timestamp).getMinutes() / intervalMinutes) }-${ minute }`
+			const timeKey = `${Math.floor(new Date(measurement.timestamp).getMinutes() / intervalMinutes)}-${minute}`
 
 			if (!seenMinutes.has(timeKey))
 			{
@@ -109,29 +107,29 @@ const MeasurementHistory = () =>
 
 	if (error)
 	{
-		return <p className="error">Error: { error }</p>
+		return <p className="error">Error: {error}</p>
 	}
 
 	return (
 		<div className="measurement-history">
-			{ latestMeasurement && (
+			{latestMeasurement && (
 				<div className="sensor-info">
 					<p>
-						<strong>История измерений для:</strong> { decodedTopicName }
+						<strong>История измерений для:</strong> {decodedTopicName}
 					</p>
 					<p>
-						<strong>Последнее значение:</strong> { latestMeasurement.value }{ ' ' }
-						{ latestMeasurement.unit || '' }
+						<strong>Последнее значение:</strong> {latestMeasurement.value}{' '}
+						{latestMeasurement.unit || ''}
 					</p>
 					<p>
-						<strong>Время последнего обновления:</strong>{ ' ' }
-						{ new Date(latestMeasurement.timestamp).toLocaleString() }
+						<strong>Время последнего обновления:</strong>{' '}
+						{new Date(latestMeasurement.timestamp).toLocaleString()}
 					</p>
 					<div className="period-selector">
 						<label>Выберите период: </label>
 						<select
-							value={ selectedPeriod }
-							onChange={ (e) => setSelectedPeriod(e.target.value as keyof typeof periods) }
+							value={selectedPeriod}
+							onChange={(e) => setSelectedPeriod(e.target.value as keyof typeof periods)}
 						>
 							<option value="hour">Последний час</option>
 							<option value="24hours">Последние 24 часа</option>
@@ -141,17 +139,17 @@ const MeasurementHistory = () =>
 						</select>
 					</div>
 				</div>
-			) }
+			)}
 			<div className="chart-container">
-				<ResponsiveContainer width="100%" height={ getChartHeight() }>
+				<ResponsiveContainer width="100%" height={getChartHeight()}>
 					<LineChart
-						data={ data }
-						margin={ { top: 20, right: 20, left: 0, bottom: 20 } }
+						data={data}
+						margin={{top: 20, right: 20, left: 0, bottom: 20}}
 					>
 						<CartesianGrid stroke="#f5f5f5" />
 						<XAxis
 							dataKey="timestamp"
-							tickFormatter={ (tick) =>
+							tickFormatter={(tick) =>
 								new Date(tick).toLocaleString([], {
 									month: '2-digit',
 									day: '2-digit',
@@ -159,18 +157,18 @@ const MeasurementHistory = () =>
 									minute: '2-digit',
 								})
 							}
-							angle={ -45 }
+							angle={-45}
 							textAnchor="end"
-							height={ 80 }
+							height={80}
 						/>
 						<YAxis />
-						<Tooltip labelFormatter={ (label) => new Date(label).toLocaleString() } />
+						<Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} />
 						<Line
 							type="monotone"
 							dataKey="value"
 							stroke="#8884d8"
-							dot={ false }
-							strokeWidth={ 2 }
+							dot={false}
+							strokeWidth={2}
 						/>
 					</LineChart>
 				</ResponsiveContainer>

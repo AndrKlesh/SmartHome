@@ -1,4 +1,5 @@
 #pragma warning disable CA1515
+
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
 
@@ -8,7 +9,7 @@ namespace SmartHomeAPI.Services;
 /// Сервис ссылок на типы измерений
 /// </summary>
 /// <param name="measuresLinksRepository"></param>
-public class MeasuresLinksService(MeasuresLinksRepository measuresLinksRepository)
+public class MeasuresLinksService (MeasuresLinksRepository measuresLinksRepository)
 {
 	/// <summary>
 	/// Загрузить следующий уровень пути ссылки

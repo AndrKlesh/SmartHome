@@ -19,7 +19,7 @@ internal sealed class MeasuresReceiverService : IHostedService
 		_measuresStorageService = measuresStorageService;
 		_subscriptionsService = subscriptionsService;
 		_mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder()
-	                                     .WithTcpServer("localhost", 1883)
+										 .WithTcpServer("localhost", 1883)
 										 .Build();
 	}
 
@@ -37,7 +37,6 @@ internal sealed class MeasuresReceiverService : IHostedService
 	{
 		IMqttClient mqttClient = _mqttFactory.CreateMqttClient();
 		mqttClient.DisconnectedAsync += OnDisconnectedAsync;
-
 
 		_ = TryConnectAsync(mqttClient, cancellationToken);
 
@@ -76,7 +75,6 @@ internal sealed class MeasuresReceiverService : IHostedService
 		{
 			Console.WriteLine($"Ошибка подключения к брокеру mqtt: {ex.Message}");
 		}
-		
 	}
 
 	private async Task UnconfigureSubscriptions (CancellationToken cancellationToken)

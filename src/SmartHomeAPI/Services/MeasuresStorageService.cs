@@ -15,8 +15,15 @@ namespace SmartHomeAPI.Services;
 /// <param name="measuresLinksRepository">Репозиторий ссылок на измерения</param>
 public class MeasuresStorageService (MeasurementRepository measurementRepository, 
 									 SubscriptionRepository subscriptionRepository,
-									 MeasuresLinksRepository measuresLinksRepository)
+									 MeasuresLinksRepository measuresLinksRepository) : IDisposable
 {
+	///<inheritdoc/>
+	public void Dispose ()
+	{
+		Dispose (true);
+		GC.SuppressFinalize (this);
+	}
+
 	/// <summary>
 	/// Добавить новое измерений
 	/// </summary>
@@ -33,6 +40,24 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 		};
 
 		await _measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
+		//TODO: Long Polling: Пределать на подписку на конкретные типы измерения
+		_ = _newMeasuresSemaphore.Release();
+	}
+
+	/// <summary>
+	/// Подписаться на последние измерения
+	/// </summary>
+	/// <param name="mask"></param>
+	/// <returns></returns>
+	public async Task<IReadOnlyList<MeasureDTO>> SubscribeToLatestMeasurementsAsync (string mask)
+	{
+		//TODO: Long Polling:Ожидание новых измерений
+		await _newMeasuresSemaphore.WaitAsync()
+			.ConfigureAwait(false);
+
+		IReadOnlyList<MeasureDTO> result = await GetLatestMeasurementsAsync(mask)
+			.ConfigureAwait(false);
+		return result;
 	}
 
 	/// <summary>
@@ -93,7 +118,25 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 		}).ToArray();
 	}
 
+	protected virtual void Dispose (bool disposing)
+	{
+		if (_disposed)
+		{
+			return;
+		}
+
+		if (disposing)
+		{
+			_newMeasuresSemaphore.Dispose();
+		}
+
+		_disposed = true;
+	}
+
 	private readonly MeasurementRepository _measurementRepository = measurementRepository;
 	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
 	private readonly MeasuresLinksRepository _measuresLinksRepository = measuresLinksRepository;
+
+	private readonly SemaphoreSlim _newMeasuresSemaphore = new(1);
+	private bool _disposed;
 }

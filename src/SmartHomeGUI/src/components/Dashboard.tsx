@@ -5,74 +5,70 @@ import './styles.css'
 import { DashboardData } from './types'
 import { formatValue } from './utils'
 
-const Dashboard = () =>
-{
+const Dashboard = () => {
 	const { name } = useParams<{ name: string }>()
 	const [data, setData] = useState<DashboardData[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 	const navigate = useNavigate()
 
-	useEffect(() =>
-	{
-		const fetchData = async () =>
-		{
-			try
-			{
-				const response = await fetch(`https://localhost:7098/api/Dashboard/latest/${name}*`)
-				if (!response.ok)
-				{
-					throw new Error(`HTTP error! status: ${ response.status }`)
+	useEffect(() => {
+		let repeat = true
+		const fetchData = async () => {
+			while (repeat) {
+				try {
+					const response = await fetch(`https://localhost:7098/api/Dashboard/latestPoll/${name}*`)
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`)
+					}
+					const json: DashboardData[] = await response.json()
+					setData(json)
+					setLoading(false)
+				} catch (err) {
+					const error = err as Error
+					setError(error.message)
+					setLoading(false)
 				}
-				const json: DashboardData[] = await response.json()
-				setData(json)
-				setLoading(false)
-			} catch (err)
-			{
-				const error = err as Error
-				setError(error.message)
-				setLoading(false)
 			}
 		}
 
-		fetchData() // Initial fetch
-		const intervalId = setInterval(fetchData, 1000)
+		fetchData()
 
-		return () => clearInterval(intervalId)
-	})
-
-	const handleItemClick = (measurementId: string) =>
-	{
+		return () =>
+		{
+			repeat = false
+			setData([])
+		}
+	}, [name]);
+	const handleItemClick = (measurementId: string) => {
 		const encodedMeasurementId = encodeURIComponent(measurementId)
-		navigate(`/history/${ encodedMeasurementId }`)
+		navigate(`/history/${encodedMeasurementId}`)
 	}
 
-	if (loading)
-	{
+	if (loading) {
 		return <p>Loading...</p>
 	}
 
-	if (error)
-	{
-		return <p>Error: { error }</p>
+	if (error) {
+		return <p>Error: {error}</p>
 	}
 
 	return (
 		<div className="container">
-			<p>{ name }</p>
-			{ data.map((item, index) => (
+			<p>{name}</p>
+			{data.map((item, index) => (
 				<div
-					key={ index }
+					key={index}
 					className="box"
-					onClick={ () => handleItemClick(item.measurementId) }
+					onClick={() => handleItemClick(item.measurementId)}
 				>
-					<h2>{ item.name }</h2> {/* Используем topicName как имя измерения */ }
+					<h2>{item.name}</h2> {/* Используем topicName как имя измерения */}
 					<p>
-						Значение: { formatValue(item.value, item.units) } {/* Используем только value и unit */ }
+						Значение: {formatValue(item.value, item.units)} {/* Используем только value и unit */}
 					</p>
-					<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
+					<p>Время: {new Date(item.timestamp).toLocaleString()}</p>
 				</div>
-			)) }
+			))}
 		</div>
 	)
 }

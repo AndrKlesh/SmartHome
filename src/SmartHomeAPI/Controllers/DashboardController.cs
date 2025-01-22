@@ -27,6 +27,19 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 		IReadOnlyList<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
 		return Ok(latestMeasurements);
 	}
+
+	/// <summary>
+	/// Подписаться на последние значения измерений
+	/// </summary>
+	/// <param name="mask"></param>
+	/// <returns></returns>
+	[HttpGet("latestPoll/{mask}")]
+	public async Task<ActionResult<IReadOnlyList<MeasureDTO>>> SubscribeToLatestMeasurements (string mask)
+	{
+		IReadOnlyList<MeasureDTO> latestMeasurements = await _measuresStorageService.SubscribeToLatestMeasurementsAsync(mask).ConfigureAwait(false);
+		return Ok(latestMeasurements);
+	}
+
 	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 }
 

@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import './styles.css'
-import {DashboardData} from './types'
-import {formatValue} from './utils'
+import { DashboardData } from './types'
+import { formatValue } from './utils'
 
 const Dashboard = () => {
 	const { name } = useParams<{ name: string }>()
@@ -13,9 +13,12 @@ const Dashboard = () => {
 
 	useEffect(() => {
 		let repeat = true
-		const fetchData = async () => {
-			while (repeat) {
-				try {
+		const fetchData = async () =>
+		{
+			while (repeat)
+			{
+				try
+				{
 					const response = await fetch(`https://localhost:7098/api/Dashboard/latestPoll/${name}*`)
 					if (!response.ok) {
 						throw new Error(`HTTP error! status: ${response.status}`)
@@ -39,16 +42,19 @@ const Dashboard = () => {
 			setData([])
 		}
 	}, [name]);
-	const handleItemClick = (measurementId: string) => {
+	const handleItemClick = (measurementId: string) =>
+	{
 		const encodedMeasurementId = encodeURIComponent(measurementId)
 		navigate(`/history/${encodedMeasurementId}`)
 	}
 
-	if (loading) {
+	if (loading)
+	{
 		return <p>Loading...</p>
 	}
 
-	if (error) {
+	if (error)
+	{
 		return <p>Error: {error}</p>
 	}
 

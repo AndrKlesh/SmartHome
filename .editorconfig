@@ -143,7 +143,7 @@ csharp_space_between_method_declaration_name_and_open_parenthesis = true
 csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_parentheses = false
 csharp_space_between_square_brackets = false
-csharp_preserve_single_line_blocks = false
+csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = false
 
 dotnet_naming_rule.interface_should_be_pascal.severity = warning

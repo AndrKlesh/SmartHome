@@ -1,58 +1,62 @@
 <Project>
 
 	<PropertyGroup>
-		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-		<Deterministic>true</Deterministic>
-		<ErrorReport>none</ErrorReport>
-		<NoWarn>CA1028,CA1031,CS1591</NoWarn>
-		<Nullable>annotations</Nullable>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryBranch>main</RepositoryBranch>
-		<RepositoryType>Git</RepositoryType>
 		<TargetFramework>net9.0</TargetFramework>
 		<TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
 		<RollForward>LatestMajor</RollForward>
-		<MinimumVisualStudioVersion>17.12</MinimumVisualStudioVersion>
-		<AnalysisLevel>latest-all</AnalysisLevel>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-		<DebugType>embedded</DebugType>
-		<PlatformTarget>x64</PlatformTarget>
-		<Optimize>true</Optimize>
-		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<IsPackable>false</IsPackable>
-		<IsTestProject>false</IsTestProject>
-		<LangVersion>latest</LangVersion>
-		<PublishTrimmed>false</PublishTrimmed>
-		<PublishSingleFile>true</PublishSingleFile>
-		<PublishReadyToRun>false</PublishReadyToRun>
-		<SourceLinkCreate>false</SourceLinkCreate>
-		<VisualStudioVersion>17.12</VisualStudioVersion>
-		<TypeScriptTarget>ESNext</TypeScriptTarget>
+
+		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+		<Deterministic>true</Deterministic>
+		<ErrorReport>none</ErrorReport>
+		<Nullable>annotations</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<MinimumVisualStudioVersion>17.12</MinimumVisualStudioVersion>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<LangVersion>latest</LangVersion>
+		<TypeScriptTarget>ESNext</TypeScriptTarget>
 
-		<!-- Путь для выходных файлов -->
-		<OutputPath>bin\$(Configuration)</OutputPath>
+		<NoWarn>CA1028,CA1031,CS1591,NU1507</NoWarn>
+		<AnalysisLevel>latest-all</AnalysisLevel>
+		<WarningLevel>8</WarningLevel>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 
-		<!-- Путь для промежуточных файлов -->
-		<IntermediateOutputPath>obj\$(Configuration)</IntermediateOutputPath>
-
-		<!-- Автоматическая генерация сборок сериализации -->
-		<GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-
-		<!-- Копирование локальных зависимостей -->
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<Authors>AndrKlesh, UltraFeed, jcardenos, Scharamuch, Ramazann54</Authors>
+		<Company>AndrKlesh</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryType>Git</RepositoryType>
+		<RepositoryBranch>master</RepositoryBranch>
+		<PackageProjectUrl>https://github.com/$(Company)/SmartHome</PackageProjectUrl>
+		<RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
+		<PackageReleaseNotes>$(PackageProjectUrl)/releases</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<DebugType>embedded</DebugType>
 		<Optimize>false</Optimize>
+		<InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
-		<Optimize>true</Optimize>
+		<DebuggerSupport>false</DebuggerSupport>
 		<DebugSymbols>false</DebugSymbols>
+		<DebugType>none</DebugType>
+		<Optimize>true</Optimize>
+		<EventSourceSupport>false</EventSourceSupport>
+		<StackTraceSupport>false</StackTraceSupport>
+		<MetricsSupport>false</MetricsSupport>
+		<HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+		<EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+		<EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
+		<UseNativeHttpHandler>true</UseNativeHttpHandler>
+		<AutoreleasePoolSupport>false</AutoreleasePoolSupport>
+		<InvariantGlobalization>false</InvariantGlobalization>
+		<UseSystemResourceKeys>true</UseSystemResourceKeys>
+		<PublishTrimmed>false</PublishTrimmed>
+		<PublishReadyToRun>false</PublishReadyToRun>
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	</PropertyGroup>
 
 </Project>

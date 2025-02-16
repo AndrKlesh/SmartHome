@@ -7,9 +7,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.1" />
-		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
-		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.2" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.2" />
 		<PackageVersion Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
 		<PackageVersion Include="MQTTnet" Version="5.0.1.1416" />
 		<PackageVersion Include="MQTTnet.AspNetCore" Version="5.0.1.1416" />

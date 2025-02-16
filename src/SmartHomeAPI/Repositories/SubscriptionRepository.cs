@@ -4,8 +4,17 @@ using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
 
-public class SubscriptionRepository
+public class SubscriptionRepository : IDisposable
 {
+	private readonly ReaderWriterLockSlim _lock = new();
+	private bool _disposed;
+
+	public void Dispose ()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
 	//TODO: Убрать заглушки подписок
 	private readonly List<SubscriptionDomain> _subscriptions =
 	[
@@ -50,7 +59,6 @@ public class SubscriptionRepository
 			ConverterName = "default",
 		},
 	];
-	private readonly ReaderWriterLockSlim _lock = new();
 
 	internal async Task<List<SubscriptionDomain>> GetAllSubscriptionsAsync ()
 	{
@@ -161,5 +169,20 @@ public class SubscriptionRepository
 		}
 
 		await Task.CompletedTask.ConfigureAwait(false);
+	}
+
+	protected virtual void Dispose (bool disposing)
+	{
+		if (_disposed)
+		{
+			return;
+		}
+
+		if (disposing)
+		{
+			_lock.Dispose();
+		}
+
+		_disposed = true;
 	}
 }

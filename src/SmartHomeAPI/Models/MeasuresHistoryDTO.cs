@@ -11,6 +11,7 @@ public class MeasuresHistoryDTO
 	/// Значение измерения
 	/// </summary>
 	public string Value { get; set; } = string.Empty;
+
 	/// <summary>
 	/// Метка времени
 	/// </summary>

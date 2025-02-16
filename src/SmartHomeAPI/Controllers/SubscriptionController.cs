@@ -22,7 +22,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	[HttpGet("getAllSubscriptions")]
 	public async Task<ActionResult<IReadOnlyList<SubscriptionDomain>>> GetAllSubscriptions ()
 	{
-		IReadOnlyList<SubscriptionDTO> subscriptions = await _subscriptionsService.GetAllSubscriptionsAsync().ConfigureAwait(false);
+		IReadOnlyList<SubscriptionDTO> subscriptions = await subscriptionsService.GetAllSubscriptionsAsync().ConfigureAwait(false);
 		return Ok(subscriptions);
 	}
 
@@ -34,7 +34,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	[HttpGet("getSubscriptionByMeasurementId/{measurementId}")]
 	public async Task<ActionResult<SubscriptionDomain>> GetSubscriptionByMeasurementId (Guid measurementId)
 	{
-		SubscriptionDTO? subscription = await _subscriptionsService.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
+		SubscriptionDTO? subscription = await subscriptionsService.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
 		if (subscription == null)
 		{
 			return NotFound(new { message = $"Subscription with measurement ID '{measurementId}' not found." });
@@ -51,7 +51,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	[HttpPost("addSubscription")]
 	public async Task<IActionResult> AddSubscription ([FromBody] SubscriptionDTO subscriptionDto)
 	{
-		await _subscriptionsService.AddSubscriptionAsync(subscriptionDto).ConfigureAwait(false);
+		await subscriptionsService.AddSubscriptionAsync(subscriptionDto).ConfigureAwait(false);
 		return Ok(new { message = $"Subscription {subscriptionDto?.MqttTopic} added" });
 	}
 
@@ -65,7 +65,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	{
 		try
 		{
-			await _subscriptionsService.UpdateSubscriptionAsync(updatedSubscription).ConfigureAwait(false);
+			await subscriptionsService.UpdateSubscriptionAsync(updatedSubscription).ConfigureAwait(false);
 			return Ok(new { message = "Subscription updated successfully." });
 		}
 		catch (ArgumentException ex)
@@ -83,7 +83,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	{
 		try
 		{
-			await _subscriptionsService.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
+			await subscriptionsService.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
 			return Ok(new { message = "Subscription deleted successfully." });
 		}
 		catch (ArgumentException ex)
@@ -91,6 +91,4 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 			return NotFound(new { message = ex.Message });
 		}
 	}
-
-	private readonly SubscriptionService _subscriptionsService = subscriptionsService;
 }

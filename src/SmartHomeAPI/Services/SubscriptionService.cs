@@ -19,7 +19,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 	/// <returns>Массив всех подписок</returns>
 	public async Task<IReadOnlyList<SubscriptionDTO>> GetAllSubscriptionsAsync ()
 	{
-		List<SubscriptionDomain> subscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync().ConfigureAwait(false);
+		List<SubscriptionDomain> subscriptions = await subscriptionRepository.GetAllSubscriptionsAsync().ConfigureAwait(false);
 		return subscriptions.Select(s => new SubscriptionDTO
 		{
 			MeasurementId = s.MeasurementId,
@@ -48,7 +48,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 			ConverterName = "default" // по умолчанию "default"
 		};
 
-		await _subscriptionRepository.AddSubscriptionAsync(subscription).ConfigureAwait(false);
+		await subscriptionRepository.AddSubscriptionAsync(subscription).ConfigureAwait(false);
 	}
 
 	/// <summary>
@@ -58,7 +58,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 	/// <returns>Подписка на mqtt-топик или null, если подписка не найдена</returns>
 	public async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (Guid measurementId)
 	{
-		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
+		SubscriptionDomain? subscription = await subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
 		return subscription != null ? new SubscriptionDTO
 		{
 			MeasurementId = subscription.MeasurementId,
@@ -81,7 +81,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 			throw new ArgumentNullException(nameof(mqttTopic));
 		}
 
-		SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic).ConfigureAwait(false);
+		SubscriptionDomain? subscription = await subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic).ConfigureAwait(false);
 		return subscription != null ? new SubscriptionDTO
 		{
 			MeasurementId = subscription.MeasurementId,
@@ -108,7 +108,7 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 			ConverterName = "default"
 		};
 
-		await _subscriptionRepository.UpdateSubscriptionAsync(subscription).ConfigureAwait(false);
+		await subscriptionRepository.UpdateSubscriptionAsync(subscription).ConfigureAwait(false);
 	}
 
 	/// <summary>
@@ -118,8 +118,6 @@ public class SubscriptionService (SubscriptionRepository subscriptionRepository)
 	/// <returns></returns>
 	public async Task DeleteSubscriptionAsync (Guid measurementId)
 	{
-		await _subscriptionRepository.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
+		await subscriptionRepository.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
 	}
-
-	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
 }

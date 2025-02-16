@@ -2,6 +2,7 @@
 
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
+using SwaggerThemes;
 
 namespace SmartHomeAPI;
 
@@ -19,16 +20,20 @@ internal sealed class Program
 			.AddSingleton<MeasuresLinksService>()
 			.AddHostedService<MeasuresReceiverService>()
 			.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
-			.AddEndpointsApiExplorer()
-			.AddSwaggerGen()
 			.AddControllers();
+
+		_ = builder.Services.AddOpenApiDocument(config =>
+		{
+			config.Title = "SmartHomeAPI";
+			config.Version = "v1";
+		});
 
 		WebApplication app = builder.Build();
 
 		if (app.Environment.IsDevelopment())
 		{
-			_ = app.UseSwagger();
-			_ = app.UseSwaggerUI();
+			_ = app.UseOpenApi();
+			_ = app.UseSwaggerUi(settings => settings.CustomInlineStyles = SwaggerTheme.GetSwaggerThemeCss(Theme.UniversalDark));
 		}
 
 		_ = app.UseHttpsRedirection();

@@ -22,16 +22,21 @@ public class MeasurementsHistoryController (MeasuresStorageService measuresStora
 	/// <param name="endDate">Дата колнца</param>
 	/// <returns></returns>
 	[HttpGet]
-	public async Task<ActionResult<List<MeasuresHistoryDTO>>> Get (
+	public async Task<ActionResult<List<MeasuresHistoryDTO>>> Get
+	(
 			[FromQuery] Guid measurementId,
 			[FromQuery] DateTime startDate,
-			[FromQuery] DateTime endDate)
+			[FromQuery] DateTime endDate
+	)
 	{
 		try
 		{
 			startDate = startDate.ToUniversalTime();
 			endDate = endDate.ToUniversalTime();
-			IReadOnlyList<MeasuresHistoryDTO> measurements = await _measuresStorageService.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
+
+			IReadOnlyList<MeasuresHistoryDTO> measurements = await measuresStorageService
+				.GetMeasurementHistory(measurementId, startDate, endDate)
+				.ConfigureAwait(false);
 
 			if (measurements == null || measurements.Count == 0)
 			{
@@ -45,6 +50,4 @@ public class MeasurementsHistoryController (MeasuresStorageService measuresStora
 			return StatusCode(500, new { message = "An error occurred.", error = ex.Message });
 		}
 	}
-
-	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 }

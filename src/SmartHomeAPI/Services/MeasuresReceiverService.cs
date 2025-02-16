@@ -10,18 +10,12 @@ namespace SmartHomeAPI.Services;
 /// </summary>
 /// <param name="measuresStorageService">Сервис измерений</param>
 /// <param name="subscriptionsService">Сервис подписок на измерения</param>
-internal sealed class MeasuresReceiverService : IHostedService
+internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService) : IHostedService
 {
-	public MeasuresReceiverService (MeasuresStorageService measuresStorageService,
-									SubscriptionService subscriptionsService)
-	{
-		_mqttFactory = new();
-		_measuresStorageService = measuresStorageService;
-		_subscriptionsService = subscriptionsService;
-		_mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder()
-										 .WithTcpServer("localhost", 1883)
-										 .Build();
-	}
+	private static readonly MqttClientFactory _mqttFactory = new();
+	private readonly MqttClientOptions _mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder().WithTcpServer("localhost", 1883).Build();
+	private IMqttClient? _mqttClient;
+	private static readonly TimeSpan _reconnectTimeout = TimeSpan.FromSeconds(5);
 
 	public async Task StartAsync (CancellationToken cancellationToken)
 	{
@@ -56,6 +50,7 @@ internal sealed class MeasuresReceiverService : IHostedService
 		await Task.Delay(_reconnectTimeout).ConfigureAwait(false);
 		await TryConnectAsync(mqttClient, default).ConfigureAwait(false);
 	}
+
 	private async Task TryConnectAsync (IMqttClient mqttClient, CancellationToken cancellationToken)
 	{
 		try
@@ -98,7 +93,7 @@ internal sealed class MeasuresReceiverService : IHostedService
 		DateTime timestamp = DateTime.UtcNow;
 
 		// Проверка существования топика в подписках
-		SubscriptionDTO? subscription = await _subscriptionsService.GetSubscriptionByMqttTopicAsync(topic).ConfigureAwait(false);
+		SubscriptionDTO? subscription = await subscriptionsService.GetSubscriptionByMqttTopicAsync(topic).ConfigureAwait(false);
 		if (subscription is null)
 		{
 			Console.WriteLine($"Топик '{topic}' не добавлен пользователем. Игнорирование сообщения.");
@@ -113,15 +108,6 @@ internal sealed class MeasuresReceiverService : IHostedService
 		};
 
 		// Передаем идентификатор измерения в метод добавления
-		await _measuresStorageService.AddMeasureAsync(measurementDto).ConfigureAwait(false);
+		await measuresStorageService.AddMeasureAsync(measurementDto).ConfigureAwait(false);
 	}
-
-	private readonly MeasuresStorageService _measuresStorageService;
-	private readonly SubscriptionService _subscriptionsService;
-
-	private IMqttClient? _mqttClient;
-	private readonly MqttClientFactory _mqttFactory;
-	private readonly MqttClientOptions _mqttClientOptions;
-
-	private static readonly TimeSpan _reconnectTimeout = TimeSpan.FromSeconds(5);
 }

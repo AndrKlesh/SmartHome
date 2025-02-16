@@ -23,8 +23,7 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 	[HttpGet("latest/{mask}")]
 	public async Task<ActionResult<IReadOnlyList<MeasureDTO>>> GetLatestMeasurements (string mask)
 	{
-
-		IReadOnlyList<MeasureDTO> latestMeasurements = await _measuresStorageService.GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
+		IReadOnlyList<MeasureDTO> latestMeasurements = await measuresStorageService.GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
 		return Ok(latestMeasurements);
 	}
 
@@ -36,10 +35,8 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 	[HttpGet("latestPoll/{mask}")]
 	public async Task<ActionResult<IReadOnlyList<MeasureDTO>>> SubscribeToLatestMeasurements (string mask)
 	{
-		IReadOnlyList<MeasureDTO> latestMeasurements = await _measuresStorageService.SubscribeToLatestMeasurementsAsync(mask).ConfigureAwait(false);
+		IReadOnlyList<MeasureDTO> latestMeasurements = await measuresStorageService.SubscribeToLatestMeasurementsAsync(mask).ConfigureAwait(false);
 		return Ok(latestMeasurements);
 	}
-
-	private readonly MeasuresStorageService _measuresStorageService = measuresStorageService;
 }
 

@@ -9,6 +9,10 @@ namespace SmartHomeAPI.Repositories;
 /// </summary>
 public class MeasurementRepository
 {
+	private readonly List<MeasureDomain> _measurements = new();
+	private readonly Lock _guard = new();
+	private const int MaxMeasurementsPerTopic = 100;
+
 	/// <summary>
 	/// Добавить новое измерение
 	/// </summary>
@@ -56,12 +60,14 @@ public class MeasurementRepository
 	{
 		lock (_guard)
 		{
-			return Task.FromResult(
-				(IReadOnlyList<MeasureDomain>) _measurements.Where(m => ids.Contains(m.MeasurementId))
-														   .GroupBy(m => m.MeasurementId)
-														   .Select(g => g.OrderByDescending(m => m.Timestamp).First())
-														   .ToArray()
-														   );
+			return Task.FromResult
+			(
+				(IReadOnlyList<MeasureDomain>) _measurements
+														.Where(m => ids.Contains(m.MeasurementId))
+														.GroupBy(m => m.MeasurementId)
+														.Select(g => g.OrderByDescending(m => m.Timestamp).First())
+														.ToArray()
+			);
 		}
 	}
 
@@ -74,11 +80,12 @@ public class MeasurementRepository
 
 		lock (_guard)
 		{
-			return Task.FromResult(
+			return Task.FromResult
+			(
 			  (IReadOnlyList<MeasureDomain>) _measurements
-				  .GroupBy(m => m.MeasurementId)
-				  .Select(g => g.OrderByDescending(m => m.Timestamp).First())
-				  .ToArray()
+														.GroupBy(m => m.MeasurementId)
+														.Select(g => g.OrderByDescending(m => m.Timestamp).First())
+														.ToArray()
 			);
 		}
 	}
@@ -94,16 +101,13 @@ public class MeasurementRepository
 	{
 		lock (_guard)
 		{
-			return Task.FromResult(
+			return Task.FromResult
+			(
 				(IReadOnlyList<MeasureDomain>) _measurements
-					.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
-					.OrderBy(m => m.Timestamp)
-					.ToArray()
+														.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
+														.OrderBy(m => m.Timestamp)
+														.ToArray()
 			);
 		}
 	}
-
-	private readonly List<MeasureDomain> _measurements = new();
-	private readonly Lock _guard = new();
-	private const int MaxMeasurementsPerTopic = 100;
 }

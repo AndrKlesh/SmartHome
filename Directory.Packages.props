@@ -1,12 +1,11 @@
 <Project>
-
 	<PropertyGroup>
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
 		<CentralPackageVersionOverrideEnabled>false</CentralPackageVersionOverrideEnabled>
 	</PropertyGroup>
-
 	<ItemGroup>
+		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
 		<PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.2" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.2" />
@@ -14,8 +13,9 @@
 		<PackageVersion Include="MQTTnet" Version="5.0.1.1416" />
 		<PackageVersion Include="MQTTnet.AspNetCore" Version="5.0.1.1416" />
 		<PackageVersion Include="NCrontab" Version="3.3.3" />
+		<PackageVersion Include="NSwag.AspNetCore" Version="14.2.0" />
+		<PackageVersion Include="NSwag.Generation.AspNetCore" Version="14.2.0" />
+		<PackageVersion Include="oqo0.SwaggerThemes" Version="1.4.3" />
 		<PackageVersion Include="Quartz" Version="3.13.1" />
-		<PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
 	</ItemGroup>
-
 </Project>

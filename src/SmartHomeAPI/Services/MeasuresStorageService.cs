@@ -16,11 +16,14 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 									 SubscriptionRepository subscriptionRepository,
 									 MeasuresLinksRepository measuresLinksRepository) : IDisposable
 {
+	private readonly SemaphoreSlim _newMeasuresSemaphore = new(1);
+	private bool _disposed;
+
 	///<inheritdoc/>
 	public void Dispose ()
 	{
-		Dispose (true);
-		GC.SuppressFinalize (this);
+		Dispose(true);
+		GC.SuppressFinalize(this);
 	}
 
 	/// <summary>
@@ -38,8 +41,8 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 			Timestamp = measurementDto.Timestamp
 		};
 
-		await _measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
-		//TODO: Long Polling: Пределать на подписку на конкретные типы измерения
+		await measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
+		// TODO: Long Polling: Пределать на подписку на конкретные типы измерения
 		_ = _newMeasuresSemaphore.Release();
 	}
 
@@ -51,11 +54,10 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 	public async Task<IReadOnlyList<MeasureDTO>> SubscribeToLatestMeasurementsAsync (string mask)
 	{
 		//TODO: Long Polling:Ожидание новых измерений
-		await _newMeasuresSemaphore.WaitAsync()
-			.ConfigureAwait(false);
+		await _newMeasuresSemaphore.WaitAsync().ConfigureAwait(false);
 
-		IReadOnlyList<MeasureDTO> result = await GetLatestMeasurementsAsync(mask)
-			.ConfigureAwait(false);
+		IReadOnlyList<MeasureDTO> result = await GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
+
 		return result;
 	}
 
@@ -67,17 +69,20 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 	/// <returns>Список последних измерений</returns>
 	public async Task<IReadOnlyList<MeasureDTO>> GetLatestMeasurementsAsync (string mask)
 	{
-		IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await _measuresLinksRepository.FindLinksByMaskAsync(mask)
-																									.ConfigureAwait(false);
-		IReadOnlyList<MeasureDomain> latestMeasuresDomain = await _measurementRepository.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value)
-																															.ToArray())
-																			   .ConfigureAwait(false);
+		IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
+
+		IReadOnlyList<MeasureDomain> latestMeasuresDomain = await measurementRepository
+			.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value)
+			.ToArray())
+			.ConfigureAwait(false);
 
 		List<MeasureDTO> latestMeasurementsDTO = new(latestMeasuresDomain.Count);
 		foreach (MeasureDomain measure in latestMeasuresDomain)
 		{
-			SubscriptionDomain? subscription = await _subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measure.MeasurementId)
-																			.ConfigureAwait(false);
+			SubscriptionDomain? subscription = await subscriptionRepository
+				.GetSubscriptionByMeasurementIdAsync(measure.MeasurementId)
+				.ConfigureAwait(false);
+
 			if (subscription is null)
 			{
 				continue;
@@ -87,6 +92,7 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 			int indexOfSlash = tag.LastIndexOf('/');
 			indexOfSlash = indexOfSlash < 0 ? 0 : indexOfSlash + 1;
 			string name = tag.Substring(indexOfSlash);
+
 			latestMeasurementsDTO.Add(new MeasureDTO()
 			{
 				MeasurementId = measure.MeasurementId,
@@ -109,7 +115,7 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 	/// <returns></returns>
 	public async Task<IReadOnlyList<MeasuresHistoryDTO>> GetMeasurementHistory (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
-		IReadOnlyList<MeasureDomain> measurements = await _measurementRepository.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
+		IReadOnlyList<MeasureDomain> measurements = await measurementRepository.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
 
 		return measurements.Select(m => new MeasuresHistoryDTO
 		{
@@ -132,11 +138,4 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 
 		_disposed = true;
 	}
-
-	private readonly MeasurementRepository _measurementRepository = measurementRepository;
-	private readonly SubscriptionRepository _subscriptionRepository = subscriptionRepository;
-	private readonly MeasuresLinksRepository _measuresLinksRepository = measuresLinksRepository;
-
-	private readonly SemaphoreSlim _newMeasuresSemaphore = new(1);
-	private bool _disposed;
 }

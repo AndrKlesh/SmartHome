@@ -1,73 +1,83 @@
-import {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
-import './styles.css'
-import {MeasurementLink} from './types'
+import { JSX, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { MeasurementLink } from './types';
+import './Sidebar.css';
+import './styles.css';
 
-function Header ()
-{
-	const [isDarkTheme, setIsDarkTheme] = useState(true)
-	const [menu, setData] = useState<MeasurementLink[]>([])
+interface HeaderProps {
+	isOpen: boolean; // Состояние меню (открыто/закрыто)
+	setIsOpen: (isOpen: boolean) => void; // Функция для изменения состояния
+}
 
-	useEffect(() =>
-	{
-		const getMenu = async () =>
-		{
-			const response = await fetch('https://localhost:7098/api/MeasuresLinks/nextLayer/')
-			if (!response.ok)
-			{
-				throw new Error(`HTTP error! status: ${response.status}`)
+function Header({ isOpen, setIsOpen }: HeaderProps) {
+	const [isDarkTheme, setIsDarkTheme] = useState(true);
+	const [menu, setData] = useState<MeasurementLink[]>([]);
+
+
+	useEffect(() => {
+		const getMenu = async () => {
+			try {
+				const response = await fetch('https://localhost:7098/api/MeasuresLinks/nextLayer/');
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				const json = await response.json();
+				setData(json);
+			} catch (error) {
+				console.error('Ошибка при загрузке меню:', error);
 			}
-			const json = await response.json()
+		};
 
-			setData(json)
-		}
-		getMenu()
-	}, [])
+		getMenu();
+	}, []);
 
-	useEffect(() =>
-	{
-		// Сразу устанавливаем тему при загрузке страницы
-		if (isDarkTheme)
-		{
-			document.body.classList.remove('light-theme')
-		} else
-		{
-			document.body.classList.add('light-theme')
-		}
-	}, [isDarkTheme]) // Этот эффект сработает только при изменении темы
+	useEffect(() => {
+		document.body.classList.toggle('light-theme', !isDarkTheme);
+	}, [isDarkTheme]);
 
-	const toggleTheme = () =>
-	{
-		setIsDarkTheme(prevTheme => !prevTheme) // Переключаем тему
-	}
+	const toggleTheme = () => {
+		setIsDarkTheme((prevTheme) => !prevTheme); // Переключаем тему
+	};
+
+	const toggleMenu = () => {
+		setIsOpen(!isOpen); // Переключаем состояние меню
+	};
+
+	// Отображение пунктов меню
+	const menuItems = menu
+		.filter((item) => item.mode.includes('d'))
+		.map((item) => (
+			<li key={item.path}>
+				<Link to={{ pathname: `/dashboard/${item.path}` }}>
+					<span>{item.path}</span> {/* Название пункта */}
+				</Link>
+			</li>
+		));
 
 	return (
 		<header>
-			<nav>
-				<div className="nav-links">
-					<ul>
-						{
-							menu.filter((item) => (item.mode.includes('d'))).map((item, index) => (
-								<li key={index}>
-									<Link to={{pathname: `/dashboard/${item.path}`}}>{item.path}</Link>
-								</li>
-							))
-						}
-						<li>
-							<Link to="/settings">Settings</Link>
-						</li>
-					</ul>
-				</div>
+			<div className={`sidebar ${isOpen ? 'open' : ''}`} onClick={toggleMenu}>
+				<ul>
+					{menuItems}
+					<li>
+						<Link to="/settings">
+							<span>Настройки</span>
+						</Link>
+					</li>
+				</ul>
+
 				<button
 					className="theme-toggle-button"
 					onClick={toggleTheme}
 					aria-label="Toggle theme"
 				>
-					{isDarkTheme ? '🌙' : '☀️'}
+					<div className="icons">
+						{isDarkTheme ? '🌙' : '🔆'}
+					</div>
 				</button>
-			</nav>
+			</div>
 		</header>
-	)
+	);
 }
 
-export default Header
+export default Header;

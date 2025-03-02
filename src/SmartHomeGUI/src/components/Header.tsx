@@ -1,18 +1,18 @@
-import { JSX, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MeasurementLink } from './types';
-import './Sidebar.css';
+
 import './styles.css';
 
 interface HeaderProps {
-	isOpen: boolean; // Состояние меню (открыто/закрыто)
-	setIsOpen: (isOpen: boolean) => void; // Функция для изменения состояния
+	isOpen: boolean;
+	setIsOpen: (isOpen: boolean) => void;
 }
 
 function Header({ isOpen, setIsOpen }: HeaderProps) {
 	const [isDarkTheme, setIsDarkTheme] = useState(true);
 	const [menu, setData] = useState<MeasurementLink[]>([]);
-
+	const [activeMenuItem, setActiveMenuItem] = useState<string>(''); 
 
 	useEffect(() => {
 		const getMenu = async () => {
@@ -36,47 +36,58 @@ function Header({ isOpen, setIsOpen }: HeaderProps) {
 	}, [isDarkTheme]);
 
 	const toggleTheme = () => {
-		setIsDarkTheme((prevTheme) => !prevTheme); // Переключаем тему
+		setIsDarkTheme((prevTheme) => !prevTheme);
 	};
 
 	const toggleMenu = () => {
-		setIsOpen(!isOpen); // Переключаем состояние меню
+		setIsOpen(!isOpen);
 	};
 
-	// Отображение пунктов меню
+	const handleMenuClick = (path: string) => {
+		setActiveMenuItem(path); 
+	};
+
 	const menuItems = menu
 		.filter((item) => item.mode.includes('d'))
-		.map((item) => (
-			<li key={item.path}>
-				<Link to={{ pathname: `/dashboard/${item.path}` }}>
-					<span>{item.path}</span> {/* Название пункта */}
-				</Link>
-			</li>
-		));
+		.map((item) => {
+			const isActive = activeMenuItem === item.path; 
+			return (
+				<li
+					key={item.path}
+					className={isActive ? 'active' : ''}
+					onClick={() => handleMenuClick(item.path)} 
+				>
+					<Link to={`/dashboard/${item.path}`}>
+						<button className="theme-toggle-button">
+						<span>{item.path}</span>
+					</button>
+					</Link>
+				</li>
+			);
+		});
+
+	const isSettingsActive = activeMenuItem === 'settings'; 
 
 	return (
-		<header>
-			<div className={`sidebar ${isOpen ? 'open' : ''}`} onClick={toggleMenu}>
-				<ul>
-					{menuItems}
-					<li>
-						<Link to="/settings">
-							<span>Настройки</span>
-						</Link>
-					</li>
-				</ul>
-
-				<button
-					className="theme-toggle-button"
-					onClick={toggleTheme}
-					aria-label="Toggle theme"
+		<div className={`sidebar ${isOpen ? 'open' : ''}`} onClick={toggleMenu}>
+			<ul>
+				{menuItems}
+				<li
+					className={isSettingsActive ? 'active' : ''}
+					onClick={() => handleMenuClick('settings')} 
 				>
-					<div className="icons">
-						{isDarkTheme ? '🌙' : '🔆'}
-					</div>
-				</button>
-			</div>
-		</header>
+					<Link to="/settings">
+						<button className="theme-toggle-button">
+							<span>Настройки</span>
+						</button>
+					</Link>
+				</li>
+			</ul>
+
+			<button className="theme-toggle-button" onClick={toggleTheme} aria-label="Toggle theme">
+				<div className="icons">{isDarkTheme ? '🌙' : '🔆'}</div>
+			</button>
+		</div>
 	);
 }
 

@@ -63,10 +63,10 @@ public sealed class MeasuresRepository
 			return Task.FromResult
 			(
 				(IReadOnlyList<MeasureDomain>) _measurements
-														.Where(m => ids.Contains(m.MeasurementId))
-														.GroupBy(m => m.MeasurementId)
-														.Select(g => g.OrderByDescending(m => m.Timestamp).First())
-														.ToArray()
+					.Where(m => ids.Contains(m.MeasurementId))
+					.GroupBy(m => m.MeasurementId)
+					.Select(g => g.OrderByDescending(m => m.Timestamp).First())
+					.ToArray()
 			);
 		}
 	}
@@ -82,9 +82,9 @@ public sealed class MeasuresRepository
 			return Task.FromResult
 			(
 			  (IReadOnlyList<MeasureDomain>) _measurements
-														.GroupBy(m => m.MeasurementId)
-														.Select(g => g.OrderByDescending(m => m.Timestamp).First())
-														.ToArray()
+				.GroupBy(m => m.MeasurementId)
+				.Select(g => g.OrderByDescending(m => m.Timestamp).First())
+				.ToArray()
 			);
 		}
 	}
@@ -103,9 +103,9 @@ public sealed class MeasuresRepository
 			return Task.FromResult
 			(
 				(IReadOnlyList<MeasureDomain>) _measurements
-														.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
-														.OrderBy(m => m.Timestamp)
-														.ToArray()
+					.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
+					.OrderBy(m => m.Timestamp)
+					.ToArray()
 			);
 		}
 	}

@@ -12,19 +12,12 @@ namespace SmartHomeAPI.Services;
 /// <param name="measurementRepository">Репозиторий измерений</param>
 /// <param name="subscriptionRepository">Репозиторий подписок</param>
 /// <param name="measuresLinksRepository">Репозиторий ссылок на измерения</param>
-public class MeasuresStorageService (MeasurementRepository measurementRepository,
+public sealed class MeasuresStorageService (MeasuresRepository measurementRepository,
 									 SubscriptionRepository subscriptionRepository,
 									 MeasuresLinksRepository measuresLinksRepository) : IDisposable
 {
 	private readonly SemaphoreSlim _newMeasuresSemaphore = new(1);
 	private bool _disposed;
-
-	///<inheritdoc/>
-	public void Dispose ()
-	{
-		Dispose(true);
-		GC.SuppressFinalize(this);
-	}
 
 	/// <summary>
 	/// Добавить новое измерений
@@ -124,7 +117,14 @@ public class MeasuresStorageService (MeasurementRepository measurementRepository
 		}).ToArray();
 	}
 
-	protected virtual void Dispose (bool disposing)
+	///<inheritdoc/>
+	public void Dispose ()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	private void Dispose (bool disposing)
 	{
 		if (_disposed)
 		{

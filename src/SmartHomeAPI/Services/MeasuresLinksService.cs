@@ -9,9 +9,8 @@ namespace SmartHomeAPI.Services;
 /// Сервис ссылок на типы измерений
 /// </summary>
 /// <param name="measuresLinksRepository"></param>
-public class MeasuresLinksService (MeasuresLinksRepository measuresLinksRepository)
+public sealed class MeasuresLinksService (MeasuresLinksRepository measuresLinksRepository)
 {
-	private readonly MeasuresLinksRepository _measuresLinksRepository = measuresLinksRepository;
 	private const string AllMask = ".*";
 	private const string MoreMask = "*";
 
@@ -38,7 +37,7 @@ public class MeasuresLinksService (MeasuresLinksRepository measuresLinksReposito
 			mask = $"{path}{MoreMask}";
 		}
 
-		IReadOnlyList<KeyValuePair<string, Guid>> links = await _measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
+		IReadOnlyList<KeyValuePair<string, Guid>> links = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 		LinkDTO [] sublayer = links
 			.Select(link => CreateLinkDTO(link.Key, path))
 			.DistinctBy(dto => dto.Path)
@@ -60,7 +59,7 @@ public class MeasuresLinksService (MeasuresLinksRepository measuresLinksReposito
 		subpath = subpath.TrimStart('/');
 		index = subpath.IndexOf('/');
 
-		LinkDTO linkDTO = new LinkDTO();
+		LinkDTO linkDTO = new();
 		if (index > 0)
 		{
 			linkDTO.Path = subpath.Substring(0, index);

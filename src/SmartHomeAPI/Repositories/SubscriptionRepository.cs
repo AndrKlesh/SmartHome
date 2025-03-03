@@ -4,16 +4,10 @@ using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
 
-public class SubscriptionRepository : IDisposable
+public sealed class SubscriptionRepository : IDisposable
 {
 	private readonly ReaderWriterLockSlim _lock = new();
 	private bool _disposed;
-
-	public void Dispose ()
-	{
-		Dispose(true);
-		GC.SuppressFinalize(this);
-	}
 
 	//TODO: Убрать заглушки подписок
 	private readonly List<SubscriptionDomain> _subscriptions =
@@ -171,7 +165,13 @@ public class SubscriptionRepository : IDisposable
 		await Task.CompletedTask.ConfigureAwait(false);
 	}
 
-	protected virtual void Dispose (bool disposing)
+	public void Dispose ()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	internal void Dispose (bool disposing)
 	{
 		if (_disposed)
 		{

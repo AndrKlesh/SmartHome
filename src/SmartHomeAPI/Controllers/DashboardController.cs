@@ -12,7 +12,7 @@ namespace SmartHomeAPI.Controllers;
 /// <param name="measuresStorageService"></param>
 [ApiController]
 [Route("api/[controller]")]
-public class DashboardController (MeasuresStorageService measuresStorageService) : ControllerBase
+public sealed class DashboardController (MeasuresStorageService measuresStorageService) : Controller
 {
 	/// <summary>
 	/// Получить последние измерения
@@ -39,4 +39,3 @@ public class DashboardController (MeasuresStorageService measuresStorageService)
 		return Ok(latestMeasurements);
 	}
 }
-

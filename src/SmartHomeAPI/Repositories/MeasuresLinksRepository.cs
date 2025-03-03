@@ -7,7 +7,7 @@ namespace SmartHomeAPI.Repositories;
 /// <summary>
 /// Репозиторий ссылок на типы измерений
 /// </summary>
-public class MeasuresLinksRepository
+public sealed class MeasuresLinksRepository
 {
 	/// <summary>
 	/// Добавить ссылку
@@ -34,9 +34,9 @@ public class MeasuresLinksRepository
 
 	/// <summary>
 	/// Поиск связи (Путь <-> Guid) по маске.
-	/// Например, 
-	///1) Общие/Температура воздуха/*
-	///2) */Температура*
+	/// Например,
+	/// 1) Общие/Температура воздуха/*
+	/// 2) */Температура*
 	/// </summary>
 	/// <param name="mask">Маска/регулярное выражение ссылок</param>
 	/// <returns></returns>

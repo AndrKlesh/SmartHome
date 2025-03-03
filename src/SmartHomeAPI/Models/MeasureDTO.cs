@@ -5,7 +5,7 @@ namespace SmartHomeAPI.Models;
 /// <summary>
 /// DTO измерения
 /// </summary>
-public class MeasureDTO
+public sealed class MeasureDTO
 {
 	/// <summary>
 	/// Ид. типа измерения

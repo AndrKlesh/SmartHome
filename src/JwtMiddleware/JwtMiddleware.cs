@@ -2,18 +2,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace JwtMiddleware;
 
-public class JwtMiddleware (RequestDelegate next)
+public sealed class JwtMiddleware (RequestDelegate next)
 {
-	private readonly RequestDelegate _next = next;
-
 	public async Task Invoke (HttpContext context)
 	{
-		string token = context.Request.Cookies ["jwt"];
+		string token = context?.Request.Cookies ["jwt"];
 		if (token == "test-token")
 		{
 			context.Items ["User"] = "AuthenticatedUser";
 		}
 
-		await _next(context).ConfigureAwait(false);
+		await next(context).ConfigureAwait(false);
 	}
 }

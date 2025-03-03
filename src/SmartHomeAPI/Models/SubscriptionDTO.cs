@@ -5,7 +5,7 @@ namespace SmartHomeAPI.Models;
 /// <summary>
 /// DTO подписки на mqtt-топики
 /// </summary>
-public class SubscriptionDTO
+public sealed class SubscriptionDTO
 {
 	/// <summary>
 	/// Ид. типа измерения

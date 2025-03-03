@@ -7,7 +7,7 @@ namespace SmartHomeAPI.Repositories;
 /// <summary>
 /// Репозиторий измерений
 /// </summary>
-public class MeasurementRepository
+public sealed class MeasuresRepository
 {
 	private readonly List<MeasureDomain> _measurements = new();
 	private readonly Lock _guard = new();
@@ -77,7 +77,6 @@ public class MeasurementRepository
 	/// <returns>Список последних значений измерений</returns>
 	public Task<IReadOnlyList<MeasureDomain>> GetLatestMeasurementsAsync ()
 	{
-
 		lock (_guard)
 		{
 			return Task.FromResult

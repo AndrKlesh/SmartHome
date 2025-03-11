@@ -3,11 +3,19 @@
     "Name": "Default",
     "Projects": [
       {
-        "Path": "src\\SmartHomeLogin\\SmartHomeLogin.esproj",
+        "Path": "src\\CollectionController\\CollectionController.csproj",
         "Action": "Start"
       },
       {
-        "Path": "src\\AuthService\\AuthService.csproj",
+        "Path": "src\\SHMQ\\SHMQ.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\SmartHomeAPI\\SmartHomeAPI.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\SmartHomeGUI\\SmartHomeGUI.esproj",
         "Action": "Start"
       }
     ]

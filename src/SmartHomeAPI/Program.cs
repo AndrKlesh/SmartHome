@@ -13,11 +13,13 @@ internal sealed class Program
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 		_ = builder.Services
 			.AddSingleton<MeasuresStorageService>()
-			.AddSingleton<MeasuresLinksRepository>()
+			.AddSingleton<MeasuresRepository>()
 			.AddSingleton<SubscriptionService>()
 			.AddSingleton<SubscriptionRepository>()
-			.AddSingleton<MeasurementRepository>()
 			.AddSingleton<MeasuresLinksService>()
+			.AddSingleton<MeasuresLinksRepository>()
+			.AddSingleton<SvgImagesService>()
+			.AddSingleton<SvgImagesRepository>()
 			.AddHostedService<MeasuresReceiverService>()
 			.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
 			.AddControllers();

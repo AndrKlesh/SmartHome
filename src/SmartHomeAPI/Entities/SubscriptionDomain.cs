@@ -5,7 +5,7 @@ namespace SmartHomeAPI.Entities;
 /// <summary>
 /// Модель подписки на mqtt-топик
 /// </summary>
-public class SubscriptionDomain
+public sealed class SubscriptionDomain
 {
 	/// <summary>
 	/// Идентификатор типа измерения

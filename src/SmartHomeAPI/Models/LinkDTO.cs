@@ -5,7 +5,7 @@ namespace SmartHomeAPI.Models;
 /// <summary>
 /// DTO ссылки
 /// </summary>
-public class LinkDTO
+public sealed class LinkDTO
 {
 	/// <summary>
 	/// Путь (полный или относительный) ссылки

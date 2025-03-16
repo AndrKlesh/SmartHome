@@ -13,7 +13,7 @@ namespace SmartHomeAPI.Controllers;
 /// <param name="subscriptionsService"></param>
 [ApiController]
 [Route("api/[controller]")]
-public sealed class SubscriptionsController (SubscriptionService subscriptionsService) : ControllerBase
+public sealed class SubscriptionsController (SubscriptionService subscriptionsService) : Controller
 {
 	/// <summary>
 	/// Получить все подписки

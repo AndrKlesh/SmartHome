@@ -16,6 +16,6 @@
 		<PackageVersion Include="NSwag.AspNetCore" Version="14.2.0" />
 		<PackageVersion Include="NSwag.Generation.AspNetCore" Version="14.2.0" />
 		<PackageVersion Include="oqo0.SwaggerThemes" Version="1.4.3" />
-		<PackageVersion Include="Quartz" Version="3.13.1" />
+		<PackageVersion Include="Quartz" Version="3.14.0" />
 	</ItemGroup>
 </Project>

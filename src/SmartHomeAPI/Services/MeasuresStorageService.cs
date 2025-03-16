@@ -12,7 +12,7 @@ namespace SmartHomeAPI.Services;
 /// <param name="measurementRepository">Репозиторий измерений</param>
 /// <param name="subscriptionRepository">Репозиторий подписок</param>
 /// <param name="measuresLinksRepository">Репозиторий ссылок на измерения</param>
-public sealed class MeasuresStorageService (MeasuresRepository measurementRepository,
+public sealed class MeasuresStorageService (IServiceProvider serviceProvider,
 									 SubscriptionRepository subscriptionRepository,
 									 MeasuresLinksRepository measuresLinksRepository) : IDisposable
 {
@@ -34,9 +34,9 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 			Timestamp = measurementDto.Timestamp
 		};
 
+		using IServiceScope scope = serviceProvider.CreateScope();
+		MeasuresRepository measurementRepository = scope.ServiceProvider.GetRequiredService<MeasuresRepository>();
 		await measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
-		// TODO: Long Polling: Пределать на подписку на конкретные типы измерения
-		_ = _newMeasuresSemaphore.Release();
 	}
 
 	/// <summary>
@@ -64,6 +64,8 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 	{
 		IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 
+		using IServiceScope scope = serviceProvider.CreateScope();
+		MeasuresRepository measurementRepository = scope.ServiceProvider.GetRequiredService<MeasuresRepository>();
 		IReadOnlyList<MeasureDomain> latestMeasuresDomain = await measurementRepository
 			.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value)
 			.ToArray())
@@ -108,6 +110,8 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 	/// <returns></returns>
 	public async Task<IReadOnlyList<MeasuresHistoryDTO>> GetMeasurementHistory (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
+		using IServiceScope scope = serviceProvider.CreateScope();
+		MeasuresRepository measurementRepository = scope.ServiceProvider.GetRequiredService<MeasuresRepository>();
 		IReadOnlyList<MeasureDomain> measurements = await measurementRepository.GetMeasurementHistory(measurementId, startDate, endDate).ConfigureAwait(false);
 
 		return measurements.Select(m => new MeasuresHistoryDTO

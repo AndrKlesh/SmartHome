@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using Microsoft.EntityFrameworkCore;
 using SmartHomeAPI.Entities;
 
@@ -6,12 +8,12 @@ namespace SmartHomeAPI.Data;
 /// <summary>
 /// Контекст базы данных для SmartHomeAPI
 /// </summary>
-internal sealed class AppDbContext (DbContextOptions<AppDbContext> options) : DbContext(options)
+public sealed class AppDbContext (DbContextOptions<AppDbContext> options) : DbContext(options)
 {
 	/// <summary>
 	/// Таблица измерений
 	/// </summary>
-	public DbSet<MeasureDomain> Measures { get; set; } = null!;
+	public DbSet<MeasureDomain> Measurements { get; set; } = null!;
 
 	/// <summary>
 	/// Таблица подписок на mqtt-топики
@@ -22,18 +24,16 @@ internal sealed class AppDbContext (DbContextOptions<AppDbContext> options) : Db
 	{
 		base.OnModelCreating(modelBuilder);
 
-		// Настройки для MeasureDomain
 		_ = modelBuilder?.Entity<MeasureDomain>()
-			.HasKey(m => m.MeasurementId); // Первичный ключ
+			.HasKey(m => new { m.MeasurementId, m.Timestamp });
 
 		_ = modelBuilder.Entity<MeasureDomain>()
 			.Property(m => m.Value)
 			.IsRequired()
 			.HasMaxLength(255);
 
-		// Настройки для SubscriptionDomain
 		_ = modelBuilder.Entity<SubscriptionDomain>()
-			.HasKey(s => s.MeasurementId); // Первичный ключ
+			.HasKey(s => s.MeasurementId);
 
 		_ = modelBuilder.Entity<SubscriptionDomain>()
 			.Property(s => s.Description)

@@ -20,7 +20,7 @@ internal sealed class Program
 
 		_ = builder.Services
 			.AddSingleton<MeasuresStorageService>()
-			.AddSingleton<MeasuresRepository>()
+			.AddScoped<MeasuresRepository>()
 			.AddSingleton<SubscriptionService>()
 			.AddSingleton<SubscriptionRepository>()
 			.AddSingleton<MeasuresLinksService>()

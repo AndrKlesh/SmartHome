@@ -12,8 +12,8 @@ using SmartHomeAPI.Data;
 namespace SmartHomeAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250316085759_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250316114402_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,7 +28,6 @@ namespace SmartHomeAPI.Migrations
             modelBuilder.Entity("SmartHomeAPI.Entities.MeasureDomain", b =>
                 {
                     b.Property<Guid>("MeasurementId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("Timestamp")
@@ -39,9 +38,9 @@ namespace SmartHomeAPI.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.HasKey("MeasurementId");
+                    b.HasKey("MeasurementId", "Timestamp");
 
-                    b.ToTable("Measures");
+                    b.ToTable("Measurements");
                 });
 
             modelBuilder.Entity("SmartHomeAPI.Entities.SubscriptionDomain", b =>

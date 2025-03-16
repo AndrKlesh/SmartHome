@@ -1,5 +1,7 @@
 #pragma warning disable CA1515
 
+using Microsoft.EntityFrameworkCore;
+using SmartHomeAPI.Data;
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
 using SwaggerThemes;
@@ -11,6 +13,11 @@ internal sealed class Program
 	internal static void Main (string [] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+		string connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
+
+		_ = builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+
 		_ = builder.Services
 			.AddSingleton<MeasuresStorageService>()
 			.AddSingleton<MeasuresRepository>()
@@ -31,6 +38,12 @@ internal sealed class Program
 		});
 
 		WebApplication app = builder.Build();
+
+		using (IServiceScope scope = app.Services.CreateScope())
+		{
+			AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+			dbContext.Database.Migrate();
+		}
 
 		if (app.Environment.IsDevelopment())
 		{

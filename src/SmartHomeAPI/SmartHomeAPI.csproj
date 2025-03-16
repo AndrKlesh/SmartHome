@@ -2,11 +2,13 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
+		<UserSecretsId>d7080a39-012a-4083-9054-d1d04e47b074</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="MQTTnet" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
 		<PackageReference Include="NSwag.AspNetCore" />
 		<PackageReference Include="oqo0.SwaggerThemes" />
 	</ItemGroup>

@@ -1,0 +1,19 @@
+{
+	"dependencies":
+	{
+		"postgresql1":
+		{
+			"connectionId": "ConnectionStrings:DatabaseConnection",
+			"containerImage": "postgres",
+			"containerName": "postgresql",
+			"containerPorts": "5432:5432",
+			"dynamicId": null,
+			"secretStore": "LocalSecretsFile",
+			"type": "postgresql.container"
+		},
+		"secrets1":
+		{
+			"type": "secrets.user"
+		}
+	}
+}

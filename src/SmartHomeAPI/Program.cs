@@ -1,5 +1,6 @@
 #pragma warning disable CA1515
 
+using System.Reflection;
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
 using SwaggerThemes;
@@ -11,7 +12,15 @@ internal sealed class Program
 	internal static void Main (string [] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+		_ = builder.Logging
+			.ClearProviders()
+			.AddConsole()
+			.AddDebug()
+			.AddConfiguration(builder.Configuration.GetSection("Logging"));
+
 		_ = builder.Services
+			// TODO Не хардкодить сообщения логгера, а вынести их в локализацию
 			.AddSingleton<MeasuresStorageService>()
 			.AddSingleton<MeasuresRepository>()
 			.AddSingleton<SubscriptionService>()
@@ -24,13 +33,17 @@ internal sealed class Program
 			.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
 			.AddControllers();
 
+		string projectName = Assembly.GetExecutingAssembly().GetName().Name;
+
 		_ = builder.Services.AddOpenApiDocument(config =>
 		{
-			config.Title = "SmartHomeAPI";
+			config.Title = projectName;
 			config.Version = "v1";
 		});
 
 		WebApplication app = builder.Build();
+
+		ILogger<Program> logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 		if (app.Environment.IsDevelopment())
 		{
@@ -42,6 +55,8 @@ internal sealed class Program
 		_ = app.UseCors("AllowAll");
 		_ = app.MapControllers();
 		app.Urls.Add("https://*:7098");
+
+		logger.LogInformation("{ProjectName} запущен", projectName);
 		app.Run();
 	}
 }

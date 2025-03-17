@@ -8,7 +8,7 @@ namespace SmartHomeAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class SvgImagesController (SvgImagesService svgImageService) : Controller
+public sealed class SvgImagesController (SvgImagesService svgImageService, ILogger<SvgImagesController> logger) : Controller
 {
 	/// <summary>
 	/// Получить SVG-изображение по названию
@@ -18,12 +18,16 @@ public sealed class SvgImagesController (SvgImagesService svgImageService) : Con
 	[HttpGet("{name}")]
 	public IActionResult GetSvgImage (string name)
 	{
+		logger.LogInformation("Запрос на получение SVG-изображения: {ImageName}", name);
+
 		string? svgContent = svgImageService.GetSvgImage(name);
 		if (svgContent != null)
 		{
+			logger.LogInformation("SVG-изображение {ImageName} успешно найдено", name);
 			return File(Encoding.UTF8.GetBytes(svgContent), "image/svg+xml");
 		}
 
-		return NotFound();
+		logger.LogWarning("SVG-изображение {ImageName} не найдено", name);
+		return NotFound(new { message = $"Изображение {name} не найдено" });
 	}
 }

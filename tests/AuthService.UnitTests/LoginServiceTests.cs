@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace AuthService.UnitTests;
 
-internal class LoginServiceTests
+internal sealed class LoginServiceTests
 {
 	[Test]
 	public void LoginTest ()
@@ -18,7 +18,7 @@ internal class LoginServiceTests
 	}
 }
 
-internal class ConfStub : IConfiguration
+internal sealed class ConfStub : IConfiguration
 {
 	public string? this [string key] { get => "qwertyuiopasdfghjklzxcvbnmqwertyu"; set => throw new NotImplementedException(); }
 

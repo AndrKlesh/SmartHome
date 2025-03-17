@@ -11,7 +11,7 @@ namespace SmartHomeAPI.Services;
 /// Сопоставляет Guid измерения <-> mqtt-топик
 /// </summary>
 /// <param name="subscriptionRepository">Репозиторий подписок на измерения</param>
-public sealed class SubscriptionService (SubscriptionRepository subscriptionRepository)
+public sealed class SubscriptionService (SubscriptionRepository subscriptionRepository, ILogger<SubscriptionService> logger)
 {
 	/// <summary>
 	/// Получить все подписки
@@ -20,6 +20,8 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	public async Task<IReadOnlyList<SubscriptionDTO>> GetAllSubscriptionsAsync ()
 	{
 		List<SubscriptionDomain> subscriptions = await subscriptionRepository.GetAllSubscriptionsAsync().ConfigureAwait(false);
+		logger.LogInformation("Получено {Count} подписок", subscriptions.Count);
+
 		return subscriptions.Select(s => new SubscriptionDTO
 		{
 			MeasurementId = s.MeasurementId,
@@ -38,6 +40,7 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	public async Task AddSubscriptionAsync (SubscriptionDTO subscriptionDto)
 	{
 		ArgumentNullException.ThrowIfNull(subscriptionDto);
+		logger.LogInformation("Добавление подписки для измерения {MeasurementId} на топик {MqttTopic}", subscriptionDto.MeasurementId, subscriptionDto.MqttTopic);
 
 		SubscriptionDomain subscription = new()
 		{
@@ -59,13 +62,21 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	public async Task<SubscriptionDTO?> GetSubscriptionByMeasurementIdAsync (Guid measurementId)
 	{
 		SubscriptionDomain? subscription = await subscriptionRepository.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
-		return subscription != null ? new SubscriptionDTO
+
+		if (subscription is null)
+		{
+			logger.LogWarning("Подписка с идентификатором {MeasurementId} не найдена", measurementId);
+			return null;
+		}
+
+		logger.LogInformation("Подписка найдена: {MqttTopic}", subscription.MqttTopic);
+		return new SubscriptionDTO
 		{
 			MeasurementId = subscription.MeasurementId,
 			Description = subscription.Description,
 			Unit = subscription.Unit,
 			MqttTopic = subscription.MqttTopic
-		} : null;
+		};
 	}
 
 	/// <summary>
@@ -78,17 +89,27 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	{
 		if (string.IsNullOrWhiteSpace(mqttTopic))
 		{
+			logger.LogError("Передан пустой MQTT-топик");
 			throw new ArgumentNullException(nameof(mqttTopic));
 		}
 
+		logger.LogInformation("Поиск подписки по MQTT-топику {MqttTopic}", mqttTopic);
 		SubscriptionDomain? subscription = await subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic).ConfigureAwait(false);
-		return subscription != null ? new SubscriptionDTO
+
+		if (subscription is null)
+		{
+			logger.LogWarning("Подписка на топик {MqttTopic} не найдена", mqttTopic);
+			return null;
+		}
+
+		logger.LogInformation("Подписка найдена для {MeasurementId}", subscription.MeasurementId);
+		return new SubscriptionDTO
 		{
 			MeasurementId = subscription.MeasurementId,
 			Description = subscription.Description,
 			Unit = subscription.Unit,
 			MqttTopic = subscription.MqttTopic
-		} : null;
+		};
 	}
 
 	/// <summary>
@@ -99,6 +120,8 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	public async Task UpdateSubscriptionAsync (SubscriptionDTO updatedSubscription)
 	{
 		ArgumentNullException.ThrowIfNull(updatedSubscription);
+		logger.LogInformation("Обновление подписки для измерения {MeasurementId}", updatedSubscription.MeasurementId);
+
 		SubscriptionDomain subscription = new()
 		{
 			MeasurementId = updatedSubscription.MeasurementId,
@@ -118,6 +141,7 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	/// <returns></returns>
 	public async Task DeleteSubscriptionAsync (Guid measurementId)
 	{
+		logger.LogInformation("Удаление подписки для измерения {MeasurementId}", measurementId);
 		await subscriptionRepository.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
 	}
 }

@@ -7,7 +7,7 @@ namespace SmartHomeAPI.Repositories;
 /// <summary>
 /// Репозиторий ссылок на типы измерений
 /// </summary>
-public sealed class MeasuresLinksRepository
+public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> logger)
 {
 	/// <summary>
 	/// Добавить ссылку
@@ -19,6 +19,7 @@ public sealed class MeasuresLinksRepository
 	/// <exception cref="NotImplementedException"></exception>
 	public Task AddMeasureLinkAsync (string path, Guid measurementId)
 	{
+		logger.LogInformation("Добавление ссылки: {Path} -> {MeasurementId}", path, measurementId);
 		throw new NotImplementedException();
 	}
 
@@ -29,7 +30,14 @@ public sealed class MeasuresLinksRepository
 	/// <returns></returns>
 	public Task<Guid> GetMeasureIdAsync (string path)
 	{
-		return Task.FromResult(_storage [path]);
+		if (_storage.TryGetValue(path, out Guid measurementId))
+		{
+			logger.LogInformation("Получен идентификатор измерения {MeasurementId} по пути {Path}", measurementId, path);
+			return Task.FromResult(measurementId);
+		}
+
+		logger.LogWarning("Не найден идентификатор измерения по пути {Path}", path);
+		throw new KeyNotFoundException($"Путь {path} не найден.");
 	}
 
 	/// <summary>
@@ -42,7 +50,10 @@ public sealed class MeasuresLinksRepository
 	/// <returns></returns>
 	public Task<IReadOnlyList<KeyValuePair<string, Guid>>> FindLinksByMaskAsync (string mask)
 	{
-		return Task.FromResult((IReadOnlyList<KeyValuePair<string, Guid>>) _storage.Where(item => Regex.IsMatch(item.Key, mask)).ToArray());
+		KeyValuePair<string, Guid> [] results = _storage.Where(item => Regex.IsMatch(item.Key, mask)).ToArray();
+
+		logger.LogInformation("Найдено {Count} соответствий по маске {Mask}", results.Length, mask);
+		return Task.FromResult((IReadOnlyList<KeyValuePair<string, Guid>>) results);
 	}
 
 	/// <summary>
@@ -53,6 +64,7 @@ public sealed class MeasuresLinksRepository
 	/// <exception cref="NotImplementedException"></exception>
 	public Task RemoveMeasureLinkAsync (string path)
 	{
+		logger.LogInformation("Удаление ссылки по пути {Path}", path);
 		throw new NotImplementedException();
 	}
 
@@ -65,6 +77,7 @@ public sealed class MeasuresLinksRepository
 	/// <exception cref="NotImplementedException"></exception>
 	public Task RemoveMeasureLinkAsync (Guid measurementId)
 	{
+		logger.LogInformation("Удаление всех ссылок для идентификатора {MeasurementId}", measurementId);
 		throw new NotImplementedException();
 	}
 

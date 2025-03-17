@@ -39,11 +39,11 @@ const Authpage: React.FC = () =>
 			return;
 		}*/
 
-		if (formData.password.length < 6)
+		/*if (formData.password.length < 6)
 		{
 			setErrors("Invalid password")
 			return
-		}
+		}*/
 
 		setErrors(null)
 		setUser({username: formData.username})

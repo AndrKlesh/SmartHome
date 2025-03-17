@@ -1,14 +1,17 @@
 #pragma warning disable CA1515
 
 using AuthService.Models;
+using AuthService.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class AuthController : ControllerBase
+public sealed class AuthController (LoginService loginService) : ControllerBase
 {
+	//private readonly LoginService _loginService = loginService;
+
 	[HttpPost("login")]
 	public IActionResult Login ([FromBody] User user)
 	{
@@ -16,14 +19,14 @@ public sealed class AuthController : ControllerBase
 		{
 			return BadRequest();
 		}
-		else if (user.Username == "user" && user.Password == "user")
-		{
-			string token = "test-token";
 
+		try
+		{
+			string token = loginService.Login(user.Username, user.Password);
 			Response.Cookies.Append("jwt", token);
-			return Ok(token);
+			return Ok();
 		}
-		else
+		catch (Exception)
 		{
 			return Unauthorized();
 		}

@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
+import { useUser } from './UserContext'
 import './Authpage.css'
-import {useUser} from './UserContext'
 
 interface FormData
 {
@@ -13,8 +13,8 @@ const Authpage: React.FC = () =>
 {
 
 	const [formData, setFormData] = useState<FormData>({
-		username: "",
-		password: ""
+		username: '',
+		password: ''
 	})
 
 	const [errors, setErrors] = useState<string | null>(null)
@@ -29,26 +29,40 @@ const Authpage: React.FC = () =>
 		})
 	}
 
+	// Отправка данных на сервер
+	const handleSubmit = async (e: React.FormEvent) => { 
+		e.preventDefault();
+		setErrors(null);
 
-	const handleSubmit = (e: React.FormEvent) =>
-	{
-		e.preventDefault()
+		try {
 
-		/*if (formData.password !== formData.confirmPassword) {
-			setErrors("Passwords do not match");
-			return;
-		}*/
+			const response = await fetch('http://localhost:5288/api/auth/login', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					username: formData.username,
+					password: formData.password,
+				}),
+			});
 
-		/*if (formData.password.length < 6)
-		{
-			setErrors("Invalid password")
-			return
-		}*/
+			console.log('Response status:', response.status); // Логируем статус ответа
+			/*const text = await response.text(); // Сначала читаем ответ как текст
+			console.log('Response text:', text); // Логируем текст ответа */
 
-		setErrors(null)
-		setUser({username: formData.username})
-		navigate("/")
-		console.log("Form submitted successfully", formData)
+			
+
+			if (response.ok) {
+				// TODO
+			}
+			else {
+				const errorData = await response.json();
+				setErrors(errorData.message || 'Ошибка входа');
+			}
+		}
+		catch (error) {
+			console.error('Ошибка при входе:', error);
+			setErrors('Произошла ошибка при входе');
+		}
 	}
 
 	return (
@@ -79,16 +93,12 @@ const Authpage: React.FC = () =>
 					/>
 				</div>
 
-				{errors && <p style={{color: 'red'}}>{errors}</p>}
+				{errors && <p style={{ color: 'red' }}>{errors}</p>}
 
-				<button type="submit">
-					Login
-				</button>
-
+				<button type="submit">Login</button>
 			</form>
 		</div>
-	)
-}
+	);
+};
+
 export default Authpage;
-
-

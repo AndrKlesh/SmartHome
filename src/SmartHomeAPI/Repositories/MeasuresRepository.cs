@@ -7,7 +7,7 @@ namespace SmartHomeAPI.Repositories;
 /// <summary>
 /// Репозиторий измерений
 /// </summary>
-public class MeasurementRepository
+public sealed class MeasuresRepository
 {
 	private readonly List<MeasureDomain> _measurements = new();
 	private readonly Lock _guard = new();
@@ -63,10 +63,10 @@ public class MeasurementRepository
 			return Task.FromResult
 			(
 				(IReadOnlyList<MeasureDomain>) _measurements
-														.Where(m => ids.Contains(m.MeasurementId))
-														.GroupBy(m => m.MeasurementId)
-														.Select(g => g.OrderByDescending(m => m.Timestamp).First())
-														.ToArray()
+					.Where(m => ids.Contains(m.MeasurementId))
+					.GroupBy(m => m.MeasurementId)
+					.Select(g => g.OrderByDescending(m => m.Timestamp).First())
+					.ToArray()
 			);
 		}
 	}
@@ -77,15 +77,14 @@ public class MeasurementRepository
 	/// <returns>Список последних значений измерений</returns>
 	public Task<IReadOnlyList<MeasureDomain>> GetLatestMeasurementsAsync ()
 	{
-
 		lock (_guard)
 		{
 			return Task.FromResult
 			(
 			  (IReadOnlyList<MeasureDomain>) _measurements
-														.GroupBy(m => m.MeasurementId)
-														.Select(g => g.OrderByDescending(m => m.Timestamp).First())
-														.ToArray()
+				.GroupBy(m => m.MeasurementId)
+				.Select(g => g.OrderByDescending(m => m.Timestamp).First())
+				.ToArray()
 			);
 		}
 	}
@@ -104,9 +103,9 @@ public class MeasurementRepository
 			return Task.FromResult
 			(
 				(IReadOnlyList<MeasureDomain>) _measurements
-														.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
-														.OrderBy(m => m.Timestamp)
-														.ToArray()
+					.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
+					.OrderBy(m => m.Timestamp)
+					.ToArray()
 			);
 		}
 	}

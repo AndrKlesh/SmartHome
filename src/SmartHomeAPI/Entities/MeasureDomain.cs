@@ -5,7 +5,7 @@ namespace SmartHomeAPI.Entities;
 /// <summary>
 /// Модель измерения
 /// </summary>
-public class MeasureDomain
+public sealed class MeasureDomain
 {
 	/// <summary>
 	/// Идентификатор

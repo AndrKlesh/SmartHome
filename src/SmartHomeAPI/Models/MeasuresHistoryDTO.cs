@@ -5,7 +5,7 @@ namespace SmartHomeAPI.Models;
 /// <summary>
 /// DTO элемента истории измерения
 /// </summary>
-public class MeasuresHistoryDTO
+public sealed class MeasuresHistoryDTO
 {
 	/// <summary>
 	/// Значение измерения

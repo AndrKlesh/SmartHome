@@ -6,14 +6,13 @@ using MQTTnet.Server;
 
 namespace SHMQ;
 
-public class MqttHostedService (IConfiguration configuration) : IHostedService
+public sealed class MqttHostedService (IConfiguration configuration) : IHostedService
 {
-	private readonly IConfiguration _configuration = configuration;
 	private MqttServer? _mqttServer;
 
 	public async Task StartAsync (CancellationToken cancellationToken)
 	{
-		int port = _configuration.GetValue<int>("MqttSettings:Port");
+		int port = configuration.GetValue<int>("MqttSettings:Port");
 
 		MqttServerOptions options = new MqttServerOptionsBuilder()
 			.WithDefaultEndpoint()

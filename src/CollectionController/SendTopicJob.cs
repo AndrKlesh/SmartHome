@@ -11,7 +11,7 @@ namespace CollectionController;
 
 internal sealed class SendTopicJob () : IJob
 {
-	private readonly IMqttClient? _mqttClient = MqttClientProvider.Client;
+	private readonly IMqttClient? mqttClient = MqttClientProvider.Client;
 	private readonly Random random = new();
 
 	async Task IJob.Execute (IJobExecutionContext context)
@@ -33,7 +33,7 @@ internal sealed class SendTopicJob () : IJob
 			currentValue -= step; // Уменьшаем
 		}
 
-		if (_mqttClient == null)
+		if (mqttClient == null)
 		{
 			Console.WriteLine("MQTT client is not initialized");
 			return;
@@ -43,7 +43,7 @@ internal sealed class SendTopicJob () : IJob
 		  .WithTopic(topic)
 		  .WithPayload(currentValue.ToString(CultureInfo.InvariantCulture))
 		  .Build();
-		_ = await _mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+		_ = await mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
 
 #pragma warning disable CA1848
 #pragma warning disable CA2253

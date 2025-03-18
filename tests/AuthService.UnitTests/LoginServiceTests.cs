@@ -1,10 +1,11 @@
 using AuthService.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using NUnit.Framework;
 
 namespace AuthService.UnitTests;
 
-public class LoginServiceTests
+internal sealed class LoginServiceTests
 {
 	[Test]
 	public void LoginTest ()
@@ -17,7 +18,7 @@ public class LoginServiceTests
 	}
 }
 
-public class ConfStub : IConfiguration
+internal sealed class ConfStub : IConfiguration
 {
 	public string? this [string key] { get => "qwertyuiopasdfghjklzxcvbnmqwertyu"; set => throw new NotImplementedException(); }
 

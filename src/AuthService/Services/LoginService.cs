@@ -1,3 +1,5 @@
+#pragma warning disable CA1515
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -5,9 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AuthService.Services;
 
-public class LoginService (IConfiguration configuration)
+public sealed class LoginService (IConfiguration configuration)
 {
-	private readonly IConfiguration _configuration = configuration;
 	public string Login (string username, string password)
 	{
 		if (username == "user" && password == "user")
@@ -25,11 +26,11 @@ public class LoginService (IConfiguration configuration)
 
 	private string GenerateJwtToken (string username)
 	{
-		byte [] key = Encoding.UTF8.GetBytes(_configuration ["Jwt:Key"]);
+		byte [] key = Encoding.UTF8.GetBytes(configuration ["Jwt:Key"]);
 
-		JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+		JwtSecurityTokenHandler tokenHandler = new();
 
-		SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+		SecurityTokenDescriptor tokenDescriptor = new()
 		{
 			Subject = new ClaimsIdentity(new [] { new Claim(ClaimTypes.Name, username) }),
 			Expires = DateTime.UtcNow.AddHours(1),

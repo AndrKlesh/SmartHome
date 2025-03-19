@@ -7,8 +7,7 @@
 	<ItemGroup>
 		<PackageReference Include="MQTTnet" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-		<PackageReference Include="NSwag.AspNetCore" />
-		<PackageReference Include="oqo0.SwaggerThemes" />
+		<PackageReference Include="Scalar.AspNetCore" />
 	</ItemGroup>
 
 </Project>

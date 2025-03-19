@@ -1,8 +1,8 @@
 #pragma warning disable CA1515
 
+using Scalar.AspNetCore;
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
-using SwaggerThemes;
 
 namespace SmartHomeAPI;
 
@@ -24,18 +24,14 @@ internal sealed class Program
 			.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
 			.AddControllers();
 
-		_ = builder.Services.AddOpenApiDocument(config =>
-		{
-			config.Title = "SmartHomeAPI";
-			config.Version = "v1";
-		});
+		_ = builder.Services.AddOpenApi();
 
 		WebApplication app = builder.Build();
 
 		if (app.Environment.IsDevelopment())
 		{
-			_ = app.UseOpenApi();
-			_ = app.UseSwaggerUi(settings => settings.CustomInlineStyles = SwaggerTheme.GetSwaggerThemeCss(Theme.UniversalDark));
+			_ = app.MapOpenApi();
+			_ = app.MapScalarApiReference();
 		}
 
 		_ = app.UseHttpsRedirection();

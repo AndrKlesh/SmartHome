@@ -22,7 +22,7 @@
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			},
 			"launchBrowser": true,
-			"launchUrl": "swagger"
+			"launchUrl": "scalar"
 		},
 		"IIS Express":
 		{
@@ -32,7 +32,7 @@
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			},
 			"launchBrowser": true,
-			"launchUrl": "swagger"
+			"launchUrl": "scalar"
 		}
 	}
 }

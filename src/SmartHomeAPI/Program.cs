@@ -1,6 +1,7 @@
 #pragma warning disable CA1515
 
 using System.Reflection;
+using Microsoft.Extensions.Logging.Console;
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
 using SwaggerThemes;
@@ -15,7 +16,13 @@ internal sealed class Program
 
 		_ = builder.Logging
 			.ClearProviders()
-			.AddConsole()
+			.AddSimpleConsole(options =>
+			{
+				options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss.fff zzz] ";
+				options.SingleLine = true;
+				options.UseUtcTimestamp = false;
+				options.ColorBehavior = LoggerColorBehavior.Enabled;
+			})
 			.AddDebug()
 			.AddConfiguration(builder.Configuration.GetSection("Logging"));
 

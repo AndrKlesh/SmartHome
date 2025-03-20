@@ -35,7 +35,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 		{
 			try
 			{
-				logger.LogInformation("Добавление нового измерения с ID: {MeasurementId}...", measurementDto.MeasurementId);
+				logger.LogInformation("Добавление измерения с ID: {MeasurementId}...", measurementDto.MeasurementId);
 
 				MeasureDomain measurement = new()
 				{
@@ -69,18 +69,18 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 	{
 		try
 		{
-			logger.LogInformation("Подписка на последние измерения с маской: '{Mask}'...", mask);
+			logger.LogInformation("Подписка на последние измерения для маски: '{Mask}'...", mask);
 
 			//TODO: Long Polling: Ожидание новых измерений
 			await _newMeasuresSemaphore.WaitAsync().ConfigureAwait(false);
 
 			IReadOnlyList<MeasureDTO> result = await GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
-			logger.LogInformation("Получены последние измерения по маске: {Mask}", mask);
+			logger.LogInformation("Получены последние измерения по маске: '{Mask}'", mask);
 			return result;
 		}
 		catch (Exception ex)
 		{
-			logger.LogError(ex, "Ошибка при подписке на последние измерения с маской: {Mask}", mask);
+			logger.LogError(ex, "Ошибка при подписке на последние измерения с маской: '{Mask}'", mask);
 			throw;
 		}
 	}
@@ -130,7 +130,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 				});
 			}
 
-			logger.LogInformation("Получено {Count} последних измерений по маске: {Mask}", latestMeasurementsDTO.Count, mask);
+			logger.LogInformation("Получено {Count} последних измерений по маске: '{Mask}'", latestMeasurementsDTO.Count, mask);
 			return latestMeasurementsDTO;
 		}
 		catch (Exception ex)

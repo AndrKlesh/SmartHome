@@ -37,7 +37,7 @@ public sealed class DashboardController (MeasuresStorageService measuresStorageS
 	[HttpGet("latestPoll/{mask}")]
 	public async Task<ActionResult<IReadOnlyList<MeasureDTO>>> SubscribeToLatestMeasurements (string mask)
 	{
-		logger.LogInformation("Подписка на последние измерения для маски: {Mask}...", mask);
+		logger.LogInformation("Подписка на последние измерения для маски: '{Mask}'...", mask);
 		IReadOnlyList<MeasureDTO> latestMeasurements = await measuresStorageService.SubscribeToLatestMeasurementsAsync(mask).ConfigureAwait(false);
 		logger.LogInformation("Подписка на последние измерения для маски: '{Mask}' завершена", mask);
 		return Ok(latestMeasurements);

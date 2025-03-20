@@ -76,6 +76,8 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 
 	private async Task UnconfigureSubscriptions (CancellationToken cancellationToken)
 	{
+		logger.LogInformation("Попытка отключиться от mqtt брокера...");
+
 		IMqttClient? mqttClient = Interlocked.Exchange(ref _mqttClient, null);
 		if (mqttClient is null)
 		{
@@ -102,6 +104,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 		string topic = e.ApplicationMessage.Topic;
 		string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 		DateTime timestamp = DateTime.UtcNow;
+		logger.LogInformation("Получено сообщение: topic = '{Topic}', payload = '{Payload}', timestamp = '{Timestamp}'", topic, payload, timestamp);
 
 		try
 		{

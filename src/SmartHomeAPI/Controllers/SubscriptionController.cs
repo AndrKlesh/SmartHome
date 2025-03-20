@@ -28,9 +28,13 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 		if (subscriptions.Count == 0)
 		{
 			logger.LogWarning("Список подписок пуст");
+			return NotFound(new { message = "Список подписок пуст" });
 		}
-
-		return Ok(subscriptions);
+		else
+		{
+			logger.LogInformation("Найдено {Count} подписок", subscriptions.Count);
+			return Ok(subscriptions);
+		}
 	}
 
 	/// <summary>
@@ -44,13 +48,17 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 		logger.LogInformation("Запрос подписки для измерения с ID '{MeasurementId}'...", measurementId);
 
 		SubscriptionDTO? subscription = await subscriptionsService.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
+
 		if (subscription == null)
 		{
 			logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена", measurementId);
 			return NotFound(new { message = $"Подписка с {nameof(measurementId)} = {measurementId} не найдена" });
 		}
-
-		return Ok(subscription);
+		else
+		{
+			logger.LogInformation("Подписка для измерения с ID '{MeasurementId}' найдена", measurementId);
+			return Ok(subscription);
+		}
 	}
 
 	/// <summary>
@@ -64,7 +72,7 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 		logger.LogInformation("Добавление подписки с топиком '{MqttTopic}'...", subscriptionDto?.MqttTopic);
 		await subscriptionsService.AddSubscriptionAsync(subscriptionDto).ConfigureAwait(false);
 
-		logger.LogInformation("Подписка '{MqttTopic}' успешно добавлена", subscriptionDto.MqttTopic);
+		logger.LogInformation("Подписка '{MqttTopic}' добавлена", subscriptionDto.MqttTopic);
 		return Ok(new { message = $"Подписка '{subscriptionDto.MqttTopic}' добавлена" });
 	}
 
@@ -77,18 +85,10 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	public async Task<IActionResult> UpdateSubscription ([FromBody] SubscriptionDTO updatedSubscription)
 	{
 		logger.LogInformation("Обновление подписки с топиком '{MqttTopic}'...", updatedSubscription?.MqttTopic);
+		await subscriptionsService.UpdateSubscriptionAsync(updatedSubscription).ConfigureAwait(false);
 
-		try
-		{
-			await subscriptionsService.UpdateSubscriptionAsync(updatedSubscription).ConfigureAwait(false);
-			logger.LogInformation("Подписка '{MqttTopic}' успешно обновлена", updatedSubscription.MqttTopic);
-			return Ok(new { message = $"Подписка '{updatedSubscription.MqttTopic}' обновлена" });
-		}
-		catch (Exception ex)
-		{
-			logger.LogWarning("Ошибка при обновлении подписки '{MqttTopic}': {Message}", updatedSubscription.MqttTopic, ex.Message);
-			return NotFound(new { message = ex.Message });
-		}
+		logger.LogInformation("Подписка '{MqttTopic}' обновлена", updatedSubscription.MqttTopic);
+		return Ok(new { message = $"Подписка '{updatedSubscription.MqttTopic}' обновлена" });
 	}
 
 	/// <summary>
@@ -100,17 +100,9 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	public async Task<IActionResult> DeleteSubscription (Guid measurementId)
 	{
 		logger.LogInformation("Удаление подписки с ID '{MeasurementId}'...", measurementId);
+		await subscriptionsService.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
 
-		try
-		{
-			await subscriptionsService.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
-			logger.LogInformation("Подписка с ID '{MeasurementId}' удалена", measurementId);
-			return Ok(new { message = $"Подписка с ID '{measurementId}' удалена" });
-		}
-		catch (Exception ex)
-		{
-			logger.LogWarning("Ошибка при удалении подписки с ID '{MeasurementId}': {Message}", measurementId, ex.Message);
-			return NotFound(new { message = ex.Message });
-		}
+		logger.LogInformation("Подписка с ID '{MeasurementId}' удалена", measurementId);
+		return Ok(new { message = $"Подписка с ID '{measurementId}' удалена" });
 	}
 }

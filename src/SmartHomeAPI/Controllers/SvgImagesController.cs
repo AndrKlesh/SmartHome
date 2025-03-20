@@ -19,15 +19,17 @@ public sealed class SvgImagesController (SvgImagesService svgImageService, ILogg
 	public IActionResult GetSvgImage (string name)
 	{
 		logger.LogInformation("Запрос на получение SVG-изображения: '{ImageName}'...", name);
-
 		string? svgContent = svgImageService.GetSvgImage(name);
-		if (svgContent != null)
+
+		if (svgContent == null)
+		{
+			logger.LogWarning("SVG-изображение '{ImageName}' не найдено", name);
+			return NotFound(new { message = $"SVG-Изображение '{name}' не найдено" });
+		}
+		else
 		{
 			logger.LogInformation("SVG-изображение '{ImageName}' найдено", name);
 			return File(Encoding.UTF8.GetBytes(svgContent), "image/svg+xml");
 		}
-
-		logger.LogWarning("SVG-изображение '{ImageName}' не найдено", name);
-		return NotFound(new { message = $"SVG-Изображение '{name}' не найдено" });
 	}
 }

@@ -62,7 +62,16 @@ public sealed class SubscriptionRepository (ILogger<SubscriptionRepository> logg
 		try
 		{
 			List<SubscriptionDomain> subscriptions = await Task.FromResult(_subscriptions.ToList()).ConfigureAwait(false);
-			logger.LogInformation("Найдено {Count} подписок", subscriptions.Count);
+
+			if (subscriptions.Count == 0)
+			{
+				logger.LogWarning("Подписки не найдены");
+			}
+			else
+			{
+				logger.LogInformation("Найдено {Count} подписок", subscriptions.Count);
+			}
+
 			return subscriptions;
 		}
 		finally
@@ -97,13 +106,13 @@ public sealed class SubscriptionRepository (ILogger<SubscriptionRepository> logg
 		try
 		{
 			SubscriptionDomain subscription = await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId)).ConfigureAwait(false);
-			if (subscription != null)
+			if (subscription == null)
 			{
-				logger.LogInformation("Найдена подписка для измерения с ID '{MeasurementId}'", measurementId);
+				logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена", measurementId);
 			}
 			else
 			{
-				logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена", measurementId);
+				logger.LogInformation("Найдена подписка для измерения с ID '{MeasurementId}'", measurementId);
 			}
 
 			return subscription;
@@ -122,13 +131,13 @@ public sealed class SubscriptionRepository (ILogger<SubscriptionRepository> logg
 		try
 		{
 			SubscriptionDomain subscription = await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MqttTopic == mqttTopic)).ConfigureAwait(false);
-			if (subscription != null)
+			if (subscription == null)
 			{
-				logger.LogInformation("Найдена подписка для MQTT топика '{MqttTopic}'", mqttTopic);
+				logger.LogWarning("Подписка для MQTT топика '{MqttTopic}' не найдена", mqttTopic);
 			}
 			else
 			{
-				logger.LogWarning("Подписка для MQTT топика '{MqttTopic}' не найдена", mqttTopic);
+				logger.LogInformation("Найдена подписка для MQTT топика '{MqttTopic}'", mqttTopic);
 			}
 
 			return subscription;

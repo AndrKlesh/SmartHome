@@ -24,25 +24,21 @@ public sealed class MeasuresLinksController (MeasuresLinksService measuresLinksS
 	/// <returns></returns>
 	[HttpGet("nextLayer")]
 
-	public async Task<ActionResult<string []>> GetNextMeasurementsLayer ([FromQuery] string? path)
+	public async Task<ActionResult<LinkDTO []>> GetNextMeasurementsLayer ([FromQuery] string? path)
 	{
 		logger.LogInformation("Запрос следующего уровня измерений для пути: {Path}...", path ?? "корень");
 
-		try
+		IReadOnlyList<LinkDTO> layer = await measuresLinksService.LoadNextMeasurementsLayer(path).ConfigureAwait(false);
+
+		if (layer.Count == 0)
 		{
-			IReadOnlyList<LinkDTO> layer = await measuresLinksService.LoadNextMeasurementsLayer(path).ConfigureAwait(false);
-
-			if (layer.Count == 0)
-			{
-				logger.LogWarning("Для пути {Path} не найдено данных", path ?? "корень");
-			}
-
-			return Ok(layer);
+			logger.LogWarning("Для пути {Path} не найдено данных", path ?? "корень");
+			return NotFound(new { message = $"Для пути {path ?? "корень"} не найдено данных" });
 		}
-		catch (Exception ex)
+		else
 		{
-			logger.LogError(ex, "Ошибка при получении следующего уровня измерений для пути {Path}", path ?? "корень");
-			return StatusCode(500, new { message = "Внутренняя ошибка сервера", error = ex.Message });
+			logger.LogInformation("Запрос следующего уровня измерений для пути: {Path} завершен. Найдено {Count} элементов", path ?? "корень", layer.Count);
+			return Ok(layer);
 		}
 	}
 }

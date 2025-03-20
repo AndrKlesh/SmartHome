@@ -20,6 +20,9 @@ public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> lo
 	public Task AddMeasureLinkAsync (string path, Guid measurementId)
 	{
 		logger.LogInformation("Добавление ссылки: '{Path}' -> '{MeasurementId}'...", path, measurementId);
+
+		// TODO: Реализовать
+		logger.LogError("Добавление ссылки: '{Path}' -> '{MeasurementId}' не реализовано", path, measurementId);
 		throw new NotImplementedException();
 	}
 
@@ -36,9 +39,13 @@ public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> lo
 			logger.LogInformation("Получен ID измерения '{MeasurementId}' по пути '{Path}'", measurementId, path);
 			return Task.FromResult(measurementId);
 		}
+		else
+		{
+			logger.LogWarning("Не найден ID измерения по пути '{Path}'", path);
 
-		logger.LogWarning("Не найден ID измерения по пути '{Path}'", path);
-		throw new KeyNotFoundException($"Не найден ID измерения по пути '{path}'");
+			// TODO: Должны ли мы выкидывать тут исключение? Может лучше вернуть null и обработать его как NotFound?
+			throw new KeyNotFoundException($"Не найден ID измерения по пути '{path}'");
+		}
 	}
 
 	/// <summary>
@@ -54,8 +61,18 @@ public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> lo
 		logger.LogInformation("Получение ссылок по маске '{Mask}'...", mask);
 		KeyValuePair<string, Guid> [] results = _storage.Where(item => Regex.IsMatch(item.Key, mask)).ToArray();
 
-		logger.LogInformation("Найдено {Count} соответствий по маске '{Mask}'", results.Length, mask);
-		return Task.FromResult((IReadOnlyList<KeyValuePair<string, Guid>>) results);
+		if (results.Length == 0)
+		{
+			logger.LogWarning("Не найдено соответствий по маске '{Mask}'", mask);
+
+			// TODO: Должны ли мы выкидывать тут исключение? Может лучше вернуть null и обработать его как NotFound?
+			throw new KeyNotFoundException($"Не найдено соответствий по маске '{mask}'");
+		}
+		else
+		{
+			logger.LogInformation("Найдено {Count} соответствий по маске '{Mask}'", results.Length, mask);
+			return Task.FromResult((IReadOnlyList<KeyValuePair<string, Guid>>) results);
+		}
 	}
 
 	/// <summary>
@@ -67,6 +84,9 @@ public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> lo
 	public Task RemoveMeasureLinkAsync (string path)
 	{
 		logger.LogInformation("Удаление ссылки по пути '{Path}'...", path);
+
+		// TODO: Реализовать
+		logger.LogError("удаление ссылки по пути '{Path}' не реализовано", path);
 		throw new NotImplementedException();
 	}
 
@@ -80,6 +100,9 @@ public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> lo
 	public Task RemoveMeasureLinkAsync (Guid measurementId)
 	{
 		logger.LogInformation("Удаление всех ссылок для measurementID = '{MeasurementId}'...", measurementId);
+
+		// TODO: Реализовать
+		logger.LogError("Удаление всех ссылок для measurementID = '{MeasurementId}' не реализовано", measurementId);
 		throw new NotImplementedException();
 	}
 

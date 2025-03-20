@@ -75,9 +75,7 @@ public sealed class SvgImagesRepository (ILogger<SvgImagesRepository> logger)
 	{
 		logger.LogInformation("Получение SVG-изображения для имени: '{Name}'...", name);
 
-		bool found = nameImagePairs.TryGetValue(name, out string? svgContent);
-
-		if (found)
+		if (nameImagePairs.TryGetValue(name, out string? svgContent))
 		{
 			logger.LogInformation("SVG-изображение для имени {Name} найдено", name);
 		}

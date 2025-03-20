@@ -25,6 +25,7 @@ public sealed class DashboardController (MeasuresStorageService measuresStorageS
 	{
 		logger.LogInformation("Получение последних измерений для маски: '{Mask}'...", mask);
 		IReadOnlyList<MeasureDTO> latestMeasurements = await measuresStorageService.GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
+
 		logger.LogInformation("Получение последних измерений для маски: '{Mask}' завершено", mask);
 		return Ok(latestMeasurements);
 	}
@@ -39,6 +40,7 @@ public sealed class DashboardController (MeasuresStorageService measuresStorageS
 	{
 		logger.LogInformation("Подписка на последние измерения для маски: '{Mask}'...", mask);
 		IReadOnlyList<MeasureDTO> latestMeasurements = await measuresStorageService.SubscribeToLatestMeasurementsAsync(mask).ConfigureAwait(false);
+
 		logger.LogInformation("Подписка на последние измерения для маски: '{Mask}' завершена", mask);
 		return Ok(latestMeasurements);
 	}

@@ -37,6 +37,7 @@ public sealed class MeasuresStorageService (IServiceProvider serviceProvider,
 		using IServiceScope scope = serviceProvider.CreateScope();
 		MeasuresRepository measurementRepository = scope.ServiceProvider.GetRequiredService<MeasuresRepository>();
 		await measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
+		_ = _newMeasuresSemaphore.Release();
 	}
 
 	/// <summary>

@@ -19,8 +19,8 @@ internal sealed class Program
 			.AddSimpleConsole(options =>
 			{
 				options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss.fff zzz] ";
-				options.SingleLine = true;
 				options.UseUtcTimestamp = false;
+				options.SingleLine = true;
 				options.ColorBehavior = LoggerColorBehavior.Enabled;
 			})
 			.AddDebug()

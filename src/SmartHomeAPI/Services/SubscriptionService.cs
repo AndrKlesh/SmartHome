@@ -40,7 +40,7 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	public async Task AddSubscriptionAsync (SubscriptionDTO subscriptionDto)
 	{
 		ArgumentNullException.ThrowIfNull(subscriptionDto);
-		logger.LogInformation("Добавление подписки для измерения {MeasurementId} на топик {MqttTopic}", subscriptionDto.MeasurementId, subscriptionDto.MqttTopic);
+		logger.LogInformation("Добавление подписки для измерения '{MeasurementId}' на топик '{MqttTopic}'...", subscriptionDto.MeasurementId, subscriptionDto.MqttTopic);
 
 		SubscriptionDomain subscription = new()
 		{
@@ -65,7 +65,7 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 
 		if (subscription is null)
 		{
-			logger.LogWarning("Подписка с идентификатором {MeasurementId} не найдена", measurementId);
+			logger.LogWarning("Подписка с ID '{MeasurementId}' не найдена", measurementId);
 			return null;
 		}
 
@@ -93,16 +93,16 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 			throw new ArgumentNullException(nameof(mqttTopic));
 		}
 
-		logger.LogInformation("Поиск подписки по MQTT-топику {MqttTopic}", mqttTopic);
+		logger.LogInformation("Поиск подписки по MQTT-топику '{MqttTopic}'...", mqttTopic);
 		SubscriptionDomain? subscription = await subscriptionRepository.GetSubscriptionByMqttTopicAsync(mqttTopic).ConfigureAwait(false);
 
 		if (subscription is null)
 		{
-			logger.LogWarning("Подписка на топик {MqttTopic} не найдена", mqttTopic);
+			logger.LogWarning("Подписка на топик '{MqttTopic}' не найдена", mqttTopic);
 			return null;
 		}
 
-		logger.LogInformation("Подписка найдена для {MeasurementId}", subscription.MeasurementId);
+		logger.LogInformation("Подписка найдена для '{MeasurementId}'", subscription.MeasurementId);
 		return new SubscriptionDTO
 		{
 			MeasurementId = subscription.MeasurementId,
@@ -120,7 +120,7 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	public async Task UpdateSubscriptionAsync (SubscriptionDTO updatedSubscription)
 	{
 		ArgumentNullException.ThrowIfNull(updatedSubscription);
-		logger.LogInformation("Обновление подписки для измерения {MeasurementId}", updatedSubscription.MeasurementId);
+		logger.LogInformation("Обновление подписки для измерения '{MeasurementId}'...", updatedSubscription.MeasurementId);
 
 		SubscriptionDomain subscription = new()
 		{
@@ -141,7 +141,7 @@ public sealed class SubscriptionService (SubscriptionRepository subscriptionRepo
 	/// <returns></returns>
 	public async Task DeleteSubscriptionAsync (Guid measurementId)
 	{
-		logger.LogInformation("Удаление подписки для измерения {MeasurementId}", measurementId);
+		logger.LogInformation("Удаление подписки для измерения '{MeasurementId}'...", measurementId);
 		await subscriptionRepository.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
 	}
 }

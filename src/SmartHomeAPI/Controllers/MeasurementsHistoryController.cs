@@ -40,8 +40,8 @@ public sealed class MeasurementsHistoryController (MeasuresStorageService measur
 
 			if (measurements == null || measurements.Count == 0)
 			{
-				logger.LogWarning("Измерения для measurementId = {MeasurementId} и диапазона {StartDate} - {EndDate} не найдены", measurementId, startDate, endDate);
-				return NotFound(new { message = $"Измерения для {nameof(measurementId)} = {measurementId} и диапозону {startDate} - {endDate} не найдены" });
+				logger.LogWarning("Измерения для measurementId = '{MeasurementId}' и диапазона '{StartDate}' - '{EndDate}' не найдены", measurementId, startDate, endDate);
+				return NotFound(new { message = $"Измерения для {nameof(measurementId)} = '{measurementId}' и диапозону '{startDate}' - '{endDate}' не найдены" });
 			}
 
 			return Ok(measurements);

@@ -35,7 +35,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 		{
 			try
 			{
-				logger.LogInformation("Добавление нового измерения с ID: {MeasurementId}", measurementDto.MeasurementId);
+				logger.LogInformation("Добавление нового измерения с ID: {MeasurementId}...", measurementDto.MeasurementId);
 
 				MeasureDomain measurement = new()
 				{
@@ -69,7 +69,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 	{
 		try
 		{
-			logger.LogInformation("Подписка на последние измерения с маской: {Mask}", mask);
+			logger.LogInformation("Подписка на последние измерения с маской: '{Mask}'...", mask);
 
 			//TODO: Long Polling: Ожидание новых измерений
 			await _newMeasuresSemaphore.WaitAsync().ConfigureAwait(false);
@@ -95,7 +95,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 	{
 		try
 		{
-			logger.LogInformation("Получение последних измерений для маски: {Mask}", mask);
+			logger.LogInformation("Получение последних измерений для маски: '{Mask}'...", mask);
 
 			IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 			IReadOnlyList<MeasureDomain> latestMeasuresDomain = await measurementRepository
@@ -130,7 +130,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 				});
 			}
 
-			logger.LogInformation("Получены {Count} последних измерений по маске: {Mask}", latestMeasurementsDTO.Count, mask);
+			logger.LogInformation("Получено {Count} последних измерений по маске: {Mask}", latestMeasurementsDTO.Count, mask);
 			return latestMeasurementsDTO;
 		}
 		catch (Exception ex)
@@ -151,7 +151,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 	{
 		try
 		{
-			logger.LogInformation("Получение истории измерений для ID: {MeasurementId} с {StartDate} по {EndDate}", measurementId, startDate, endDate);
+			logger.LogInformation("Получение истории измерений для ID: '{MeasurementId}' с '{StartDate'} по '{EndDate}'", measurementId, startDate, endDate);
 
 			IReadOnlyList<MeasureDomain> measurements = await measurementRepository
 				.GetMeasurementHistory(measurementId, startDate, endDate)
@@ -163,12 +163,12 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 				Timestamp = m.Timestamp
 			}).ToArray();
 
-			logger.LogInformation("Получено {Count} записей в истории измерений для ID: {MeasurementId}", history.Length, measurementId);
+			logger.LogInformation("Получено {Count} записей в истории измерений для ID: '{MeasurementId}'", history.Length, measurementId);
 			return history;
 		}
 		catch (Exception ex)
 		{
-			logger.LogError(ex, "Ошибка при получении истории измерений для ID: {MeasurementId} с {StartDate} по {EndDate}", measurementId, startDate, endDate);
+			logger.LogError(ex, "Ошибка при получении истории измерений для ID: '{MeasurementId}' с '{StartDate}' по '{EndDate}'", measurementId, startDate, endDate);
 			throw;
 		}
 	}

@@ -56,7 +56,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 	{
 		try
 		{
-			logger.LogInformation("Выполняется попытка подключения к mqtt-брокеру");
+			logger.LogInformation("Выполняется попытка подключения к mqtt-брокеру...");
 			_ = await mqttClient.ConnectAsync(_mqttClientOptions, cancellationToken).ConfigureAwait(false);
 
 			mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
@@ -66,7 +66,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 			_ = await mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
 			_ = Interlocked.Exchange(ref _mqttClient, mqttClient);
 
-			logger.LogInformation("Подключение к брокеру mqtt успешно выполнено.");
+			logger.LogInformation("Подключение к брокеру mqtt выполнено");
 		}
 		catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
 		{
@@ -89,7 +89,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 		{
 			await mqttClient.DisconnectAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 			mqttClient.Dispose();
-			logger.LogInformation("Подключение с mqtt-брокером разорвано и клиент очищен.");
+			logger.LogInformation("Подключение с mqtt-брокером разорвано и клиент очищен");
 		}
 		catch (Exception ex)
 		{
@@ -109,7 +109,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 			SubscriptionDTO? subscription = await subscriptionsService.GetSubscriptionByMqttTopicAsync(topic).ConfigureAwait(false);
 			if (subscription is null)
 			{
-				logger.LogWarning("Топик {Topic} не добавлен пользователем. Игнорирование сообщения.", topic);
+				logger.LogWarning("Топик {Topic} не добавлен пользователем. Игнорирование сообщения", topic);
 				return;
 			}
 
@@ -122,7 +122,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 
 			// Передаем идентификатор измерения в метод добавления
 			await measuresStorageService.AddMeasureAsync(measurementDto).ConfigureAwait(false);
-			logger.LogInformation("Измерение для топика {Topic} успешно сохранено", topic);
+			logger.LogInformation("Измерение для топика {Topic} сохранено", topic);
 		}
 		catch (ArgumentException ex)
 		{

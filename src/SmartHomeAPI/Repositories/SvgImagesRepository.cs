@@ -73,17 +73,17 @@ public sealed class SvgImagesRepository (ILogger<SvgImagesRepository> logger)
 
 	public string? GetSvgImage (string name)
 	{
-		logger.LogInformation("Попытка получить SVG-изображение для имени: {Name}", name);
+		logger.LogInformation("Получение SVG-изображения для имени: '{Name}'...", name);
 
 		bool found = nameImagePairs.TryGetValue(name, out string? svgContent);
 
 		if (found)
 		{
-			logger.LogInformation("SVG-изображение для имени {Name} успешно найдено.", name);
+			logger.LogInformation("SVG-изображение для имени {Name} найдено", name);
 		}
 		else
 		{
-			logger.LogWarning("SVG-изображение для имени {Name} не найдено.", name);
+			logger.LogWarning("SVG-изображение для имени {Name} не найдено", name);
 		}
 
 		return svgContent;

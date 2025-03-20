@@ -22,7 +22,7 @@ public sealed class MeasuresLinksService (MeasuresLinksRepository measuresLinksR
 	/// <returns></returns>
 	public async Task<IReadOnlyList<LinkDTO>> LoadNextMeasurementsLayer (string? path)
 	{
-		logger.LogInformation("Загрузка следующего уровня по пути: {Path}", path);
+		logger.LogInformation("Загрузка следующего уровня по пути: '{Path}'...", path);
 
 		if (string.IsNullOrWhiteSpace(path))
 		{
@@ -41,7 +41,7 @@ public sealed class MeasuresLinksService (MeasuresLinksRepository measuresLinksR
 
 		try
 		{
-			logger.LogInformation("Используем маску: {Mask} для поиска ссылок", mask);
+			logger.LogInformation("Используем маску: {Mask} для поиска ссылок...", mask);
 			IReadOnlyList<KeyValuePair<string, Guid>> links = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 
 			LinkDTO [] sublayer = links

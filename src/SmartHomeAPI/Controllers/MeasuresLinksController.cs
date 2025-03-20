@@ -26,7 +26,7 @@ public sealed class MeasuresLinksController (MeasuresLinksService measuresLinksS
 
 	public async Task<ActionResult<string []>> GetNextMeasurementsLayer ([FromQuery] string? path)
 	{
-		logger.LogInformation("Запрос следующего уровня измерений для пути: {Path}", path ?? "корень");
+		logger.LogInformation("Запрос следующего уровня измерений для пути: {Path}...", path ?? "корень");
 
 		try
 		{

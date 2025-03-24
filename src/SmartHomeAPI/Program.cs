@@ -57,6 +57,7 @@ internal sealed class Program
 		_ = app.MapControllers();
 		app.Urls.Add("https://*:7098");
 
+		string projectName = Assembly.GetExecutingAssembly().GetName().Name;
 		logger.LogInformation("{ProjectName} запущен", projectName);
 		app.Run();
 	}

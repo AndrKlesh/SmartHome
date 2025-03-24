@@ -1,8 +1,6 @@
 #pragma warning disable CA1515
-using System.Security.Claims;
 using AuthService.Models;
 using AuthService.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,19 +34,5 @@ public sealed class AuthController (LoginService loginService) : ControllerBase
 		{
 			return Unauthorized();
 		}
-	}
-
-	[Authorize] // Аутентификации через JWT
-	[HttpGet("me")]
-	public IActionResult GetCurrentUser ()
-	{
-		string username = User.FindFirst(ClaimTypes.Name)?.Value;
-
-		if (username is null)
-		{
-			return Unauthorized(new { message = "Токен недействителен" });
-		}
-
-		return Ok(new { username });
 	}
 }

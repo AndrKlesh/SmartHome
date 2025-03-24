@@ -15,12 +15,14 @@ internal sealed class LoginServiceTests
 		string username = "user";
 		string token = ls.Login(username, username);
 		Assert.That(token, Is.Not.EqualTo(string.Empty));
+		bool isValid = ls.CheckToken(token);
+		Assert.That(isValid, Is.True);
 	}
 }
 
 internal sealed class ConfStub : IConfiguration
 {
-	public string? this [string key] { get => "qwertyuiopasdfghjklzxcvbnmqwertyu"; set => throw new NotImplementedException(); }
+	public string? this [string key] { get => "F8h#9sLm@2vX!zP$QeRtY&5*KdNwUoG1"; set => throw new NotImplementedException(); }
 
 	public IEnumerable<IConfigurationSection> GetChildren ()
 	{

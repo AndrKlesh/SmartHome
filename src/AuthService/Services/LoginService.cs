@@ -33,6 +33,8 @@ public sealed class LoginService (IConfiguration configuration)
 		SecurityTokenDescriptor tokenDescriptor = new()
 		{
 			Subject = new ClaimsIdentity(new [] { new Claim(ClaimTypes.Name, username) }),
+			Audience = "12345",
+			Issuer = "12345",
 			Expires = DateTime.UtcNow.AddHours(1),
 			SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 		};
@@ -40,5 +42,31 @@ public sealed class LoginService (IConfiguration configuration)
 		SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 		string tokenString = tokenHandler.WriteToken(token);
 		return tokenString;
+	}
+
+	public bool CheckToken (string token)
+	{
+		try
+		{
+			byte [] key = Encoding.UTF8.GetBytes(configuration ["Jwt:Key"]);
+			JwtSecurityTokenHandler tokenHandler = new();
+			TokenValidationParameters validationParameters = new()
+			{
+				ValidateLifetime = true,
+				ValidateIssuerSigningKey = true,
+				ValidAudience = "12345",
+				ValidIssuer = "12345",
+				IssuerSigningKey = new SymmetricSecurityKey(key),
+				ClockSkew = TimeSpan.Zero
+			};
+
+			ClaimsPrincipal claims = tokenHandler.ValidateToken(token, validationParameters, out _);
+			Claim userClaim = claims.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			return false;
+		}
 	}
 }

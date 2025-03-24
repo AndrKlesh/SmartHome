@@ -89,6 +89,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 
 		try
 		{
+            logger.LogInformation("Отключение от mqtt-брокера ...");
 			await mqttClient.DisconnectAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 			mqttClient.Dispose();
 			logger.LogInformation("Подключение с mqtt-брокером разорвано и клиент очищен");

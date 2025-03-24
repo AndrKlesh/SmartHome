@@ -10,7 +10,7 @@ namespace SmartHomeAPI.Services;
 /// </summary>
 /// <param name="measuresStorageService">Сервис измерений</param>
 /// <param name="subscriptionsService">Сервис подписок на измерения</param>
-internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService) : IHostedService
+internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService, ILogger<MeasuresReceiverService> logger) : IHostedService
 {
 	private static readonly MqttClientFactory _mqttFactory = new();
 	private readonly MqttClientOptions _mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder().WithTcpServer("localhost", 1883).Build();
@@ -40,7 +40,8 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 
 	private async Task OnDisconnectedAsync (MqttClientDisconnectedEventArgs arg)
 	{
-		Console.WriteLine("Подключение с mqtt-брокером разорвано");
+		logger.LogWarning("Подключение с mqtt-брокером разорвано");
+
 		IMqttClient? mqttClient = _mqttClient;
 		if (mqttClient is null)
 		{
@@ -55,7 +56,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 	{
 		try
 		{
-			Console.WriteLine("Выполняется попытка подключения к mqtt-брокеру");
+			logger.LogInformation("Выполняется попытка подключения к mqtt-брокеру...");
 			_ = await mqttClient.ConnectAsync(_mqttClientOptions, cancellationToken).ConfigureAwait(false);
 
 			mqttClient.ApplicationMessageReceivedAsync += OnApplicationMessageReceivedAsync;
@@ -64,16 +65,19 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 				.Build();
 			_ = await mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
 			_ = Interlocked.Exchange(ref _mqttClient, mqttClient);
-			Console.WriteLine("Подключение к брокеру mqtt успешно выполнено.");
+
+			logger.LogInformation("Подключение к брокеру mqtt выполнено");
 		}
 		catch (Exception ex) when (ex is OperationCanceledException or MqttCommunicationTimedOutException or MqttCommunicationException or TimeoutException)
 		{
-			Console.WriteLine($"Ошибка подключения к брокеру mqtt: {ex.Message}");
+			logger.LogError(ex, "Ошибка подключения к брокеру mqtt");
 		}
 	}
 
 	private async Task UnconfigureSubscriptions (CancellationToken cancellationToken)
 	{
+		logger.LogInformation("Попытка отключиться от mqtt брокера...");
+
 		IMqttClient? mqttClient = Interlocked.Exchange(ref _mqttClient, null);
 		if (mqttClient is null)
 		{
@@ -82,8 +86,18 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 
 		mqttClient.DisconnectedAsync -= OnDisconnectedAsync;
 		mqttClient.ApplicationMessageReceivedAsync -= OnApplicationMessageReceivedAsync;
-		await mqttClient.DisconnectAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-		mqttClient.Dispose();
+
+		try
+		{
+            logger.LogInformation("Отключение от mqtt-брокера ...");
+			await mqttClient.DisconnectAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+			mqttClient.Dispose();
+			logger.LogInformation("Подключение с mqtt-брокером разорвано и клиент очищен");
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "Ошибка при отключении от mqtt-брокера");
+		}
 	}
 
 	private async Task OnApplicationMessageReceivedAsync (MqttApplicationMessageReceivedEventArgs e)
@@ -91,23 +105,36 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 		string topic = e.ApplicationMessage.Topic;
 		string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 		DateTime timestamp = DateTime.UtcNow;
+		logger.LogInformation("Получено сообщение: topic = '{Topic}', payload = '{Payload}', timestamp = '{Timestamp}'", topic, payload, timestamp);
 
-		// Проверка существования топика в подписках
-		SubscriptionDTO? subscription = await subscriptionsService.GetSubscriptionByMqttTopicAsync(topic).ConfigureAwait(false);
-		if (subscription is null)
+		try
 		{
-			Console.WriteLine($"Топик '{topic}' не добавлен пользователем. Игнорирование сообщения.");
-			return;
+			// Проверка существования топика в подписках
+			SubscriptionDTO? subscription = await subscriptionsService.GetSubscriptionByMqttTopicAsync(topic).ConfigureAwait(false);
+			if (subscription is null)
+			{
+				logger.LogWarning("Топик {Topic} не добавлен пользователем. Игнорирование сообщения", topic);
+				return;
+			}
+
+			MeasureDTO measurementDto = new()
+			{
+				MeasurementId = subscription.MeasurementId,
+				Value = payload,
+				Timestamp = timestamp
+			};
+
+			// Передаем идентификатор измерения в метод добавления
+			await measuresStorageService.AddMeasureAsync(measurementDto).ConfigureAwait(false);
+			logger.LogInformation("Измерение для топика {Topic} сохранено", topic);
 		}
-
-		MeasureDTO measurementDto = new()
+		catch (ArgumentException ex)
 		{
-			MeasurementId = subscription.MeasurementId,
-			Value = payload,
-			Timestamp = timestamp
-		};
-
-		// Передаем идентификатор измерения в метод добавления
-		await measuresStorageService.AddMeasureAsync(measurementDto).ConfigureAwait(false);
+			logger.LogError(ex, "Ошибка в данных сообщения MQTT (неверный формат или недопустимые данные)");
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "Не удалось обработать сообщение MQTT");
+		}
 	}
 }

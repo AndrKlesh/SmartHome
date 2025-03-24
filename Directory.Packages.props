@@ -10,7 +10,7 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.3" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.3" />
-		<PackageVersion Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
+		<PackageVersion Include="Microsoft.Web.LibraryManager.Build" Version="3.0.71" />
 		<PackageVersion Include="MQTTnet" Version="5.0.1.1416" />
 		<PackageVersion Include="MQTTnet.AspNetCore" Version="5.0.1.1416" />
 		<PackageVersion Include="NCrontab" Version="3.3.3" />

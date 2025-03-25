@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import './styles.css'
 import { DashboardData } from './types'
 import { formatValue } from './utils'
+import { API_BASE_URL } from "../config"
 
 const Dashboard = () => {
 	const { name } = useParams<{ name: string }>()
@@ -19,7 +20,7 @@ const Dashboard = () => {
 			{
 				try
 				{
-					const response = await fetch(`https://localhost:7098/api/Dashboard/latestPoll/${name}*`)
+					const response = await fetch(API_BASE_URL + `/Dashboard/latestPoll/${name}*`)
 					if (!response.ok) {
 						throw new Error(`HTTP error! status: ${response.status}`)
 					}

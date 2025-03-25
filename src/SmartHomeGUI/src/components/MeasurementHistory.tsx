@@ -3,6 +3,7 @@ import {useParams} from 'react-router-dom'
 import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts'
 import './styles.css'
 import {Measurement} from './types'
+import { API_BASE_URL } from "../config"
 
 const periods = {
 	hour: 1,
@@ -32,7 +33,7 @@ const MeasurementHistory = () =>
 			).toISOString()
 
 			const response = await fetch(
-				`https://localhost:7098/api/MeasurementsHistory?measurementId=${encodeURIComponent(
+				API_BASE_URL + `/MeasurementsHistory?measurementId=${encodeURIComponent(
 					decodedTopicName
 				)}&startDate=${startDate}&endDate=${endDate}`
 			)

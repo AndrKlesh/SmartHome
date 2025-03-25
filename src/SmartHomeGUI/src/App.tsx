@@ -5,6 +5,8 @@ import Header from "./components/Header"
 import MeasurementHistory from "./components/MeasurementHistory"
 import Settings from "./components/Settings"
 import "./components/styles.css"
+import { API_BASE_URL } from "./config"
+import { BASE_NAME } from "./config"
 
 function App ()
 {
@@ -17,7 +19,7 @@ function App ()
 		{
 			try
 			{
-				const response = await fetch("https://localhost:7098/api/MeasuresLinks/nextLayer/")
+				const response = await fetch(API_BASE_URL +'/MeasuresLinks/nextLayer/')
 				if (!response.ok)
 				{
 					throw new Error(`Ошибка загрузки меню: ${ response.status }`)
@@ -37,7 +39,7 @@ function App ()
 	}, [])
 
 	return (
-		<Router>
+		<Router basename={BASE_NAME}>
 			<Header isOpen={ isOpen } setIsOpen={ setIsOpen } />
 			<div className={ `content ${ isOpen ? "shifted" : "" }` }>
 				<Routes>

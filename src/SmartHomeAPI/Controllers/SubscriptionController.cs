@@ -13,7 +13,7 @@ namespace SmartHomeAPI.Controllers;
 /// <param name="subscriptionsService"></param>
 [ApiController]
 [Route("api/[controller]")]
-public sealed class SubscriptionsController (SubscriptionService subscriptionsService) : Controller
+public sealed class SubscriptionsController (SubscriptionService subscriptionsService, ILogger<SubscriptionsController> logger) : Controller
 {
 	/// <summary>
 	/// Получить все подписки
@@ -22,8 +22,19 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	[HttpGet("getAllSubscriptions")]
 	public async Task<ActionResult<IReadOnlyList<SubscriptionDomain>>> GetAllSubscriptions ()
 	{
+		logger.LogInformation("Запрос всех подписок...");
 		IReadOnlyList<SubscriptionDTO> subscriptions = await subscriptionsService.GetAllSubscriptionsAsync().ConfigureAwait(false);
-		return Ok(subscriptions);
+
+		if (subscriptions.Count == 0)
+		{
+			logger.LogWarning("Список подписок пуст");
+			return NotFound(new { message = "Список подписок пуст" });
+		}
+		else
+		{
+			logger.LogInformation("Найдено {Count} подписок", subscriptions.Count);
+			return Ok(subscriptions);
+		}
 	}
 
 	/// <summary>
@@ -34,13 +45,20 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	[HttpGet("getSubscriptionByMeasurementId/{measurementId}")]
 	public async Task<ActionResult<SubscriptionDomain>> GetSubscriptionByMeasurementId (Guid measurementId)
 	{
+		logger.LogInformation("Запрос подписки для измерения с ID '{MeasurementId}'...", measurementId);
+
 		SubscriptionDTO? subscription = await subscriptionsService.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
+
 		if (subscription == null)
 		{
-			return NotFound(new { message = $"Subscription with measurement ID '{measurementId}' not found." });
+			logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена", measurementId);
+			return NotFound(new { message = $"Подписка с {nameof(measurementId)} = {measurementId} не найдена" });
 		}
-
-		return Ok(subscription);
+		else
+		{
+			logger.LogInformation("Подписка для измерения с ID '{MeasurementId}' найдена", measurementId);
+			return Ok(subscription);
+		}
 	}
 
 	/// <summary>
@@ -51,8 +69,11 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	[HttpPost("addSubscription")]
 	public async Task<IActionResult> AddSubscription ([FromBody] SubscriptionDTO subscriptionDto)
 	{
+		logger.LogInformation("Добавление подписки с топиком '{MqttTopic}'...", subscriptionDto?.MqttTopic);
 		await subscriptionsService.AddSubscriptionAsync(subscriptionDto).ConfigureAwait(false);
-		return Ok(new { message = $"Subscription {subscriptionDto?.MqttTopic} added" });
+
+		logger.LogInformation("Подписка '{MqttTopic}' добавлена", subscriptionDto.MqttTopic);
+		return Ok(new { message = $"Подписка '{subscriptionDto.MqttTopic}' добавлена" });
 	}
 
 	/// <summary>
@@ -63,16 +84,13 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	[HttpPut("updateSubscription")]
 	public async Task<IActionResult> UpdateSubscription ([FromBody] SubscriptionDTO updatedSubscription)
 	{
-		try
-		{
-			await subscriptionsService.UpdateSubscriptionAsync(updatedSubscription).ConfigureAwait(false);
-			return Ok(new { message = "Subscription updated successfully." });
-		}
-		catch (ArgumentException ex)
-		{
-			return NotFound(new { message = ex.Message });
-		}
+		logger.LogInformation("Обновление подписки с топиком '{MqttTopic}'...", updatedSubscription?.MqttTopic);
+		await subscriptionsService.UpdateSubscriptionAsync(updatedSubscription).ConfigureAwait(false);
+
+		logger.LogInformation("Подписка '{MqttTopic}' обновлена", updatedSubscription.MqttTopic);
+		return Ok(new { message = $"Подписка '{updatedSubscription.MqttTopic}' обновлена" });
 	}
+
 	/// <summary>
 	/// Удалить подписку
 	/// </summary>
@@ -81,14 +99,10 @@ public sealed class SubscriptionsController (SubscriptionService subscriptionsSe
 	[HttpDelete("deleteSubscription/{measurementId}")]
 	public async Task<IActionResult> DeleteSubscription (Guid measurementId)
 	{
-		try
-		{
-			await subscriptionsService.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
-			return Ok(new { message = "Subscription deleted successfully." });
-		}
-		catch (ArgumentException ex)
-		{
-			return NotFound(new { message = ex.Message });
-		}
+		logger.LogInformation("Удаление подписки с ID '{MeasurementId}'...", measurementId);
+		await subscriptionsService.DeleteSubscriptionAsync(measurementId).ConfigureAwait(false);
+
+		logger.LogInformation("Подписка с ID '{MeasurementId}' удалена", measurementId);
+		return Ok(new { message = $"Подписка с ID '{measurementId}' удалена" });
 	}
 }

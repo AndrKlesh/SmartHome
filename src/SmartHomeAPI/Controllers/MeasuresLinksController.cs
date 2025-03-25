@@ -14,7 +14,7 @@ namespace SmartHomeAPI.Controllers;
 /// <param name="measuresLinksService">Репозиторий связи id_измерения:ссылка</param>
 [ApiController]
 [Route("api/[controller]")]
-public sealed class MeasuresLinksController (MeasuresLinksService measuresLinksService) : Controller
+public sealed class MeasuresLinksController (MeasuresLinksService measuresLinksService, ILogger<MeasuresLinksController> logger) : Controller
 {
 	/// <summary>
 	/// Получить следующий уровень пути.
@@ -23,9 +23,22 @@ public sealed class MeasuresLinksController (MeasuresLinksService measuresLinksS
 	/// <param name="path">Предыдущий путь</param>
 	/// <returns></returns>
 	[HttpGet("nextLayer")]
-	public async Task<ActionResult<string []>> GetNextMeasurementsLayer ([FromQuery] string? path)
+
+	public async Task<ActionResult<LinkDTO []>> GetNextMeasurementsLayer ([FromQuery] string? path)
 	{
+		logger.LogInformation("Запрос следующего уровня измерений для пути: {Path}...", path ?? "корень");
+
 		IReadOnlyList<LinkDTO> layer = await measuresLinksService.LoadNextMeasurementsLayer(path).ConfigureAwait(false);
-		return Ok(layer);
+
+		if (layer.Count == 0)
+		{
+			logger.LogWarning("Для пути {Path} не найдено данных", path ?? "корень");
+			return NotFound(new { message = $"Для пути {path ?? "корень"} не найдено данных" });
+		}
+		else
+		{
+			logger.LogInformation("Запрос следующего уровня измерений для пути: {Path} завершен. Найдено {Count} элементов", path ?? "корень", layer.Count);
+			return Ok(layer);
+		}
 	}
 }

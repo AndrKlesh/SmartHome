@@ -7,10 +7,10 @@ namespace SmartHomeAPI.Repositories;
 /// <summary>
 /// Репозиторий измерений
 /// </summary>
-public sealed class MeasuresRepository
+public sealed class MeasuresRepository (ILogger<MeasuresRepository> logger)
 {
 	private readonly List<MeasureDomain> _measurements = new();
-	private readonly Lock _guard = new();
+	private readonly Lock _lock = new();
 	private const int MaxMeasurementsPerTopic = 100;
 
 	/// <summary>
@@ -20,22 +20,46 @@ public sealed class MeasuresRepository
 	/// <returns></returns>
 	public Task AddMeasurementAsync (MeasureDomain measurement)
 	{
-		lock (_guard)
+		if (measurement == null)
+		{
+			logger.LogWarning("Попытка добавить null-измерение");
+			return Task.CompletedTask;
+		}
+
+		logger.LogInformation("Добавление измерения с ID '{MeasurementId}'...", measurement.MeasurementId);
+
+		MeasureDomain? oldestMeasurement = null;
+
+		lock (_lock)
 		{
 			_measurements.Add(measurement);
 
-			List<MeasureDomain> measurementsForTopic = _measurements.Where(m => m.MeasurementId == measurement.MeasurementId).ToList();
+			List<MeasureDomain> measurementsForTopic = _measurements
+				.Where(m => m.MeasurementId == measurement.MeasurementId)
+				.OrderBy(m => m.Timestamp)
+				.ToList();
+
 			if (measurementsForTopic.Count > MaxMeasurementsPerTopic)
 			{
-				MeasureDomain? oldestMeasurement = measurementsForTopic.OrderBy(m => m.Timestamp).FirstOrDefault();
-				if (oldestMeasurement != null)
+				oldestMeasurement = measurementsForTopic.First();
+			}
+
+			if (oldestMeasurement != null)
+			{
+
+				if (_measurements.Remove(oldestMeasurement))
 				{
-					_ = _measurements.Remove(oldestMeasurement);
+					logger.LogInformation("Удалено самое старое измерение с ID '{MeasurementId}'", oldestMeasurement.MeasurementId);
+				}
+				else
+				{
+					logger.LogWarning("Не удалось удалить самое старое измерение с ID '{MeasurementId}'", oldestMeasurement.MeasurementId);
 				}
 			}
-		}
 
-		return Task.CompletedTask;
+			logger.LogInformation("Добавление измерения с ID '{MeasurementId}' завершено", measurement.MeasurementId);
+			return Task.CompletedTask;
+		}
 	}
 
 	/// <summary>
@@ -45,10 +69,27 @@ public sealed class MeasuresRepository
 	/// <returns>Список измерений</returns>
 	public Task<IReadOnlyList<MeasureDomain>> GetMeasurementsByTopicIdAsync (Guid measurementId)
 	{
-		lock (_guard)
+		logger.LogInformation("Получение измерений для ID типа измерения '{MeasurementId}'...", measurementId);
+
+		MeasureDomain [] measurements;
+
+		lock (_lock)
 		{
-			return Task.FromResult((IReadOnlyList<MeasureDomain>) _measurements.Where(m => m.MeasurementId == measurementId).ToArray());
+			measurements = _measurements
+				.Where(m => m.MeasurementId == measurementId)
+				.ToArray();
 		}
+
+		if (measurements.Length == 0)
+		{
+			logger.LogInformation("Измерений для ID типа измерения '{MeasurementId}' не найдено", measurementId);
+		}
+		else
+		{
+			logger.LogInformation("Для типа измерения '{MeasurementId}' найдено {Count} записей", measurementId, measurements.Length);
+		}
+
+		return Task.FromResult<IReadOnlyList<MeasureDomain>>(measurements);
 	}
 
 	/// <summary>
@@ -58,17 +99,35 @@ public sealed class MeasuresRepository
 	/// <returns>Список последних значений измерений</returns>
 	public Task<IReadOnlyList<MeasureDomain>> GetLatestMeasurementsAsync (IReadOnlyList<Guid> ids)
 	{
-		lock (_guard)
+		if (ids == null || ids.Count == 0)
 		{
-			return Task.FromResult
-			(
-				(IReadOnlyList<MeasureDomain>) _measurements
-					.Where(m => ids.Contains(m.MeasurementId))
-					.GroupBy(m => m.MeasurementId)
-					.Select(g => g.OrderByDescending(m => m.Timestamp).First())
-					.ToArray()
-			);
+			logger.LogWarning("Попытка получить последние измерения с пустым списком ID");
+			return Task.FromResult<IReadOnlyList<MeasureDomain>>(Array.Empty<MeasureDomain>());
 		}
+
+		logger.LogInformation("Получение последних измерений для типов: {MeasurementIds}...", string.Join(", ", ids));
+
+		MeasureDomain [] measurements;
+
+		lock (_lock)
+		{
+			measurements = _measurements
+				.Where(m => ids.Contains(m.MeasurementId))
+				.GroupBy(m => m.MeasurementId)
+				.Select(g => g.OrderByDescending(m => m.Timestamp).First())
+				.ToArray();
+		}
+
+		if (measurements.Length == 0)
+		{
+			logger.LogWarning("Последние измерения для типов: {MeasurementIds} не найдены", string.Join(", ", ids));
+		}
+		else
+		{
+			logger.LogInformation("Найдено {Count} последних измерений для заданных типов", measurements.Length);
+		}
+
+		return Task.FromResult<IReadOnlyList<MeasureDomain>>(measurements);
 	}
 
 	/// <summary>
@@ -77,16 +136,28 @@ public sealed class MeasuresRepository
 	/// <returns>Список последних значений измерений</returns>
 	public Task<IReadOnlyList<MeasureDomain>> GetLatestMeasurementsAsync ()
 	{
-		lock (_guard)
+		logger.LogInformation("Получение последних измерений для всех типов...");
+
+		MeasureDomain [] measurements;
+
+		lock (_lock)
 		{
-			return Task.FromResult
-			(
-			  (IReadOnlyList<MeasureDomain>) _measurements
+			measurements = _measurements
 				.GroupBy(m => m.MeasurementId)
 				.Select(g => g.OrderByDescending(m => m.Timestamp).First())
-				.ToArray()
-			);
+				.ToArray();
 		}
+
+		if (measurements.Length == 0)
+		{
+			logger.LogWarning("Последние измерения для всех типов не найдены");
+		}
+		else
+		{
+			logger.LogInformation("Найдено {Count} последних измерений для всех типов", measurements.Length);
+		}
+
+		return Task.FromResult<IReadOnlyList<MeasureDomain>>(measurements);
 	}
 
 	/// <summary>
@@ -98,15 +169,33 @@ public sealed class MeasuresRepository
 	/// <returns>Список с историей измерения</returns>
 	public Task<IReadOnlyList<MeasureDomain>> GetMeasurementHistory (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
-		lock (_guard)
+		if (startDate > endDate)
 		{
-			return Task.FromResult
-			(
-				(IReadOnlyList<MeasureDomain>) _measurements
-					.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
-					.OrderBy(m => m.Timestamp)
-					.ToArray()
-			);
+			logger.LogWarning("Некорректный интервал: startDate ({StartDate}) > endDate ({EndDate})", startDate, endDate);
+			return Task.FromResult<IReadOnlyList<MeasureDomain>>(Array.Empty<MeasureDomain>());
 		}
+
+		logger.LogInformation("Получение истории измерений для типа '{MeasurementId}' с '{StartDate}' по '{EndDate}'...", measurementId, startDate, endDate);
+
+		MeasureDomain [] measurements;
+
+		lock (_lock)
+		{
+			measurements = _measurements
+				.Where(m => m.MeasurementId == measurementId && m.Timestamp >= startDate && m.Timestamp <= endDate)
+				.OrderBy(m => m.Timestamp)
+				.ToArray();
+		}
+
+		if (measurements.Length == 0)
+		{
+			logger.LogWarning("Измерения для типа '{MeasurementId}' с '{StartDate}' по '{EndDate}' не найдены", measurementId, startDate, endDate);
+		}
+		else
+		{
+			logger.LogInformation("Для типа '{MeasurementId}' найдено {Count} измерений с '{StartDate}' по '{EndDate}'", measurementId, measurements.Length, startDate, endDate);
+		}
+
+		return Task.FromResult<IReadOnlyList<MeasureDomain>>(measurements);
 	}
 }

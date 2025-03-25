@@ -12,7 +12,7 @@ namespace SmartHomeAPI.Controllers;
 /// <param name="measuresStorageService"></param>
 [ApiController]
 [Route("api/[controller]")]
-public sealed class DashboardController (MeasuresStorageService measuresStorageService) : Controller
+public sealed class DashboardController (MeasuresStorageService measuresStorageService, ILogger<DashboardController> logger) : Controller
 {
 	/// <summary>
 	/// Получить последние измерения
@@ -23,7 +23,10 @@ public sealed class DashboardController (MeasuresStorageService measuresStorageS
 	[HttpGet("latest/{mask}")]
 	public async Task<ActionResult<IReadOnlyList<MeasureDTO>>> GetLatestMeasurements (string mask)
 	{
+		logger.LogInformation("Получение последних измерений для маски: '{Mask}'...", mask);
 		IReadOnlyList<MeasureDTO> latestMeasurements = await measuresStorageService.GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
+
+		logger.LogInformation("Получение последних измерений для маски: '{Mask}' завершено", mask);
 		return Ok(latestMeasurements);
 	}
 
@@ -35,7 +38,10 @@ public sealed class DashboardController (MeasuresStorageService measuresStorageS
 	[HttpGet("latestPoll/{mask}")]
 	public async Task<ActionResult<IReadOnlyList<MeasureDTO>>> SubscribeToLatestMeasurements (string mask)
 	{
+		logger.LogInformation("Подписка на последние измерения для маски: '{Mask}'...", mask);
 		IReadOnlyList<MeasureDTO> latestMeasurements = await measuresStorageService.SubscribeToLatestMeasurementsAsync(mask).ConfigureAwait(false);
+
+		logger.LogInformation("Подписка на последние измерения для маски: '{Mask}' завершена", mask);
 		return Ok(latestMeasurements);
 	}
 }

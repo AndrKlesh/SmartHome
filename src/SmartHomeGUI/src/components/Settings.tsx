@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import ErrorMessage from './ErrorMessage'
 import './styles.css'
-import {TopicData} from './types'
+import { TopicData } from './types'
+import { API_BASE_URL } from "../config"
 
 const SubscribeToMqttTopics: React.FC = () =>
 {
@@ -22,7 +23,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 			setLoading(true)
 			try
 			{
-				const response = await fetch('https://localhost:7098/api/Subscriptions/getAllSubscriptions')
+				const response = await fetch(API_BASE_URL + '/Subscriptions/getAllSubscriptions')
 				if (!response.ok)
 				{
 					throw new Error('Failed to fetch topics')
@@ -55,7 +56,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 
 		try
 		{
-			const response = await fetch('https://localhost:7098/api/Subscriptions/addSubscription', {
+			const response = await fetch(API_BASE_URL + '/Subscriptions/addSubscription', {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
@@ -84,7 +85,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 
 		try
 		{
-			const response = await fetch(`https://localhost:7098/api/Subscriptions/deleteSubscription`, {
+			const response = await fetch(API_BASE_URL + `/deleteSubscription`, {
 				method: 'DELETE',
 			})
 
@@ -122,7 +123,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 
 		try
 		{
-			const response = await fetch(`https://localhost:7098/api/Subscriptions/updateSubscription/${measurementId}`, {
+			const response = await fetch(API_BASE_URL + `/Subscriptions/updateSubscription/${measurementId}`, {
 				method: 'PUT',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({

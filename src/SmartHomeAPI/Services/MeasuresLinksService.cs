@@ -9,7 +9,7 @@ namespace SmartHomeAPI.Services;
 /// Сервис ссылок на типы измерений
 /// </summary>
 /// <param name="measuresLinksRepository"></param>
-public sealed class MeasuresLinksService (MeasuresLinksRepository measuresLinksRepository)
+public sealed class MeasuresLinksService (MeasuresLinksRepository measuresLinksRepository, ILogger<MeasuresLinksService> logger)
 {
 	private const string AllMask = ".*";
 	private const string MoreMask = "*";
@@ -22,6 +22,8 @@ public sealed class MeasuresLinksService (MeasuresLinksRepository measuresLinksR
 	/// <returns></returns>
 	public async Task<IReadOnlyList<LinkDTO>> LoadNextMeasurementsLayer (string? path)
 	{
+		logger.LogInformation("Загрузка следующего уровня по пути: '{Path}'...", path);
+
 		if (string.IsNullOrWhiteSpace(path))
 		{
 			path = string.Empty;
@@ -37,13 +39,25 @@ public sealed class MeasuresLinksService (MeasuresLinksRepository measuresLinksR
 			mask = $"{path}{MoreMask}";
 		}
 
-		IReadOnlyList<KeyValuePair<string, Guid>> links = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
-		LinkDTO [] sublayer = links
-			.Select(link => CreateLinkDTO(link.Key, path))
-			.DistinctBy(dto => dto.Path)
-			.ToArray();
+		try
+		{
+			logger.LogInformation("Используем маску: {Mask} для поиска ссылок...", mask);
+			IReadOnlyList<KeyValuePair<string, Guid>> links = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 
-		return sublayer;
+			LinkDTO [] sublayer = links
+				.Select(link => CreateLinkDTO(link.Key, path))
+				.DistinctBy(dto => dto.Path)
+				.ToArray();
+
+			logger.LogInformation("Найдено {Count} ссылок", sublayer.Length);
+
+			return sublayer;
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "Ошибка при загрузке следующего уровня ссылок");
+			throw;
+		}
 	}
 
 	private static LinkDTO CreateLinkDTO (string key, string path)

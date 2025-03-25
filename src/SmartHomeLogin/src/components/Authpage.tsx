@@ -2,6 +2,7 @@ import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import { useUser } from './UserContext'
 import './Authpage.css'
+import { API_BASE_URL } from '../config'
 
 interface FormData
 {
@@ -36,7 +37,7 @@ const Authpage: React.FC = () =>
 
 		try {
 
-			const response = await fetch('http://localhost:5288/api/auth/login', {
+			const response = await fetch(API_BASE_URL + '/auth/login', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

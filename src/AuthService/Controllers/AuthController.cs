@@ -1,14 +1,12 @@
 #pragma warning disable CA1515
 using AuthService.Models;
 using AuthService.Services;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[EnableCors("AllowFrontend")]
 public sealed class AuthController (LoginService loginService) : ControllerBase
 {
 	//private readonly LoginService _loginService = loginService;

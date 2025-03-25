@@ -1,51 +1,49 @@
 #pragma warning disable CA1515
 
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
 
 namespace SmartHomeAPI.Repositories;
 
 /// <summary>
 /// Репозиторий ссылок на типы измерений
 /// </summary>
-public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> logger)
+public sealed class MeasuresLinksRepository
 {
-	/// <summary>
-	/// Добавить ссылку
-	/// (Путь <-> Guid). Например, (Общие/Температура воздуха <-> 24FE134B-4CBF-4EB9-A811-2720D4315146)
-	/// </summary>
-	/// <param name="path">Путь ссылки. Представляет собой путь, как в файловой системе</param>
-	/// <param name="measurementId">Ид. типа измерения</param>
-	/// <returns></returns>
-	/// <exception cref="NotImplementedException"></exception>
-	public Task AddMeasureLinkAsync (string path, Guid measurementId)
-	{
-		logger.LogInformation("Добавление ссылки: '{Path}' -> '{MeasurementId}'...", path, measurementId);
+	private readonly ILogger<MeasuresLinksRepository> logger;
+	private readonly IOptionsMonitor<ConcurrentDictionary<string, Guid>> optionsMonitor;
+	private ConcurrentDictionary<string, Guid> _links;
 
-		// TODO: Реализовать
-		logger.LogError("Добавление ссылки: '{Path}' -> '{MeasurementId}' не реализовано", path, measurementId);
-		throw new NotImplementedException();
+	public MeasuresLinksRepository (ILogger<MeasuresLinksRepository> logger, IOptionsMonitor<ConcurrentDictionary<string, Guid>> optionsMonitor)
+	{
+		this.logger = logger;
+		this.optionsMonitor = optionsMonitor;
+
+		_links = new ConcurrentDictionary<string, Guid>(optionsMonitor?.CurrentValue.ToDictionary(link => link.Key, link => link.Value));
+
+		_ = optionsMonitor.OnChange(updatedLinks => _links = new ConcurrentDictionary<string, Guid>(updatedLinks.ToDictionary(link => link.Key, link => link.Value)));
 	}
 
 	/// <summary>
-	/// Получить ид. типа измерения по ссылке на него.
+	/// Получить ID типа измерения по ссылке на него.
 	/// </summary>
 	/// <param name="path">Путь ссылки</param>
 	/// <returns></returns>
-	public Task<Guid> GetMeasureIdAsync (string path)
+	public Task<Guid> GetMeasurementIdAsync (string path)
 	{
-		logger.LogInformation("Получение ID измерения по пути '{Path}'", path);
-		if (_storage.TryGetValue(path, out Guid measurementId))
+		logger.LogInformation("Получение ID измерения по пути '{Path}'...", path);
+
+		if (_links.TryGetValue(path, out Guid measurementId))
 		{
 			logger.LogInformation("Получен ID измерения '{MeasurementId}' по пути '{Path}'", measurementId, path);
-			return Task.FromResult(measurementId);
 		}
 		else
 		{
 			logger.LogWarning("Не найден ID измерения по пути '{Path}'", path);
-
-			// TODO: Должны ли мы выкидывать тут исключение? Может лучше вернуть null и обработать его как NotFound?
-			throw new KeyNotFoundException($"Не найден ID измерения по пути '{path}'");
 		}
+
+		return Task.FromResult(measurementId);
 	}
 
 	/// <summary>
@@ -56,23 +54,44 @@ public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> lo
 	/// </summary>
 	/// <param name="mask">Маска/регулярное выражение ссылок</param>
 	/// <returns></returns>
-	public Task<IReadOnlyList<KeyValuePair<string, Guid>>> FindLinksByMaskAsync (string mask)
+	public Task<Dictionary<string, Guid>> FindLinksByMaskAsync (string mask)
 	{
 		logger.LogInformation("Получение ссылок по маске '{Mask}'...", mask);
-		KeyValuePair<string, Guid> [] results = _storage.Where(item => Regex.IsMatch(item.Key, mask)).ToArray();
+		Dictionary<string, Guid> results = _links.Where(item => Regex.IsMatch(item.Key, mask)).ToDictionary();
 
-		if (results.Length == 0)
+		if (results.Count == 0)
 		{
 			logger.LogWarning("Не найдено соответствий по маске '{Mask}'", mask);
-
-			// TODO: Должны ли мы выкидывать тут исключение? Может лучше вернуть null и обработать его как NotFound?
-			throw new KeyNotFoundException($"Не найдено соответствий по маске '{mask}'");
 		}
 		else
 		{
-			logger.LogInformation("Найдено {Count} соответствий по маске '{Mask}'", results.Length, mask);
-			return Task.FromResult((IReadOnlyList<KeyValuePair<string, Guid>>) results);
+			logger.LogInformation("Найдено {Count} соответствий по маске '{Mask}'", results.Count, mask);
 		}
+
+		return Task.FromResult(results);
+	}
+
+	/// <summary>
+	/// Добавить ссылку
+	/// (Путь <-> Guid). Например, (Общие/Температура воздуха <-> 24FE134B-4CBF-4EB9-A811-2720D4315146)
+	/// </summary>
+	/// <param name="path">Путь ссылки. Представляет собой путь, как в файловой системе</param>
+	/// <param name="measurementId">ID типа измерения</param>
+	/// <returns></returns>
+	/// <exception cref="NotImplementedException"></exception>
+	public Task AddMeasurementLinkAsync (string path, Guid measurementId)
+	{
+		throw new NotImplementedException("Добавление ссылки не реализовано");
+
+		/*
+		logger.LogInformation("Добавление ссылки: '{Path}' -> '{MeasurementId}'...", path, measurementId);
+		if (!_links.TryAdd(path, measurementId))
+		{
+			logger.LogWarning("Ссылка по пути '{Path}' не добавлена", path);
+		}
+
+		return Task.CompletedTask;
+		*/
 	}
 
 	/// <summary>
@@ -81,37 +100,53 @@ public sealed class MeasuresLinksRepository (ILogger<MeasuresLinksRepository> lo
 	/// <param name="path">Путь/Ссылка</param>
 	/// <returns></returns>
 	/// <exception cref="NotImplementedException"></exception>
-	public Task RemoveMeasureLinkAsync (string path)
+	public Task DeleteMeasurementLinkAsync (string path)
 	{
-		logger.LogInformation("Удаление ссылки по пути '{Path}'...", path);
+		throw new NotImplementedException("Удаление ссылки по пути не реализовано");
 
-		// TODO: Реализовать
-		logger.LogError("удаление ссылки по пути '{Path}' не реализовано", path);
-		throw new NotImplementedException();
+		/*
+		logger.LogInformation("Удаление ссылки по пути '{Path}'...", path);
+		if (_links.TryRemove(path, out _))
+		{
+			logger.LogInformation("Ссылка по пути '{Path}' удалена", path);
+		}
+		else
+		{
+			logger.LogWarning("Не найдена ссылка для удаления по пути '{Path}'", path);
+		}
+
+		return Task.CompletedTask;
+		*/
 	}
 
 	/// <summary>
-	/// Удалить ссылки на измерения по ид. типа измерения
-	/// Внимание, удаляются все ссылки на ид. типа измерения
+	/// Удалить ссылки на измерения по ID типа измерения
+	/// Внимание, удаляются все ссылки на ID типа измерения
 	/// </summary>
-	/// <param name="measurementId">Ид. типа измерения</param>
+	/// <param name="measurementId">ID типа измерения</param>
 	/// <returns></returns>
 	/// <exception cref="NotImplementedException"></exception>
-	public Task RemoveMeasureLinkAsync (Guid measurementId)
+	public Task DeleteMeasurementLinkAsync (Guid measurementId)
 	{
+		throw new NotImplementedException("Удаление всех ссылок для measurementID не реализовано");
+
+		/*
 		logger.LogInformation("Удаление всех ссылок для measurementID = '{MeasurementId}'...", measurementId);
 
-		// TODO: Реализовать
-		logger.LogError("Удаление всех ссылок для measurementID = '{MeasurementId}' не реализовано", measurementId);
-		throw new NotImplementedException();
-	}
+		Dictionary<string, Guid> linksToRemove = _links.Where(x => x.Value == measurementId).ToDictionary();
+		foreach (KeyValuePair<string, Guid> link in linksToRemove)
+		{
+			if (_links.TryRemove(link.Key, out _))
+			{
+				logger.LogInformation("Ссылка по пути '{Path}' удалена", link.Key);
+			}
+			else
+			{
+				logger.LogWarning("Ссылка по пути '{Path}' не удалена", link.Key);
+			}
+		}
 
-	private readonly Dictionary<string, Guid> _storage = new()
-	{
-		{ "Общие/Температура воздуха", Guid.Parse("24FE134B-4CBF-4EB9-A811-2720D4315146") },
-		{ "Общие/Входная дверь", Guid.Parse("421673E7-95EF-478C-912A-71F3158FF613") },
-		{ "Общие/Вентиляция", Guid.Parse("40EAC794-65E5-432D-84E6-F1B04B14DB8A") },
-		{ "Ванная комната/Температура горячей воды", Guid.Parse("462F9446-ADFF-4EA4-8CA1-F1665268520F") },
-		{ "Спальня/Температура воздуха", Guid.Parse ("21274707-C7CA-4436-B191-9BAC91C473F5") },
-	};
+		return Task.CompletedTask;
+		*/
+	}
 }

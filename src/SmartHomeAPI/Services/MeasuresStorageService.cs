@@ -97,7 +97,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 		{
 			logger.LogInformation("Получение последних измерений для маски: '{Mask}'...", mask);
 
-			IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
+			Dictionary<string, Guid> measurementsLinks = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 			IReadOnlyList<MeasureDomain> latestMeasuresDomain = await measurementRepository
 				.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value).ToArray())
 				.ConfigureAwait(false);

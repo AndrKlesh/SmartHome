@@ -1,8 +1,9 @@
 #pragma warning disable CA1515
 
-using System.Reflection;
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging.Console;
 using Scalar.AspNetCore;
+using SmartHomeAPI.Entities;
 using SmartHomeAPI.Repositories;
 using SmartHomeAPI.Services;
 
@@ -14,6 +15,7 @@ internal sealed class Program
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+		// Logging
 		_ = builder.Logging
 			.ClearProviders()
 			.AddSimpleConsole(options =>
@@ -27,24 +29,29 @@ internal sealed class Program
 			.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
 		_ = builder.Services
-			// TODO Не хардкодить сообщения логгера, а вынести их в локализацию
-			.AddSingleton<MeasuresStorageService>()
+			// Configuration
+			.Configure<List<SubscriptionDomain>>(builder.Configuration.GetSection("Subscriptions"))
+			.Configure<ConcurrentDictionary<string, Guid>>(builder.Configuration.GetSection("Links"))
+
+			// Repositories
 			.AddSingleton<MeasuresRepository>()
-			.AddSingleton<SubscriptionService>()
 			.AddSingleton<SubscriptionRepository>()
-			.AddSingleton<MeasuresLinksService>()
 			.AddSingleton<MeasuresLinksRepository>()
-			.AddSingleton<SvgImagesService>()
 			.AddSingleton<SvgImagesRepository>()
+
+			// Services
+			.AddSingleton<MeasuresStorageService>()
+			.AddSingleton<SubscriptionService>()
+			.AddSingleton<MeasuresLinksService>()
+			.AddSingleton<SvgImagesService>()
 			.AddHostedService<MeasuresReceiverService>()
+
+			// CORS и API
 			.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
+			.AddOpenApi()
 			.AddControllers();
 
-		_ = builder.Services.AddOpenApi();
-
 		WebApplication app = builder.Build();
-
-		ILogger<Program> logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 		if (app.Environment.IsDevelopment())
 		{
@@ -55,10 +62,8 @@ internal sealed class Program
 		_ = app.UseHttpsRedirection();
 		_ = app.UseCors("AllowAll");
 		_ = app.MapControllers();
-		app.Urls.Add("https://*:7098");
+		app.Urls.Add(builder.Configuration ["Urls"]);
 
-		string projectName = Assembly.GetExecutingAssembly().GetName().Name;
-		logger.LogInformation("{ProjectName} запущен", projectName);
 		app.Run();
 	}
 }

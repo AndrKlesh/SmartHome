@@ -42,7 +42,7 @@ public sealed class MeasuresLinksService (MeasuresLinksRepository measuresLinksR
 		try
 		{
 			logger.LogInformation("Используем маску: {Mask} для поиска ссылок...", mask);
-			IReadOnlyList<KeyValuePair<string, Guid>> links = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
+			Dictionary<string, Guid> links = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 
 			LinkDTO [] sublayer = links
 				.Select(link => CreateLinkDTO(link.Key, path))

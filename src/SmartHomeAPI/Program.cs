@@ -1,6 +1,5 @@
 #pragma warning disable CA1515
 
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging.Console;
 using Scalar.AspNetCore;
 using SmartHomeAPI.Entities;
@@ -15,6 +14,8 @@ internal sealed class Program
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+		_ = builder.WebHost.UseKestrel();
+
 		// Logging
 		_ = builder.Logging
 			.ClearProviders()
@@ -25,13 +26,12 @@ internal sealed class Program
 				options.SingleLine = true;
 				options.ColorBehavior = LoggerColorBehavior.Enabled;
 			})
-			.AddDebug()
-			.AddConfiguration(builder.Configuration.GetSection("Logging"));
+			.AddDebug();
 
 		_ = builder.Services
 			// Configuration
 			.Configure<List<SubscriptionDomain>>(builder.Configuration.GetSection("Subscriptions"))
-			.Configure<ConcurrentDictionary<string, Guid>>(builder.Configuration.GetSection("Links"))
+			.Configure<Dictionary<string, Guid>>(builder.Configuration.GetSection("Links"))
 
 			// Repositories
 			.AddSingleton<MeasuresRepository>()
@@ -62,7 +62,6 @@ internal sealed class Program
 		_ = app.UseHttpsRedirection();
 		_ = app.UseCors("AllowAll");
 		_ = app.MapControllers();
-		app.Urls.Add(builder.Configuration ["Urls"]);
 
 		app.Run();
 	}

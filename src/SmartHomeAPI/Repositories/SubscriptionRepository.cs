@@ -1,6 +1,6 @@
 #pragma warning disable CA1515
 
-using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using Microsoft.Extensions.Options;
 using SmartHomeAPI.Entities;
 
@@ -10,16 +10,16 @@ public sealed class SubscriptionRepository
 {
 	private readonly ILogger<SubscriptionRepository> logger;
 	private readonly IOptionsMonitor<List<SubscriptionDomain>> optionsMonitor;
-	private ConcurrentBag<SubscriptionDomain> subscriptions;
+	private ImmutableArray<SubscriptionDomain> subscriptions;
 
 	public SubscriptionRepository (ILogger<SubscriptionRepository> logger, IOptionsMonitor<List<SubscriptionDomain>> optionsMonitor)
 	{
 		this.logger = logger;
 		this.optionsMonitor = optionsMonitor;
 
-		subscriptions = new ConcurrentBag<SubscriptionDomain>(optionsMonitor?.CurrentValue);
+		subscriptions = optionsMonitor?.CurrentValue.ToImmutableArray() ?? ImmutableArray<SubscriptionDomain>.Empty;
 
-		_ = optionsMonitor.OnChange(newSubscriptions => subscriptions = new ConcurrentBag<SubscriptionDomain>(newSubscriptions));
+		_ = optionsMonitor.OnChange(updatedSubscriptions => ImmutableInterlocked.Update(ref subscriptions, _ => updatedSubscriptions?.ToImmutableArray() ?? ImmutableArray<SubscriptionDomain>.Empty));
 	}
 
 	public async Task<List<SubscriptionDomain>> GetAllSubscriptionsAsync ()
@@ -44,7 +44,7 @@ public sealed class SubscriptionRepository
 		return await Task.FromResult(subscription).ConfigureAwait(false);
 	}
 
-	internal async Task<SubscriptionDomain?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
+	public async Task<SubscriptionDomain?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
 	{
 		logger.LogInformation("Получение подписки для MQTT топика '{MqttTopic}'...", mqttTopic);
 

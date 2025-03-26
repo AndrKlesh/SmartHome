@@ -1,6 +1,6 @@
 #pragma warning disable CA1515
 
-using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
 
@@ -12,17 +12,17 @@ namespace SmartHomeAPI.Repositories;
 public sealed class MeasuresLinksRepository
 {
 	private readonly ILogger<MeasuresLinksRepository> logger;
-	private readonly IOptionsMonitor<ConcurrentDictionary<string, Guid>> optionsMonitor;
-	private ConcurrentDictionary<string, Guid> _links;
+	private readonly IOptionsMonitor<Dictionary<string, Guid>> optionsMonitor;
+	private ImmutableDictionary<string, Guid> _links;
 
-	public MeasuresLinksRepository (ILogger<MeasuresLinksRepository> logger, IOptionsMonitor<ConcurrentDictionary<string, Guid>> optionsMonitor)
+	public MeasuresLinksRepository (ILogger<MeasuresLinksRepository> logger, IOptionsMonitor<Dictionary<string, Guid>> optionsMonitor)
 	{
 		this.logger = logger;
 		this.optionsMonitor = optionsMonitor;
 
-		_links = new ConcurrentDictionary<string, Guid>(optionsMonitor?.CurrentValue.ToDictionary(link => link.Key, link => link.Value));
+		_links = optionsMonitor?.CurrentValue.ToImmutableDictionary() ?? ImmutableDictionary<string, Guid>.Empty;
 
-		_ = optionsMonitor.OnChange(updatedLinks => _links = new ConcurrentDictionary<string, Guid>(updatedLinks.ToDictionary(link => link.Key, link => link.Value)));
+		_ = optionsMonitor.OnChange(updatedLinks => ImmutableInterlocked.Update(ref _links, _ => updatedLinks?.ToImmutableDictionary() ?? ImmutableDictionary<string, Guid>.Empty));
 	}
 
 	/// <summary>
@@ -37,13 +37,13 @@ public sealed class MeasuresLinksRepository
 		if (_links.TryGetValue(path, out Guid measurementId))
 		{
 			logger.LogInformation("Получен ID измерения '{MeasurementId}' по пути '{Path}'", measurementId, path);
+			return Task.FromResult(measurementId);
 		}
 		else
 		{
 			logger.LogWarning("Не найден ID измерения по пути '{Path}'", path);
+			return Task.FromResult(Guid.Empty);
 		}
-
-		return Task.FromResult(measurementId);
 	}
 
 	/// <summary>

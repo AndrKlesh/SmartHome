@@ -99,7 +99,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 
 			Dictionary<string, Guid> measurementsLinks = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 			IReadOnlyList<MeasureDomain> latestMeasuresDomain = await measurementRepository
-				.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value).ToArray())
+				.GetLatestMeasurementsAsync(measurementsLinks.Values.ToArray())
 				.ConfigureAwait(false);
 
 			List<MeasureDTO> latestMeasurementsDTO = new(latestMeasuresDomain.Count);

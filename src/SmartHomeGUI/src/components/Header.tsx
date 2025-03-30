@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MeasurementLink } from './types';
-
+import { API_BASE_URL } from "../config"
 import './styles.css';
 
 interface HeaderProps {
@@ -17,7 +17,7 @@ function Header({ isOpen, setIsOpen }: HeaderProps) {
 	useEffect(() => {
 		const getMenu = async () => {
 			try {
-				const response = await fetch('https://localhost:7098/api/MeasuresLinks/nextLayer/');
+				const response = await fetch(`${API_BASE_URL}/MeasuresLinks/nextLayer/`);
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}

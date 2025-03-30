@@ -1,3 +1,5 @@
+using AuthService.Services;
+
 namespace AuthService;
 
 internal sealed class Program
@@ -5,7 +7,7 @@ internal sealed class Program
 	public static void Main (string [] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
+		_ = builder.Services.AddSingleton<LoginService>();
 		_ = builder.Services.AddControllers();
 		_ = builder.Services.AddEndpointsApiExplorer();
 

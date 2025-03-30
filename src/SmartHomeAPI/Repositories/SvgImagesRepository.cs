@@ -2,7 +2,7 @@
 
 namespace SmartHomeAPI.Repositories;
 
-public sealed class SvgImagesRepository
+public sealed class SvgImagesRepository (ILogger<SvgImagesRepository> logger)
 {
 	private readonly Dictionary<string, string> nameImagePairs = new()
 	{
@@ -73,7 +73,17 @@ public sealed class SvgImagesRepository
 
 	public string? GetSvgImage (string name)
 	{
-		_ = nameImagePairs.TryGetValue(name, out string? svgContent);
+		logger.LogInformation("Получение SVG-изображения для имени: '{Name}'...", name);
+
+		if (nameImagePairs.TryGetValue(name, out string? svgContent))
+		{
+			logger.LogInformation("SVG-изображение для имени {Name} найдено", name);
+		}
+		else
+		{
+			logger.LogWarning("SVG-изображение для имени {Name} не найдено", name);
+		}
+
 		return svgContent;
 	}
 }

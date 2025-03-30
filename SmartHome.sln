@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SmartHome.slnLaunch = SmartHome.slnLaunch
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.UnitTests", "tests\AuthService.UnitTests\AuthService.UnitTests.csproj", "{42374195-BBC3-4474-BAC6-9A24FFE66D57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{54A65B8D-2FD9-4DD2-A3D4-AA19AF792730}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54A65B8D-2FD9-4DD2-A3D4-AA19AF792730}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54A65B8D-2FD9-4DD2-A3D4-AA19AF792730}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42374195-BBC3-4474-BAC6-9A24FFE66D57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42374195-BBC3-4474-BAC6-9A24FFE66D57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42374195-BBC3-4474-BAC6-9A24FFE66D57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42374195-BBC3-4474-BAC6-9A24FFE66D57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,14 +25,29 @@ body.light-theme
 	--hover-accent: lightskyblue;
 }
 
+/* Хедер */
+head
+{
+	background-color: var(--secondary-background);
+	padding: 25px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+	position: center;
+	top: 1000px !important;
+	width: 100%;
+	z-index: 100;
+	border-top-right-radius: 12px;
+	border-bottom-left-radius: 12px;
+	color: blue;
+}
+
 /* Базовые стили */
 body
 {
 	background-color: var(--primary-background);
 	color: var(--text-light);
 	font-family: Verdana, sans-serif;
-	margin: 50px;
-	margin-left: 120px;
+	margin: -10px;
+	margin-left: 100px;
 }
 
 /* Основные контейнеры */
@@ -59,6 +74,7 @@ body
 	position: relative;
 	opacity: 0;
 	animation: fadeIn 0.5s ease forwards;
+	transition: transform 0.2s ease-in-out;
 }
 
 	.box:hover
@@ -67,19 +83,7 @@ body
 		transition: transform 0.2s;
 	}
 
-/* Хедер */
-header
-{
-	background-color: var(--secondary-background);
-	padding: 25px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-	position: fixed;
-	top: 0;
-	width: 100%;
-	z-index: 100;
-	border-top-right-radius: 12px;
-	border-bottom-left-radius: 12px;
-}
+
 
 /* Стили для таблиц */
 .table
@@ -240,17 +244,18 @@ header
 .sidebar
 {
 	width: 250px;
-	height: 75vh;
+	height: 100vh;
 	background-color: var(--secondary-background);
 	color: var(--text-light);
 	padding: 20px;
 	position: fixed;
 	top: 60px;
-	left: -240px;
-	transition: left 0.3s ease, width 0.3s ease;
+	left: 0;
+	transition: width 0.3s ease;
 	z-index: 999;
 	border-bottom-right-radius: 12px;
 	border-top-right-radius: 12px;
+	overflow: hidden;
 }
 
 	.sidebar.open
@@ -258,9 +263,10 @@ header
 		left: 0;
 	}
 
-	.sidebar.closed
+	.sidebar:not(.open)
 	{
 		width: 60px;
+		overflow: hidden;
 	}
 
 	.sidebar ul
@@ -273,7 +279,7 @@ header
 		{
 			display: flex;
 			align-items: center;
-			margin: 5px 0;
+			padding: 10px;
 		}
 
 			.sidebar ul li a,
@@ -291,20 +297,27 @@ header
 				padding: 5px;
 				width: 100%;
 				text-align: left;
+				transition: all 0.3s ease;
 			}
 
-				.sidebar ul li a img,
-				.sidebar ul li button img
-				{
-					width: 24px;
-					height: 24px;
-				}
+	.sidebar:not(.open) ul li a span,
+	.sidebar:not(.open) ul li button span
+	{
+		display: none;
+	}
 
-			.sidebar ul li.active
-			{
-				color: var(--text-light);
-				border-right: 4px solid var(--text-gray);
-			}
+	.sidebar ul li a img,
+	.sidebar ul li button img
+	{
+		width: 32px;
+		height: 32px;
+	}
+
+	.sidebar ul li.active
+	{
+		color: var(--text-light);
+		border-right: 4px solid var(--text-gray);
+	}
 
 /* Иконка меню */
 .menu-icon
@@ -320,4 +333,32 @@ header
 .dark-theme .menu-icon
 {
 	filter: invert(0);
+}
+
+.menu-toggle
+{
+	position: absolute;
+	top: calc(100% - 170px); /* Прижимаем кнопку к нижнему краю меню */
+	left: 50%;
+	transform: translateX(-50%);
+	width: 50px; /* Увеличиваем размер кнопки */
+	height: 50px;
+	background: var(--secondary-background); /* Делаем кнопку более заметной */
+	color: white;
+	border: none;
+	cursor: pointer;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24px; /* Увеличиваем иконку */
+	transition: all 0.3s ease;
+}
+
+/* При свёрнутом меню */
+.sidebar:not(.open) .menu-toggle
+{
+	width: 45px; /* Чуть уменьшаем, чтобы вписалась в узкое меню */
+	height: 45px;
+	font-size: 20px;
 }

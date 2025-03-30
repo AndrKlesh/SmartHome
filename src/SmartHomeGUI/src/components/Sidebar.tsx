@@ -4,18 +4,18 @@ import { API_BASE_URL } from "../config"
 import './styles.css'
 import { MeasurementLink } from './types'
 
-interface HeaderProps
+interface SidebarProps
 {
 	isOpen: boolean
 	setIsOpen: (isOpen: boolean) => void
 }
 
-function Header ({ isOpen, setIsOpen }: HeaderProps)
+function Sidebar ({ isOpen, setIsOpen }: SidebarProps)
 {
 	const [isDarkTheme, setIsDarkTheme] = useState(true)
 	const [menu, setData] = useState<MeasurementLink[]>([])
 	const [activeMenuItem, setActiveMenuItem] = useState<string>('')
-	const [icons, setIcons] = useState<{ [key: string]: string }>({})
+
 
 	useEffect(() =>
 	{
@@ -55,7 +55,6 @@ function Header ({ isOpen, setIsOpen }: HeaderProps)
 					console.error(`Ошибка загрузки иконки для ${ item.path }:`, error)
 				}
 			}
-			setIcons(newIcons)
 		}
 
 		if (menu.length > 0)
@@ -69,11 +68,6 @@ function Header ({ isOpen, setIsOpen }: HeaderProps)
 		document.body.classList.toggle('light-theme', !isDarkTheme)
 	}, [isDarkTheme])
 
-	const toggleMenu = () =>
-	{
-		setIsOpen(!isOpen)
-	}
-
 	const handleMenuClick = (path: string) =>
 	{
 		setActiveMenuItem(path)
@@ -85,7 +79,7 @@ function Header ({ isOpen, setIsOpen }: HeaderProps)
 	}
 
 	return (
-		<div className={ `sidebar ${ isOpen ? 'open' : '' }` } onClick={ toggleMenu }>
+		<div className={ `sidebar ${ isOpen ? 'open' : '' }` }>
 			<ul>
 				{ menu.filter((item) => item.mode.includes('d')).map((item) => (
 					<li key={ item.path } className={ activeMenuItem === item.path ? 'active' : '' } onClick={ () => handleMenuClick(item.path) }>
@@ -108,8 +102,14 @@ function Header ({ isOpen, setIsOpen }: HeaderProps)
 					</button>
 				</li>
 			</ul>
+
+			{/* Перемещаем кнопку вниз, вне списка ul */ }
+			<button className="menu-toggle" onClick={ () => setIsOpen(!isOpen) }>
+				{ isOpen ? '❮' : '❯' }
+			</button>
 		</div>
 	)
+
 }
 
-export default Header
+export default Sidebar

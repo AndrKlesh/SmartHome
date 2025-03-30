@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom"
 import Dashboard from "./components/Dashboard"
-import Header from "./components/Header"
+import Sidebar from "./components/Sidebar"
 import MeasurementHistory from "./components/MeasurementHistory"
 import Settings from "./components/Settings"
 import "./components/styles.css"
@@ -40,7 +40,7 @@ function App ()
 
 	return (
 		<Router basename={BASE_NAME}>
-			<Header isOpen={ isOpen } setIsOpen={ setIsOpen } />
+			<Sidebar isOpen={ isOpen } setIsOpen={ setIsOpen } />
 			<div className={ `content ${ isOpen ? "shifted" : "" }` }>
 				<Routes>
 					{/* Динамическое перенаправление, когда меню загружено */ }

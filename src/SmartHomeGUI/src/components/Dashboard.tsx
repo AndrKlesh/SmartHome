@@ -60,23 +60,26 @@ const Dashboard = () => {
 	}
 
 	return (
-		<div className="container">
-			<p>{name}</p>
-			{data.map((item, index) => (
-				<div
-					key={index}
-					className="box"
-					onClick={() => handleItemClick(item.measurementId)}
-				>
-					<h2>{item.name}</h2> {/* Используем topicName как имя измерения */}
-					<p>
-						Значение: {formatValue(item.value, item.units)} {/* Используем только value и unit */}
-					</p>
-					<p>Время: {new Date(item.timestamp).toLocaleString()}</p>
-				</div>
-			))}
-		</div>
+		<>
+			<p className="content">{ name }</p>
+			<div className="container">
+				{ data.map((item, index) => (
+					<div
+						key={ index }
+						className="box"
+						onClick={ () => handleItemClick(item.measurementId) }
+					>
+						<h2>{ item.name }</h2> {/* Используем topicName как имя измерения */ }
+						<p>
+							Значение: { formatValue(item.value, item.units) } {/* Используем только value и unit */ }
+						</p>
+						<p>Время: { new Date(item.timestamp).toLocaleString() }</p>
+					</div>
+				)) }
+			</div>
+		</>
 	)
+
 }
 
 export default Dashboard

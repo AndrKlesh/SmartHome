@@ -10,7 +10,7 @@ namespace SmartHomeAPI.Services;
 /// </summary>
 /// <param name="measuresStorageService">Сервис измерений</param>
 /// <param name="subscriptionsService">Сервис подписок на измерения</param>
-internal sealed class MeasuresReceiverService (MeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService, ILogger<MeasuresReceiverService> logger) : IHostedService
+internal sealed class MeasuresReceiverService (IMeasuresStorageService measuresStorageService, SubscriptionService subscriptionsService, ILogger<MeasuresReceiverService> logger) : IHostedService
 {
 	private static readonly MqttClientFactory _mqttFactory = new();
 	private readonly MqttClientOptions _mqttClientOptions = _mqttFactory.CreateClientOptionsBuilder().WithTcpServer("localhost", 1883).Build();
@@ -89,7 +89,7 @@ internal sealed class MeasuresReceiverService (MeasuresStorageService measuresSt
 
 		try
 		{
-            logger.LogInformation("Отключение от mqtt-брокера ...");
+			logger.LogInformation("Отключение от mqtt-брокера ...");
 			await mqttClient.DisconnectAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 			mqttClient.Dispose();
 			logger.LogInformation("Подключение с mqtt-брокером разорвано и клиент очищен");

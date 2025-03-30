@@ -30,9 +30,18 @@ internal sealed class Program
 		string connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
 		_ = builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
+		if (builder.Environment.IsDevelopment())
+		{
+			_ = builder.Services.AddSingleton<IMeasuresRepository, InMemoryMeasuresRepository>();
+			_ = builder.Services.AddSingleton<IMeasuresStorageService, InMemoryMeasuresStorageService>();
+		}
+		else
+		{
+			_ = builder.Services.AddScoped<IMeasuresRepository, DBMeasuresRepository>();
+			_ = builder.Services.AddScoped<IMeasuresStorageService, DBMeasuresStorageService>();
+		}
+
 		_ = builder.Services
-			.AddSingleton<MeasuresStorageService>()
-			.AddScoped<MeasuresRepository>()
 			.AddSingleton<SubscriptionService>()
 			.AddSingleton<SubscriptionRepository>()
 			.AddSingleton<MeasuresLinksService>()

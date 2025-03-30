@@ -12,7 +12,7 @@ namespace SmartHomeAPI.Controllers;
 /// <param name="measuresStorageService"></param>
 [ApiController]
 [Route("api/[controller]")]
-public sealed class MeasurementsHistoryController (MeasuresStorageService measuresStorageService, ILogger<MeasurementsHistoryController> logger) : Controller
+public sealed class MeasurementsHistoryController (IMeasuresStorageService measuresStorageService, ILogger<MeasurementsHistoryController> logger) : Controller
 {
 	/// <summary>
 	/// Получить историю измерения

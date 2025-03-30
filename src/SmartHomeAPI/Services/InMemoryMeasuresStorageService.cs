@@ -9,61 +9,71 @@ namespace SmartHomeAPI.Services;
 /// <summary>
 /// Сервис измерений
 /// </summary>
-public sealed class MeasuresStorageService (IServiceProvider serviceProvider,
-										   SubscriptionRepository subscriptionRepository,
-										   MeasuresLinksRepository measuresLinksRepository,
-										   ILogger<MeasuresStorageService> logger) : IDisposable
+/// <param name="measurementRepository">Репозиторий измерений</param>
+/// <param name="subscriptionRepository">Репозиторий подписок</param>
+/// <param name="measuresLinksRepository">Репозиторий ссылок на измерения</param>
+public sealed class InMemoryMeasuresStorageService (InMemoryMeasuresRepository measurementRepository,
+									 SubscriptionRepository subscriptionRepository,
+									 MeasuresLinksRepository measuresLinksRepository,
+									 ILogger<InMemoryMeasuresStorageService> logger) : IDisposable, IMeasuresStorageService
 {
 	private readonly SemaphoreSlim _newMeasuresSemaphore = new(1);
 	private bool _disposed;
 
 	/// <summary>
-	/// Добавить новое измерение
+	/// Добавить новое измерений
 	/// </summary>
+	/// <param name="measurementDto">Измерение</param>
+	/// <returns></returns>
 	public async Task AddMeasureAsync (MeasureDTO measurementDto)
 	{
 		if (measurementDto == null)
 		{
 			logger.LogError("measurementDto был null");
-			throw new ArgumentNullException(nameof(measurementDto));
 		}
-
-		try
+		else
 		{
-			logger.LogInformation("Добавление измерения с ID: {MeasurementId}...", measurementDto.MeasurementId);
-
-			MeasureDomain measurement = new()
+			try
 			{
-				MeasurementId = measurementDto.MeasurementId,
-				Value = measurementDto.Value,
-				Timestamp = measurementDto.Timestamp
-			};
+				logger.LogInformation("Добавление измерения с ID: {MeasurementId}...", measurementDto.MeasurementId);
 
-			using IServiceScope scope = serviceProvider.CreateScope();
-			MeasuresRepository measurementRepository = scope.ServiceProvider.GetRequiredService<MeasuresRepository>();
-			await measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
+				MeasureDomain measurement = new()
+				{
+					MeasurementId = measurementDto.MeasurementId,
+					Value = measurementDto.Value,
+					Timestamp = measurementDto.Timestamp
+				};
 
-			logger.LogInformation("Измерение с ID {MeasurementId} успешно добавлено", measurementDto.MeasurementId);
-		}
-		catch (Exception ex)
-		{
-			logger.LogError(ex, "Ошибка при добавлении измерения с ID: {MeasurementId}", measurementDto.MeasurementId);
-		}
-		finally
-		{
-			_ = _newMeasuresSemaphore.Release();
+				await measurementRepository.AddMeasurementAsync(measurement).ConfigureAwait(false);
+
+				logger.LogInformation("Измерение с ID {MeasurementId} успешно добавлено", measurementDto.MeasurementId);
+			}
+			catch (Exception ex)
+			{
+				logger.LogError(ex, "Ошибка при добавлении измерения с ID: {MeasurementId}", measurementDto.MeasurementId);
+			}
+			finally
+			{
+				// TODO: Long Polling: Пределать на подписку на конкретные типы измерения
+				_ = _newMeasuresSemaphore.Release();
+			}
 		}
 	}
 
 	/// <summary>
 	/// Подписаться на последние измерения
 	/// </summary>
+	/// <param name="mask"></param>
+	/// <returns></returns>
 	public async Task<IReadOnlyList<MeasureDTO>> SubscribeToLatestMeasurementsAsync (string mask)
 	{
 		try
 		{
 			logger.LogInformation("Подписка на последние измерения для маски: '{Mask}'...", mask);
+
+			//TODO: Long Polling: Ожидание новых измерений
 			await _newMeasuresSemaphore.WaitAsync().ConfigureAwait(false);
+
 			IReadOnlyList<MeasureDTO> result = await GetLatestMeasurementsAsync(mask).ConfigureAwait(false);
 			logger.LogInformation("Получены последние измерения по маске: '{Mask}'", mask);
 			return result;
@@ -77,16 +87,17 @@ public sealed class MeasuresStorageService (IServiceProvider serviceProvider,
 
 	/// <summary>
 	/// Получить последние измерения по маске.
+	/// Например, получение последних измерений по маске Общие/*
 	/// </summary>
+	/// <param name="mask">Маска ссылок на типы измерений</param>
+	/// <returns>Список последних измерений</returns>
 	public async Task<IReadOnlyList<MeasureDTO>> GetLatestMeasurementsAsync (string mask)
 	{
 		try
 		{
 			logger.LogInformation("Получение последних измерений для маски: '{Mask}'...", mask);
-			IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 
-			using IServiceScope scope = serviceProvider.CreateScope();
-			MeasuresRepository measurementRepository = scope.ServiceProvider.GetRequiredService<MeasuresRepository>();
+			IReadOnlyList<KeyValuePair<string, Guid>> measurementsLinks = await measuresLinksRepository.FindLinksByMaskAsync(mask).ConfigureAwait(false);
 			IReadOnlyList<MeasureDomain> latestMeasuresDomain = await measurementRepository
 				.GetLatestMeasurementsAsync(measurementsLinks.Select(l => l.Value).ToArray())
 				.ConfigureAwait(false);
@@ -130,16 +141,18 @@ public sealed class MeasuresStorageService (IServiceProvider serviceProvider,
 	}
 
 	/// <summary>
-	/// Получить историю измерений
+	/// Получить историю измерения
 	/// </summary>
+	/// <param name="measurementId">Ид. измерения</param>
+	/// <param name="startDate">Дата начала</param>
+	/// <param name="endDate">Дата конца</param>
+	/// <returns></returns>
 	public async Task<IReadOnlyList<MeasuresHistoryDTO>> GetMeasurementHistory (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
 		try
 		{
-			logger.LogInformation("Получение истории измерений для ID: '{MeasurementId}' с '{StartDate}' по '{EndDate}'", measurementId, startDate, endDate);
+			logger.LogInformation("Получение истории измерений для ID: '{MeasurementId}' с '{StartDate'} по '{EndDate}'", measurementId, startDate, endDate);
 
-			using IServiceScope scope = serviceProvider.CreateScope();
-			MeasuresRepository measurementRepository = scope.ServiceProvider.GetRequiredService<MeasuresRepository>();
 			IReadOnlyList<MeasureDomain> measurements = await measurementRepository
 				.GetMeasurementHistory(measurementId, startDate, endDate)
 				.ConfigureAwait(false);

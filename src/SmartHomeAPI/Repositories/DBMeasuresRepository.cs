@@ -9,7 +9,7 @@ namespace SmartHomeAPI.Repositories;
 /// <summary>
 /// Репозиторий измерений
 /// </summary>
-public sealed class MeasuresRepository (AppDbContext dbContext, ILogger<MeasuresRepository> logger)
+public sealed class DBMeasuresRepository (AppDbContext dbContext, ILogger<DBMeasuresRepository> logger) : IMeasuresRepository
 {
 	/// <summary>
 	/// Добавить новое измерение

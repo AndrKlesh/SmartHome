@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MeasurementLink } from './types'
 import { API_BASE_URL } from "../config"
 import './styles.css'
+import { MeasurementLink } from './types'
 
 interface HeaderProps
 {
@@ -50,7 +50,6 @@ function Header ({ isOpen, setIsOpen }: HeaderProps)
 				{
 					const iconUrl = `${ API_BASE_URL }/SvgImages/${ item.path }`
 					newIcons[item.path] = iconUrl
-					console.log(iconUrl)
 				} catch (error)
 				{
 					console.error(`Ошибка загрузки иконки для ${ item.path }:`, error)
@@ -70,16 +69,6 @@ function Header ({ isOpen, setIsOpen }: HeaderProps)
 		document.body.classList.toggle('light-theme', !isDarkTheme)
 	}, [isDarkTheme])
 
-	const setDarkTheme = () =>
-	{
-		setIsDarkTheme(true)
-	}
-
-	const setLightTheme = () =>
-	{
-		setIsDarkTheme(false)
-	}
-
 	const toggleMenu = () =>
 	{
 		setIsOpen(!isOpen)
@@ -90,54 +79,35 @@ function Header ({ isOpen, setIsOpen }: HeaderProps)
 		setActiveMenuItem(path)
 	}
 
-	const menuItems = menu
-		.filter((item) => item.mode.includes('d'))
-		.map((item) =>
-		{
-			const isActive = activeMenuItem === item.path
-			return (
-				<li
-					key={ item.path }
-					className={ isActive ? 'active' : '' }
-					onClick={ () => handleMenuClick(item.path) }
-				>
-					<Link to={ `/dashboard/${ item.path }` }>
-						<button className="theme-toggle-button">
-							<img src={ icons[item.path] } alt={ item.path } className="menu-icon" />
-							<span>{ item.path }</span>
-						</button>
-					</Link>
-				</li>
-			)
-		})
-
-	const isSettingsActive = activeMenuItem === 'settings'
+	const toggleTheme = () =>
+	{
+		setIsDarkTheme((prev) => !prev)
+	}
 
 	return (
 		<div className={ `sidebar ${ isOpen ? 'open' : '' }` } onClick={ toggleMenu }>
 			<ul>
-				{ menuItems }
-				<li
-					className={ isSettingsActive ? 'active' : '' }
-					onClick={ () => handleMenuClick('settings') }
-				>
+				{ menu.filter((item) => item.mode.includes('d')).map((item) => (
+					<li key={ item.path } className={ activeMenuItem === item.path ? 'active' : '' } onClick={ () => handleMenuClick(item.path) }>
+						<Link to={ `/dashboard/${ item.path }` }>
+							<img src={ `${ API_BASE_URL }/SvgImages/${ item.path }` } className="menu-icon" />
+							<span>{ item.path }</span>
+						</Link>
+					</li>
+				)) }
+				<li className={ activeMenuItem === 'settings' ? 'active' : '' } onClick={ () => handleMenuClick('settings') }>
 					<Link to="/settings">
-						<button className="theme-toggle-button">
-							<img src={ `${ API_BASE_URL }/SvgImages/Настройки` } className="menu-icon" />
-							<span>Настройки</span>
-						</button>
+						<img src={ `${ API_BASE_URL }/SvgImages/Настройки` } className="menu-icon" alt="Настройки" />
+						<span>Настройки</span>
 					</Link>
 				</li>
+				<li onClick={ toggleTheme }>
+					<button>
+						<img src={ `${ API_BASE_URL }/SvgImages/${ isDarkTheme ? 'Светлая тема' : 'Темная тема' }` } alt="Переключить тему" className="menu-icon" />
+						<span>{ isDarkTheme ? 'Светлая тема' : 'Темная тема' }</span>
+					</button>
+				</li>
 			</ul>
-
-				<button className="theme-toggle-button" onClick={ setDarkTheme } aria-label="Темная тема">
-					<img src={ `${ API_BASE_URL }/SvgImages/Темная тема` } alt={ 'Темная тема' } className="menu-icon" />
-					<span>Темная тема</span>
-				</button>
-				<button className="theme-toggle-button" onClick={ setLightTheme } aria-label="Светлая тема">
-					<img src={ `${ API_BASE_URL }/SvgImages/Светлая тема` } alt={ 'Светлая тема' } className="menu-icon" />
-					<span>Светлая тема</span>
-				</button>
 		</div>
 	)
 }

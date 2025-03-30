@@ -16,7 +16,8 @@ internal sealed class Program
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-		_ = builder.Logging.ClearProviders()
+		_ = builder.Logging
+			.ClearProviders()
 			.AddSimpleConsole(options =>
 			{
 				options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss.fff zzz] ";
@@ -24,8 +25,7 @@ internal sealed class Program
 				options.SingleLine = true;
 				options.ColorBehavior = LoggerColorBehavior.Enabled;
 			})
-			.AddDebug()
-			.AddConfiguration(builder.Configuration.GetSection("Logging"));
+			.AddDebug();
 
 		string connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
 		_ = builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
@@ -41,6 +41,7 @@ internal sealed class Program
 			.AddSingleton<SvgImagesRepository>()
 			.AddHostedService<MeasuresReceiverService>()
 			.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
+			.AddOpenApi()
 			.AddControllers();
 
 		_ = builder.Services.AddOpenApi();
@@ -58,7 +59,7 @@ internal sealed class Program
 
 		if (app.Environment.IsDevelopment())
 		{
-			_ = app.UseOpenApi();
+			_ = app.MapOpenApi();
 			_ = app.MapScalarApiReference();
 		}
 

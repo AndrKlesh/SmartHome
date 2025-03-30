@@ -3,19 +3,13 @@
 using SmartHomeAPI.Entities;
 using SmartHomeAPI.Models;
 using SmartHomeAPI.Repositories;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
 
 namespace SmartHomeAPI.Services;
 
 /// <summary>
 /// Сервис измерений
 /// </summary>
-public sealed class MeasuresStorageService(IServiceProvider serviceProvider,
+public sealed class MeasuresStorageService (IServiceProvider serviceProvider,
 										   SubscriptionRepository subscriptionRepository,
 										   MeasuresLinksRepository measuresLinksRepository,
 										   ILogger<MeasuresStorageService> logger) : IDisposable
@@ -26,7 +20,7 @@ public sealed class MeasuresStorageService(IServiceProvider serviceProvider,
 	/// <summary>
 	/// Добавить новое измерение
 	/// </summary>
-	public async Task AddMeasureAsync(MeasureDTO measurementDto)
+	public async Task AddMeasureAsync (MeasureDTO measurementDto)
 	{
 		if (measurementDto == null)
 		{
@@ -64,7 +58,7 @@ public sealed class MeasuresStorageService(IServiceProvider serviceProvider,
 	/// <summary>
 	/// Подписаться на последние измерения
 	/// </summary>
-	public async Task<IReadOnlyList<MeasureDTO>> SubscribeToLatestMeasurementsAsync(string mask)
+	public async Task<IReadOnlyList<MeasureDTO>> SubscribeToLatestMeasurementsAsync (string mask)
 	{
 		try
 		{
@@ -84,7 +78,7 @@ public sealed class MeasuresStorageService(IServiceProvider serviceProvider,
 	/// <summary>
 	/// Получить последние измерения по маске.
 	/// </summary>
-	public async Task<IReadOnlyList<MeasureDTO>> GetLatestMeasurementsAsync(string mask)
+	public async Task<IReadOnlyList<MeasureDTO>> GetLatestMeasurementsAsync (string mask)
 	{
 		try
 		{
@@ -138,7 +132,7 @@ public sealed class MeasuresStorageService(IServiceProvider serviceProvider,
 	/// <summary>
 	/// Получить историю измерений
 	/// </summary>
-	public async Task<IReadOnlyList<MeasuresHistoryDTO>> GetMeasurementHistory(Guid measurementId, DateTime startDate, DateTime endDate)
+	public async Task<IReadOnlyList<MeasuresHistoryDTO>> GetMeasurementHistory (Guid measurementId, DateTime startDate, DateTime endDate)
 	{
 		try
 		{
@@ -150,7 +144,7 @@ public sealed class MeasuresStorageService(IServiceProvider serviceProvider,
 				.GetMeasurementHistory(measurementId, startDate, endDate)
 				.ConfigureAwait(false);
 
-			MeasuresHistoryDTO[] history = measurements.Select(m => new MeasuresHistoryDTO
+			MeasuresHistoryDTO [] history = measurements.Select(m => new MeasuresHistoryDTO
 			{
 				Value = m.Value,
 				Timestamp = m.Timestamp
@@ -167,13 +161,13 @@ public sealed class MeasuresStorageService(IServiceProvider serviceProvider,
 	}
 
 	///<inheritdoc/>
-	public void Dispose()
+	public void Dispose ()
 	{
 		Dispose(true);
 		GC.SuppressFinalize(this);
 	}
 
-	private void Dispose(bool disposing)
+	private void Dispose (bool disposing)
 	{
 		if (_disposed)
 		{

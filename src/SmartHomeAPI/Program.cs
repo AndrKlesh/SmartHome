@@ -1,6 +1,5 @@
 #pragma warning disable CA1515
 
-using System.Linq;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Console;
@@ -14,7 +13,7 @@ namespace SmartHomeAPI;
 
 internal sealed class Program
 {
-	internal static void Main(string[] args)
+	internal static void Main (string [] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -39,9 +38,9 @@ internal sealed class Program
 		app.Run();
 	}
 
-	private static void ConfigureLogging(WebApplicationBuilder builder)
+	private static void ConfigureLogging (WebApplicationBuilder builder)
 	{
-		builder.Logging.ClearProviders()
+		_ = builder.Logging.ClearProviders()
 			.AddSimpleConsole(options =>
 			{
 				options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss.fff zzz] ";
@@ -53,18 +52,18 @@ internal sealed class Program
 			.AddConfiguration(builder.Configuration.GetSection("Logging"));
 	}
 
-	private static void ConfigureDatabase(WebApplicationBuilder builder)
+	private static void ConfigureDatabase (WebApplicationBuilder builder)
 	{
 		string connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
 		if (!string.IsNullOrEmpty(connectionString))
 		{
-			builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+			_ = builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 		}
 	}
 
-	private static void ConfigureServices(WebApplicationBuilder builder)
+	private static void ConfigureServices (WebApplicationBuilder builder)
 	{
-		builder.Services
+		_ = builder.Services
 			.AddSingleton<MeasuresStorageService>()
 			.AddScoped<MeasuresRepository>()
 			.AddSingleton<SubscriptionService>()
@@ -78,34 +77,34 @@ internal sealed class Program
 			.AddControllers();
 	}
 
-	private static void ConfigureOpenApi(WebApplicationBuilder builder)
+	private static void ConfigureOpenApi (WebApplicationBuilder builder)
 	{
-		builder.Services.AddOpenApiDocument(config =>
+		_ = builder.Services.AddOpenApiDocument(config =>
 		{
 			config.Title = "SmartHomeAPI";
 			config.Version = "v1";
 		});
 	}
 
-	private static void ApplyMigrations(WebApplication app)
+	private static void ApplyMigrations (WebApplication app)
 	{
 		using IServiceScope scope = app.Services.CreateScope();
 		AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 		dbContext.Database.Migrate();
 	}
 
-	private static void ConfigureApp(WebApplication app)
+	private static void ConfigureApp (WebApplication app)
 	{
 		if (app.Environment.IsDevelopment())
 		{
-			app.UseOpenApi();
-			app.UseSwaggerUi(settings => settings.CustomInlineStyles = SwaggerTheme.GetSwaggerThemeCss(Theme.UniversalDark));
-			app.MapScalarApiReference();
+			_ = app.UseOpenApi();
+			_ = app.UseSwaggerUi(settings => settings.CustomInlineStyles = SwaggerTheme.GetSwaggerThemeCss(Theme.UniversalDark));
+			_ = app.MapScalarApiReference();
 		}
 
-		app.UseHttpsRedirection();
-		app.UseCors("AllowAll");
-		app.MapControllers();
+		_ = app.UseHttpsRedirection();
+		_ = app.UseCors("AllowAll");
+		_ = app.MapControllers();
 		app.Urls.Add("https://*:7098");
 	}
 }

@@ -1,6 +1,7 @@
-/* Общие переменные (темная тема) */
+/* Общие переменные */
 :root
 {
+	/* Темная тема */
 	--primary-background: #121212;
 	--secondary-background: #1e1e1e;
 	--text-light: white;
@@ -24,7 +25,7 @@ body.light-theme
 	--hover-accent: lightskyblue;
 }
 
-/* Общий стиль для страницы */
+/* Базовые стили */
 body
 {
 	background-color: var(--primary-background);
@@ -34,7 +35,7 @@ body
 	margin-left: 120px;
 }
 
-/* Стили для контейнеров */
+/* Основные контейнеры */
 .container
 {
 	display: grid;
@@ -66,13 +67,13 @@ body
 		transition: transform 0.2s;
 	}
 
+/* Хедер */
 header
 {
 	background-color: var(--secondary-background);
 	padding: 25px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 	position: fixed;
-	margin-left: 0;
 	top: 0;
 	width: 100%;
 	z-index: 100;
@@ -89,7 +90,8 @@ header
 	table-layout: auto;
 }
 
-	.table th, .table td
+	.table th,
+	.table td
 	{
 		border: 1px solid var(--border-color);
 		padding: 10px;
@@ -215,12 +217,13 @@ header
 	}
 }
 
+/* Стили для приложения */
 .app
 {
 	display: flex;
 }
 
-/* Стили для основного контента */
+/* Контент */
 .content
 {
 	margin-left: 0;
@@ -228,13 +231,12 @@ header
 	padding: 20px;
 }
 
-	/* Стили для смещенного контента */
 	.content.shifted
 	{
 		margin-left: 250px;
 	}
 
-/* Стили для бокового меню */
+/* Боковое меню */
 .sidebar
 {
 	width: 250px;
@@ -303,3 +305,19 @@ header
 				color: var(--text-light);
 				border-right: 4px solid var(--text-gray);
 			}
+
+/* Иконка меню */
+.menu-icon
+{
+	transition: filter 0.3s ease-in-out;
+}
+
+.light-theme .menu-icon
+{
+	filter: invert(1);
+}
+
+.dark-theme .menu-icon
+{
+	filter: invert(0);
+}

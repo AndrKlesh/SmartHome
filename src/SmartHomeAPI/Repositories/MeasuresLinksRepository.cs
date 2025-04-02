@@ -54,21 +54,21 @@ public sealed class MeasuresLinksRepository
 	/// </summary>
 	/// <param name="mask">Маска/регулярное выражение ссылок</param>
 	/// <returns></returns>
-	public Task<Dictionary<string, Guid>> FindLinksByMaskAsync (string mask)
+	public Task<IReadOnlyList<KeyValuePair<string, Guid>>> FindLinksByMaskAsync (string mask)
 	{
 		logger.LogInformation("Получение ссылок по маске '{Mask}'...", mask);
-		Dictionary<string, Guid> results = _links.Where(item => Regex.IsMatch(item.Key, mask)).ToDictionary();
+		KeyValuePair<string, Guid> [] results = _links.Where(item => Regex.IsMatch(item.Key, mask)).ToArray();
 
-		if (results.Count == 0)
+		if (results.Length == 0)
 		{
 			logger.LogWarning("Не найдено соответствий по маске '{Mask}'", mask);
 		}
 		else
 		{
-			logger.LogInformation("Найдено {Count} соответствий по маске '{Mask}'", results.Count, mask);
+			logger.LogInformation("Найдено {Count} соответствий по маске '{Mask}'", results.Length, mask);
 		}
 
-		return Task.FromResult(results);
+		return Task.FromResult((IReadOnlyList<KeyValuePair<string, Guid>>) results);
 	}
 
 	/// <summary>

@@ -9,8 +9,6 @@ namespace AuthService.Controllers;
 [Route("api/[controller]")]
 public sealed class AuthController (LoginService loginService) : ControllerBase
 {
-	//private readonly LoginService _loginService = loginService;
-
 	[HttpPost("login")] // Авторизация и генерация JWT
 	public IActionResult Login ([FromBody] User user)
 	{
@@ -33,4 +31,21 @@ public sealed class AuthController (LoginService loginService) : ControllerBase
 			return Unauthorized();
 		}
 	}
+
+	/*[HttpPost("register")]
+	public IActionResult Register ([FromBody] User user)
+	{
+		if (user is null || user.Username is null || user.Password is null)
+		{
+			return BadRequest("Username and password are required");
+		}
+
+		bool success = loginService.Register(user.Username, user.Password);
+		if (!success)
+		{
+			return Conflict("Username already exists");
+		}
+
+		return Ok("Registration successful");
+	}*/
 }

@@ -21,6 +21,8 @@ internal sealed class Program
 
 		_ = app.UseCors("AllowAll");
 
+		_ = app.UseJwtMiddleware();
+
 		_ = app.MapControllers();
 
 		app.Run();

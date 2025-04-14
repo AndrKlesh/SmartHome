@@ -1,242 +1,123 @@
 #pragma warning disable CA1515
 
+using System.Collections.Immutable;
+using Microsoft.Extensions.Options;
 using SmartHomeAPI.Entities;
 
 namespace SmartHomeAPI.Repositories;
 
-public sealed class SubscriptionRepository (ILogger<SubscriptionRepository> logger) : IDisposable
+public sealed class SubscriptionRepository
 {
-	private readonly ReaderWriterLockSlim _lock = new();
-	private bool _disposed;
+	private readonly ILogger<SubscriptionRepository> logger;
+	private readonly IOptionsMonitor<List<SubscriptionDomain>> optionsMonitor;
+	private ImmutableArray<SubscriptionDomain> subscriptions;
 
-	//TODO: Убрать заглушки подписок
-	private readonly List<SubscriptionDomain> _subscriptions =
-	[
-		new SubscriptionDomain()
-		{
-			MeasurementId = Guid.Parse("462F9446-ADFF-4EA4-8CA1-F1665268520F"),
-			Description = "Температура горячей воды",
-			Unit = "°C",
-			MqttTopic = "home/bathroom/hot_water_temp",
-			ConverterName = "default",
-		},
-		new SubscriptionDomain()
-		{
-			MeasurementId = Guid.Parse("21274707-C7CA-4436-B191-9BAC91C473F5"),
-			Description = "Температура в помещении",
-			Unit = "°C",
-			MqttTopic = "home/living_room/temperature",
-			ConverterName = "default",
-		},
-		new SubscriptionDomain()
-		{
-			MeasurementId = Guid.Parse("24FE134B-4CBF-4EB9-A811-2720D4315146"),
-			Description = "Температура воздуха снаружи здания",
-			Unit = "°C",
-			MqttTopic = "home/outside/temperature",
-			ConverterName = "default",
-		},
-		new SubscriptionDomain()
-		{
-			MeasurementId = Guid.Parse("421673E7-95EF-478C-912A-71F3158FF613"),
-			Description = "Входная дверь",
-			Unit = "",
-			MqttTopic = "home/door",
-			ConverterName = "default",
-		},
-		new SubscriptionDomain()
-		{
-			MeasurementId = Guid.Parse("40EAC794-65E5-432D-84E6-F1B04B14DB8A"),
-			Description = "Вентиляция",
-			Unit = "",
-			MqttTopic = "home/venting",
-			ConverterName = "default",
-		},
-	];
-
-	internal async Task<List<SubscriptionDomain>> GetAllSubscriptionsAsync ()
+	public SubscriptionRepository (ILogger<SubscriptionRepository> logger, IOptionsMonitor<List<SubscriptionDomain>> optionsMonitor)
 	{
-		logger.LogInformation("Получение всех подписок...");
+		this.logger = logger;
+		this.optionsMonitor = optionsMonitor;
 
-		_lock.EnterReadLock();
-		try
-		{
-			List<SubscriptionDomain> subscriptions = await Task.FromResult(_subscriptions.ToList()).ConfigureAwait(false);
+		subscriptions = optionsMonitor?.CurrentValue.ToImmutableArray() ?? ImmutableArray<SubscriptionDomain>.Empty;
 
-			if (subscriptions.Count == 0)
-			{
-				logger.LogWarning("Подписки не найдены");
-			}
-			else
-			{
-				logger.LogInformation("Найдено {Count} подписок", subscriptions.Count);
-			}
-
-			return subscriptions;
-		}
-		finally
-		{
-			_lock.ExitReadLock();
-		}
+		_ = optionsMonitor.OnChange(updatedSubscriptions => ImmutableInterlocked.Update(ref subscriptions, _ => updatedSubscriptions?.ToImmutableArray() ?? ImmutableArray<SubscriptionDomain>.Empty));
 	}
 
-	internal async Task AddSubscriptionAsync (SubscriptionDomain subscription)
+	public async Task<List<SubscriptionDomain>> GetAllSubscriptionsAsync ()
 	{
-		logger.LogInformation("Добавление подписки для измерения с ID '{MeasurementId}'...", subscription.MeasurementId);
-
-		_lock.EnterWriteLock();
-		try
-		{
-			_subscriptions.Add(subscription);
-			logger.LogInformation("Подписка для измерения с ID '{MeasurementId}' добавлена", subscription.MeasurementId);
-		}
-		finally
-		{
-			_lock.ExitWriteLock();
-		}
-
-		await Task.CompletedTask.ConfigureAwait(false);
+		return await Task.FromResult(subscriptions.ToList()).ConfigureAwait(false);
 	}
 
-	internal async Task<SubscriptionDomain?> GetSubscriptionByMeasurementIdAsync (Guid measurementId)
+	public async Task<SubscriptionDomain?> GetSubscriptionByMeasurementIdAsync (Guid measurementId)
 	{
 		logger.LogInformation("Получение подписки для измерения с ID '{MeasurementId}'...", measurementId);
 
-		_lock.EnterReadLock();
-		try
+		SubscriptionDomain subscription = subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId);
+		if (subscription == null)
 		{
-			SubscriptionDomain subscription = await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId)).ConfigureAwait(false);
-			if (subscription == null)
-			{
-				logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена", measurementId);
-			}
-			else
-			{
-				logger.LogInformation("Найдена подписка для измерения с ID '{MeasurementId}'", measurementId);
-			}
+			logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена", measurementId);
+		}
+		else
+		{
+			logger.LogInformation("Найдена подписка для измерения с ID '{MeasurementId}'", measurementId);
+		}
 
-			return subscription;
-		}
-		finally
-		{
-			_lock.ExitReadLock();
-		}
+		return await Task.FromResult(subscription).ConfigureAwait(false);
 	}
 
-	internal async Task<SubscriptionDomain?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
+	public async Task<SubscriptionDomain?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
 	{
 		logger.LogInformation("Получение подписки для MQTT топика '{MqttTopic}'...", mqttTopic);
 
-		_lock.EnterReadLock();
-		try
+		SubscriptionDomain subscription = subscriptions.FirstOrDefault(s => s.MqttTopic == mqttTopic);
+		if (subscription == null)
 		{
-			SubscriptionDomain subscription = await Task.FromResult(_subscriptions.FirstOrDefault(s => s.MqttTopic == mqttTopic)).ConfigureAwait(false);
-			if (subscription == null)
-			{
-				logger.LogWarning("Подписка для MQTT топика '{MqttTopic}' не найдена", mqttTopic);
-			}
-			else
-			{
-				logger.LogInformation("Найдена подписка для MQTT топика '{MqttTopic}'", mqttTopic);
-			}
+			logger.LogWarning("Подписка для MQTT топика '{MqttTopic}' не найдена", mqttTopic);
+		}
+		else
+		{
+			logger.LogInformation("Найдена подписка для MQTT топика '{MqttTopic}'", mqttTopic);
+		}
 
-			return subscription;
-		}
-		finally
-		{
-			_lock.ExitReadLock();
-		}
+		return await Task.FromResult(subscription).ConfigureAwait(false);
 	}
 
-	internal async Task UpdateSubscriptionAsync (SubscriptionDomain subscription)
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
+	public async Task AddSubscriptionAsync (SubscriptionDomain subscription)
 	{
-		logger.LogInformation("Обновление подписки для измерения с ID '{MeasurementId}'...", subscription.MeasurementId);
+		throw new NotImplementedException("Добавление подписки для измерения не реализовано");
+		/*
+		logger.LogInformation("Добавление подписки для измерения с ID '{MeasurementId}'...", subscription.MeasurementId);
+		subscriptions.Add(subscription);
 
-		_lock.EnterUpgradeableReadLock();
-		try
-		{
-			SubscriptionDomain? existingSubscription = _subscriptions.FirstOrDefault(s => s.MeasurementId == subscription.MeasurementId);
-			if (existingSubscription != null)
-			{
-				_lock.EnterWriteLock();
-				try
-				{
-					existingSubscription.Description = subscription.Description;
-					existingSubscription.Unit = subscription.Unit;
-					existingSubscription.MqttTopic = subscription.MqttTopic;
-					existingSubscription.ConverterName = "default";
-					logger.LogInformation("Подписка для измерения с ID '{MeasurementId}' обновлена", subscription.MeasurementId);
-				}
-				finally
-				{
-					_lock.ExitWriteLock();
-				}
-			}
-			else
-			{
-				logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена для обновления", subscription.MeasurementId);
-			}
-		}
-		finally
-		{
-			_lock.ExitUpgradeableReadLock();
-		}
-
+		logger.LogInformation("Подписка для измерения с ID '{MeasurementId}' добавлена", subscription.MeasurementId);
 		await Task.CompletedTask.ConfigureAwait(false);
+		*/
 	}
 
-	internal async Task DeleteSubscriptionAsync (Guid measurementId)
+	public async Task DeleteSubscriptionAsync (Guid measurementId)
 	{
+		throw new NotImplementedException("Удаление подписки для измерения не реализовано");
+
+		/*
 		logger.LogInformation("Удаление подписки для измерения с ID '{MeasurementId}'...", measurementId);
 
-		_lock.EnterUpgradeableReadLock();
-		try
+		SubscriptionDomain subscription = subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId);
+		if (subscription != null)
 		{
-			SubscriptionDomain? subscription = _subscriptions.FirstOrDefault(s => s.MeasurementId == measurementId);
-			if (subscription != null)
-			{
-				_lock.EnterWriteLock();
-				try
-				{
-					_ = _subscriptions.Remove(subscription);
-					logger.LogInformation("Подписка для измерения с ID {MeasurementId} удалена", measurementId);
-				}
-				finally
-				{
-					_lock.ExitWriteLock();
-				}
-			}
-			else
-			{
-				logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена для удаления", measurementId);
-			}
+			subscriptions = new ConcurrentBag<SubscriptionDomain>(subscriptions.Where(s => s.MeasurementId != measurementId));
+
+			logger.LogInformation("Подписка для измерения с ID '{MeasurementId}' удалена", measurementId);
 		}
-		finally
+		else
 		{
-			_lock.ExitUpgradeableReadLock();
+			logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена для удаления", measurementId);
 		}
 
 		await Task.CompletedTask.ConfigureAwait(false);
+		*/
 	}
 
-	public void Dispose ()
+	public async Task UpdateSubscriptionAsync (SubscriptionDomain subscription)
 	{
-		Dispose(true);
-		GC.SuppressFinalize(this);
-	}
+		throw new NotImplementedException("Обновление подписки для измерения не реализовано");
 
-	internal void Dispose (bool disposing)
-	{
-		if (_disposed)
+		/*
+		logger.LogInformation("Обновление подписки для измерения с ID '{MeasurementId}'...", subscription.MeasurementId);
+
+		SubscriptionDomain existingSubscription = subscriptions.FirstOrDefault(s => s.MeasurementId == subscription.MeasurementId);
+		if (existingSubscription != null)
 		{
-			return;
+			subscriptions = new ConcurrentBag<SubscriptionDomain>(subscriptions.Where(s => s.MeasurementId != subscription.MeasurementId));
+			subscriptions.Add(subscription);
+
+			logger.LogInformation("Подписка для измерения с ID '{MeasurementId}' обновлена", subscription.MeasurementId);
+		}
+		else
+		{
+			logger.LogWarning("Подписка для измерения с ID '{MeasurementId}' не найдена для обновления", subscription.MeasurementId);
 		}
 
-		if (disposing)
-		{
-			_lock.Dispose();
-		}
-
-		_disposed = true;
+		await Task.CompletedTask.ConfigureAwait(false);
+		*/
 	}
 }

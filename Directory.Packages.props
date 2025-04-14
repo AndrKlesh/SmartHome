@@ -27,3 +27,4 @@
     <PackageVersion Include="Scalar.AspNetCore" Version="2.1.3" />
   </ItemGroup>
 </Project>
+

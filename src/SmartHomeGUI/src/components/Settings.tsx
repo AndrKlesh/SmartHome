@@ -224,7 +224,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 									<td>{record.converterName}</td>
 									<td>
 										<button onClick={() => handleEdit(record)} className="button">Edit</button>
-										<button onClick={() => handleDelete(record.measurementId)} className="button">Delete</button>
+											<button onClick={ () => handleDelete(record.measurementId) } className="button" style={ { marginLeft: "8px" } }>Delete</button>
 									</td>
 								</>
 							)}

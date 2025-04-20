@@ -1,3 +1,4 @@
+using System.Text;
 using AuthService.Services;
 
 namespace AuthService;
@@ -10,21 +11,17 @@ internal sealed class Program
 		_ = builder.Services.AddSingleton<LoginService>();
 		_ = builder.Services.AddControllers();
 		_ = builder.Services.AddEndpointsApiExplorer();
+		_ = builder.Services.AddAuthorization();
+		_ = builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-		_ = builder.Services.AddCors(options =>
-		{
-			options.AddPolicy("AllowAll",
-				policy =>
-				{
-					_ = policy.AllowAnyOrigin()  // Разрешаем запросы с любых источников
-						  .AllowAnyMethod()
-						  .AllowAnyHeader();
-				});
-		});
+		IConfigurationSection jwtSettings = builder.Configuration.GetSection("Jwt");
+		byte [] key = Encoding.UTF8.GetBytes(jwtSettings ["Key"]);
 
 		WebApplication app = builder.Build();
 
-		_ = app.UseAuthorization();
+		_ = app.UseCors("AllowAll");
+
+		_ = app.UseJwtMiddleware();
 
 		_ = app.MapControllers();
 

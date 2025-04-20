@@ -17,6 +17,10 @@
       {
         "Path": "src\\SmartHomeGUI\\SmartHomeGUI.esproj",
         "Action": "Start"
+      },
+      {
+        "Path": "src\\AuthService\\AuthService.csproj",
+        "Action": "Start"
       }
     ]
   }

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
@@ -9,7 +10,6 @@ namespace SmartHomeAPI.UnitTests.Repositories;
 [TestFixture]
 internal sealed class MeasuresLinksRepositoryTests
 {
-	private Mock<ILogger<MeasuresLinksRepository>> _loggerMock;
 	private Mock<IOptionsMonitor<Dictionary<string, Guid>>> _optionsMonitorMock;
 	private MeasuresLinksRepository _repository;
 	private Dictionary<string, Guid> _links;
@@ -17,21 +17,20 @@ internal sealed class MeasuresLinksRepositoryTests
 	[SetUp]
 	public void SetUp ()
 	{
-		_loggerMock = new Mock<ILogger<MeasuresLinksRepository>>();
 		_optionsMonitorMock = new Mock<IOptionsMonitor<Dictionary<string, Guid>>>();
 
 		_links = new Dictionary<string, Guid>
-		{
-			{ "Ванная комната/Температура горячей воды", Guid.Parse("462f9446-adff-4ea4-8ca1-f1665268520f") },
-			{ "Общие/Вентиляция", Guid.Parse("40eac794-65e5-432d-84e6-f1b04b14db8a") },
-			{ "Общие/Входная дверь", Guid.Parse("421673e7-95ef-478c-912a-71f3158ff613") },
-			{ "Общие/Температура воздуха", Guid.Parse("24fe134b-4cbf-4eb9-a811-2720d4315146") },
-			{ "Спальня/Температура воздуха", Guid.Parse("21274707-c7ca-4436-b191-9bac91c473f5") }
-		};
+	{
+		{ "Ванная комната/Температура горячей воды", Guid.Parse("462f9446-adff-4ea4-8ca1-f1665268520f") },
+		{ "Общие/Вентиляция", Guid.Parse("40eac794-65e5-432d-84e6-f1b04b14db8a") },
+		{ "Общие/Входная дверь", Guid.Parse("421673e7-95ef-478c-912a-71f3158ff613") },
+		{ "Общие/Температура воздуха", Guid.Parse("24fe134b-4cbf-4eb9-a811-2720d4315146") },
+		{ "Спальня/Температура воздуха", Guid.Parse("21274707-c7ca-4436-b191-9bac91c473f5") }
+	};
 
 		_ = _optionsMonitorMock.Setup(m => m.CurrentValue).Returns(_links);
 
-		_repository = new MeasuresLinksRepository(_loggerMock.Object, _optionsMonitorMock.Object);
+		_repository = new MeasuresLinksRepository(NullLogger<MeasuresLinksRepository>.Instance, _optionsMonitorMock.Object);
 	}
 
 	[Test]

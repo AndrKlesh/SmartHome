@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
@@ -10,7 +11,6 @@ namespace SmartHomeAPI.UnitTests.Repositories;
 [TestFixture]
 internal sealed class SubscriptionRepositoryTests
 {
-	private Mock<ILogger<SubscriptionRepository>> _loggerMock;
 	private Mock<IOptionsMonitor<List<SubscriptionDomain>>> _optionsMonitorMock;
 	private List<SubscriptionDomain> _subscriptions;
 	private SubscriptionRepository _repository;
@@ -18,26 +18,25 @@ internal sealed class SubscriptionRepositoryTests
 	[SetUp]
 	public void SetUp ()
 	{
-		_loggerMock = new Mock<ILogger<SubscriptionRepository>>();
 		_optionsMonitorMock = new Mock<IOptionsMonitor<List<SubscriptionDomain>>>();
 
 		_subscriptions = new()
+	{
+		new SubscriptionDomain
 		{
-			new SubscriptionDomain
-			{
-				MeasurementId = Guid.NewGuid(),
-				MqttTopic = "test/temperature"
-			},
-			new SubscriptionDomain
-			{
-				MeasurementId = Guid.NewGuid(),
-				MqttTopic = "test/humidity"
-			}
-		};
+			MeasurementId = Guid.NewGuid(),
+			MqttTopic = "test/temperature"
+		},
+		new SubscriptionDomain
+		{
+			MeasurementId = Guid.NewGuid(),
+			MqttTopic = "test/humidity"
+		}
+	};
 
 		_ = _optionsMonitorMock.Setup(x => x.CurrentValue).Returns(_subscriptions);
 
-		_repository = new SubscriptionRepository(_loggerMock.Object, _optionsMonitorMock.Object);
+		_repository = new SubscriptionRepository(NullLogger<SubscriptionRepository>.Instance, _optionsMonitorMock.Object);
 	}
 
 	[Test]

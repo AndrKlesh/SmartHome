@@ -31,11 +31,11 @@ jobs:
           node-version: 'latest'
 
       - name: Install SmartHomeGUI dependencies
-        working-directory: SmartHome/src/SmartHomeGUI
+        working-directory: src/SmartHomeGUI
         run: npm ci
 
       - name: Build SmartHomeGUI with Webpack
-        working-directory: SmartHome/src/SmartHomeGUI
+        working-directory: src/SmartHomeGUI
         run: npm run build
 
   test:

@@ -1,4 +1,4 @@
-name: Build
+name: CI Pipeline
 
 on:
   push:
@@ -57,3 +57,39 @@ jobs:
 
       - name: Run tests
         run: dotnet test --configuration Release
+
+  analyze:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp', 'javascript-typescript' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended, security-and-quality
+          tools: linked
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.3.1
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

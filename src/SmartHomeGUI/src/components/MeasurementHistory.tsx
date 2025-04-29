@@ -4,7 +4,7 @@ import {CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, Point
 import {useCallback, useEffect, useState} from 'react'
 import {Line} from 'react-chartjs-2'
 import {useParams} from 'react-router-dom'
-import {API_BASE_URL} from "../config"
+import {API_BASE_URL} from "../Config"
 import {Measurement} from './Types'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend)

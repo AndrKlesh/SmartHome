@@ -1,6 +1,6 @@
 import {Box, Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useTheme} from '@mui/material'
 import React, {useCallback, useEffect, useState} from 'react'
-import {API_BASE_URL} from "../config"
+import {API_BASE_URL} from "../Config"
 import ErrorMessage from './ErrorMessage'
 import {TopicData} from './Types'
 

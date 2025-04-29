@@ -3,7 +3,7 @@ import {Box, Divider, Drawer, List, ListItemButton, ListItemIcon, ListItemText, 
 import {useTheme} from "@mui/material/styles"
 import {useCallback, useEffect, useState} from "react"
 import {Link, useLocation} from "react-router-dom"
-import {API_BASE_URL} from "../config"
+import {API_BASE_URL} from "../Config"
 import {MeasurementLink} from "./Types"
 
 interface SidebarProps

@@ -2,7 +2,7 @@ import {Box, Card, CardContent, CircularProgress, Divider, Typography} from '@mu
 import {useTheme} from '@mui/material/styles'
 import {useCallback, useEffect, useState} from 'react'
 import {useNavigate, useParams} from 'react-router-dom'
-import {API_BASE_URL} from '../config'
+import {API_BASE_URL} from '../Config'
 import {DashboardData} from './Types'
 
 const Dashboard = () =>

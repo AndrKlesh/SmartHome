@@ -6,7 +6,7 @@ import Dashboard from "./components/Dashboard"
 import MeasurementHistory from "./components/MeasurementHistory"
 import Settings from "./components/Settings"
 import Sidebar from "./components/Sidebar"
-import {API_BASE_URL, BASE_NAME} from "./config"
+import {API_BASE_URL, BASE_NAME} from "./Config"
 
 interface MeasurementLink
 {

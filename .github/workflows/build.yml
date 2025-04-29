@@ -25,6 +25,19 @@ jobs:
       - name: Build .NET projects
         run: dotnet build --configuration Release
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 'latest'
+
+      - name: Install SmartHomeGUI dependencies
+        working-directory: SmartHome/src/SmartHomeGUI
+        run: npm ci
+
+      - name: Build SmartHomeGUI with Webpack
+        working-directory: SmartHome/src/SmartHomeGUI
+        run: npm run build
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest

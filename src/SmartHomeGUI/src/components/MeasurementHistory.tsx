@@ -1,11 +1,16 @@
-import {useEffect, useState} from 'react'
+import {Box, Card, CardContent, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography} from '@mui/material'
+import {useTheme} from "@mui/material/styles"
+import {CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, Title, Tooltip} from 'chart.js'
+import {useCallback, useEffect, useState} from 'react'
+import {Line} from 'react-chartjs-2'
 import {useParams} from 'react-router-dom'
-import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts'
-import './styles.css'
-import {Measurement} from './types'
-import { API_BASE_URL } from "../config"
+import {API_BASE_URL} from "../config"
+import {Measurement} from './Types'
 
-const periods = {
+ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend)
+
+const periods =
+{
 	hour: 1,
 	'24hours': 24,
 	week: 7 * 24,
@@ -23,158 +28,104 @@ const MeasurementHistory = () =>
 	const [latestMeasurement, setLatestMeasurement] = useState<Measurement | null>(null)
 	const [selectedPeriod, setSelectedPeriod] = useState<'hour' | '24hours' | 'week' | 'month' | '3months'>('hour')
 
-	const fetchHistory = async () =>
+	const theme = useTheme()
+
+	const chartOptions = {
+		responsive: true,
+		maintainAspectRatio: false,
+		scales: {
+			x: {
+				grid: {color: theme.palette.divider},
+				ticks: {color: theme.palette.text.primary},
+			},
+			y: {
+				grid: {color: theme.palette.divider},
+				ticks: {color: theme.palette.text.primary},
+			},
+		},
+		elements: {line: {tension: 0.4}},
+	}
+
+	const fetchHistory = useCallback(async () =>
 	{
 		try
 		{
 			const endDate = new Date().toISOString()
-			const startDate = new Date(
-				Date.now() - periods[selectedPeriod] * 60 * 60 * 1000
-			).toISOString()
-
-			const response = await fetch(
-				API_BASE_URL + `/MeasurementsHistory?measurementId=${encodeURIComponent(
-					decodedTopicName
-				)}&startDate=${startDate}&endDate=${endDate}`
-			)
-
-			if (!response.ok)
-			{
-				throw new Error(`HTTP error! status: ${response.status}`)
-			}
-
+			const startDate = new Date(Date.now() - periods[selectedPeriod] * 60 * 60 * 1000).toISOString()
+			const response = await fetch(`${API_BASE_URL}/MeasurementsHistory?measurementId=${encodeURIComponent(decodedTopicName)}&startDate=${startDate}&endDate=${endDate}`)
+			if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 			const json: Measurement[] = await response.json()
-
-			// Фильтруем данные в зависимости от выбранного периода
-			const filteredData = filterMeasurementsByMinute(json, selectedPeriod)
-
-			setData(filteredData)
-			setLatestMeasurement(
-				filteredData.length > 0 ? filteredData[filteredData.length - 1] : null
-			)
+			setData(json)
+			setLatestMeasurement(json.length > 0 ? json[json.length - 1] : null)
 			setLoading(false)
 		} catch (err)
 		{
-			const error = err as Error
-			setError(error.message)
+			setError(err instanceof Error ? err.message : 'Unknown error')
 			setLoading(false)
 		}
-	}
+	}, [decodedTopicName, selectedPeriod])
 
 	useEffect(() =>
 	{
-		fetchHistory() // Initial fetch
-		const intervalId = setInterval(fetchHistory, 1000 * 60) // Обновляем данные каждую минуту
-
+		fetchHistory()
+		const intervalId = setInterval(fetchHistory, 1000 * 60)
 		return () => clearInterval(intervalId)
-	}, [decodedTopicName, selectedPeriod])
+	}, [fetchHistory])
 
-	const filterMeasurementsByMinute = (measurements: Measurement[], period: string): Measurement[] =>
-	{
-		const intervalMinutes = {
-			hour: 1, // оставляем все данные (обновление каждую минуту)
-			'24hours': 5, // выбираем данные каждые 5 минут
-			week: 60, // выбираем данные каждый час
-			month: 240, // выбираем данные каждые 4 часа
-			'3months': 1440, // выбираем данные каждый день
-		}[period] || 1
-
-		const seenMinutes = new Set<string>()
-		return measurements.filter((measurement) =>
-		{
-			const minute = new Date(measurement.timestamp).toISOString().substring(0, 16)
-			const timeKey = `${Math.floor(new Date(measurement.timestamp).getMinutes() / intervalMinutes)}-${minute}`
-
-			if (!seenMinutes.has(timeKey))
+	const chartData = {
+		labels: data.map(measurement => new Date(measurement.timestamp).toLocaleString()),
+		datasets: [
 			{
-				seenMinutes.add(timeKey)
-				return true
-			}
-			return false
-		})
+				label: 'Измерения',
+				data: data.map(measurement => Number(measurement.value)),
+				borderColor: theme.palette.primary.main,
+				fill: false,
+			},
+		],
 	}
 
-	const getChartHeight = () =>
-	{
-		const screenHeight = window.innerHeight
-		const screenWidth = window.innerWidth
-		return Math.max(400, Math.min(screenHeight * 0.5, screenWidth * 0.4))
-	}
-
-	if (loading)
-	{
-		return <p className="loading">Loading...</p>
-	}
-
-	if (error)
-	{
-		return <p className="error">Error: {error}</p>
-	}
+	if (loading) return <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}><CircularProgress /></Box>
+	if (error) return <Typography color={theme.palette.error.main} variant="h6">{`Ошибка: ${error}`}</Typography>
 
 	return (
-		<div className="measurement-history">
+		<Box sx={{
+			display: 'flex',
+			flexDirection: 'column',
+			height: '95vh', // Высота экрана
+			width: '100%', // Уменьшаем ширину на размер сайдбара
+			gap: 2,
+			padding: 3,
+			maxWidth: '100vw', // Ограничение ширины с учетом сайдбара
+			overflow: 'hidden',
+		}}>
+
 			{latestMeasurement && (
-				<div className="sensor-info">
-					<p>
-						<strong>История измерений для:</strong> {decodedTopicName}
-					</p>
-					<p>
-						<strong>Последнее значение:</strong> {latestMeasurement.value}{' '}
-						{latestMeasurement.unit || ''}
-					</p>
-					<p>
-						<strong>Время последнего обновления:</strong>{' '}
-						{new Date(latestMeasurement.timestamp).toLocaleString()}
-					</p>
-					<div className="period-selector">
-						<label>Выберите период: </label>
-						<select
-							value={selectedPeriod}
-							onChange={(e) => setSelectedPeriod(e.target.value as keyof typeof periods)}
-						>
-							<option value="hour">Последний час</option>
-							<option value="24hours">Последние 24 часа</option>
-							<option value="week">Последняя неделя</option>
-							<option value="month">Последний месяц</option>
-							<option value="3months">Последние 3 месяца</option>
-						</select>
-					</div>
-				</div>
+				<Card elevation={3} sx={{ padding: 2 }}>
+					<CardContent>
+						<Typography variant="h6">История измерений для: {topicName}</Typography>
+						<Typography variant="body1">Последнее значение: {latestMeasurement.value} {latestMeasurement.unit || ''}</Typography>
+						<Typography variant="body1">Время последнего обновления: {new Date(latestMeasurement.timestamp).toLocaleString()}</Typography>
+					</CardContent>
+				</Card>
 			)}
-			<div className="chart-container">
-				<ResponsiveContainer width="100%" height={getChartHeight()}>
-					<LineChart
-						data={data}
-						margin={{top: 20, right: 20, left: 0, bottom: 20}}
-					>
-						<CartesianGrid stroke="#f5f5f5" />
-						<XAxis
-							dataKey="timestamp"
-							tickFormatter={(tick) =>
-								new Date(tick).toLocaleString([], {
-									month: '2-digit',
-									day: '2-digit',
-									hour: '2-digit',
-									minute: '2-digit',
-								})
-							}
-							angle={-45}
-							textAnchor="end"
-							height={80}
-						/>
-						<YAxis />
-						<Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} />
-						<Line
-							type="monotone"
-							dataKey="value"
-							stroke="#8884d8"
-							dot={false}
-							strokeWidth={2}
-						/>
-					</LineChart>
-				</ResponsiveContainer>
-			</div>
-		</div>
+
+			<FormControl fullWidth>
+				<InputLabel id="select-period-label">Выберите период</InputLabel>
+				<Select labelId="select-period-label" value={selectedPeriod} onChange={(e) => setSelectedPeriod(e.target.value as keyof typeof periods)}>
+					<MenuItem value="hour">Последний час</MenuItem>
+					<MenuItem value="24hours">Последние 24 часа</MenuItem>
+					<MenuItem value="week">Последняя неделя</MenuItem>
+					<MenuItem value="month">Последний месяц</MenuItem>
+					<MenuItem value="3months">Последние 3 месяца</MenuItem>
+				</Select>
+			</FormControl>
+
+			<Box sx={{ flex: 1, width: '100%', height: 'calc(100vh - 250px)', overflow: 'auto' }}>
+				<Line data={chartData} options={chartOptions} />
+			</Box>
+
+		</Box>
+
 	)
 }
 

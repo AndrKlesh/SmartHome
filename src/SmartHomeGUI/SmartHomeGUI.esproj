@@ -1,7 +1,6 @@
-<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2266548">
-
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2703133">
 	<PropertyGroup>
-		<StartupCommand>npm run dev</StartupCommand>
+		<StartupCommand>npm start</StartupCommand>
 		<JavaScriptTestRoot>src\</JavaScriptTestRoot>
 		<JavaScriptTestFramework>Jest</JavaScriptTestFramework>
 		<!-- Allows the build (or compile) script located on package.json to run on Build -->
@@ -9,5 +8,4 @@
 		<!-- Folder where production build objects will be placed -->
 		<BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
 	</PropertyGroup>
-
 </Project>

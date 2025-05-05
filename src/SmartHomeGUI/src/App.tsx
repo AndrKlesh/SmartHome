@@ -1,60 +1,112 @@
-import { useState, useEffect } from "react"
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom"
+import {Box, CircularProgress, Container, CssBaseline} from "@mui/material"
+import {ThemeProvider, createTheme} from "@mui/material/styles"
+import {useCallback, useEffect, useState} from "react"
+import {Navigate, Route, BrowserRouter as Router, Routes} from "react-router-dom"
 import Dashboard from "./components/Dashboard"
-import Sidebar from "./components/Sidebar"
 import MeasurementHistory from "./components/MeasurementHistory"
 import Settings from "./components/Settings"
-import "./components/styles.css"
-import { API_BASE_URL } from "./config"
-import { BASE_NAME } from "./config"
+import Sidebar from "./components/Sidebar"
+import {API_BASE_URL, BASE_NAME} from "./Config"
 
-function App ()
+interface MeasurementLink
 {
-	const [isOpen, setIsOpen] = useState(false)
+	path: string
+	mode: string
+}
+
+const App = () =>
+{
+	const [menu, setMenu] = useState<MeasurementLink[]>([])
 	const [firstMenuItem, setFirstMenuItem] = useState<string | null>(null)
+	const [isDarkTheme, setDarkTheme] = useState(true)
+
+	const toggleTheme = useCallback(() => setDarkTheme((prev) => !prev), [])
+
+	const fetchMenu = useCallback(async () =>
+	{
+		try
+		{
+			const response = await fetch(`${API_BASE_URL}/MeasuresLinks/nextLayer/`)
+			if (!response.ok)
+			{
+				throw new Error(`Ошибка загрузки меню: ${response.status}`)
+			}
+			const data = await response.json()
+			setMenu(data)
+			if (data.length > 0)
+			{
+				setFirstMenuItem(data[0].path)
+			}
+		} catch (error)
+		{
+			console.error("Ошибка при загрузке меню:", error)
+		}
+	}, [])
 
 	useEffect(() =>
 	{
-		const fetchMenu = async () =>
-		{
-			try
-			{
-				const response = await fetch(API_BASE_URL +'/MeasuresLinks/nextLayer/')
-				if (!response.ok)
-				{
-					throw new Error(`Ошибка загрузки меню: ${ response.status }`)
-				}
-				const menu = await response.json()
-				if (menu.length > 0)
-				{
-					setFirstMenuItem(menu[0].path) // Берём первый доступный путь
-				}
-			} catch (error)
-			{
-				console.error("Ошибка при загрузке меню:", error)
-			}
-		}
-
 		fetchMenu()
-	}, [])
+	}, [fetchMenu])
+
+	const theme = createTheme({
+		palette: {
+			mode: isDarkTheme ? "dark" : "light",
+		},
+		typography: {
+			fontFamily: '"Roboto", "Arial", sans-serif',
+		},
+		components: {
+			MuiButton: {
+				defaultProps: {
+					variant: "contained",
+				},
+			},
+			MuiAppBar: {
+				styleOverrides: {
+					root: {
+						borderRadius: "8px",
+						boxShadow: "none",
+					},
+				},
+			},
+		},
+	})
+
+	if (!firstMenuItem)
+	{
+		return (
+			<ThemeProvider theme={theme}>
+				<CssBaseline />
+				<Container sx={{mt: 2}}>
+					<Box display="flex" justifyContent="center">
+						<CircularProgress />
+					</Box>
+				</Container>
+			</ThemeProvider>
+		)
+	}
 
 	return (
-		<Router basename={BASE_NAME}>
-			<Sidebar isOpen={ isOpen } setIsOpen={ setIsOpen } />
-			<div className={ `content ${ isOpen ? "shifted" : "" }` }>
-				<Routes>
-					{/* Динамическое перенаправление, когда меню загружено */ }
-					<Route
-						path="/"
-						element={ firstMenuItem ? <Navigate to={ `/dashboard/${ firstMenuItem }` } /> : null }
-					/>
-					<Route path="/dashboard/:name" element={ <Dashboard /> } />
-					<Route path="/history/:topicName" element={ <MeasurementHistory /> } />
-					<Route path="/settings" element={ <Settings /> } />
-				</Routes>
-			</div>
-		</Router>
-	)
+		<ThemeProvider theme={theme}>
+			<CssBaseline />
+			<Router basename={BASE_NAME}>
+				<Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+					<Sidebar menu={menu} isDarkTheme={isDarkTheme} toggleTheme={toggleTheme} />
+					<Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, minWidth: 0 }}>
+						<Container sx={{ flexGrow: 1, minWidth: 0, maxWidth: "100vw", overflow: "auto", p: 2 }}>
+							<Routes>
+								<Route path="/" element={<Navigate to={`/dashboard/${firstMenuItem}`} />} />
+								<Route path="/dashboard/:name" element={<Dashboard />} />
+								<Route path="/history/:topicName" element={<MeasurementHistory />} />
+								<Route path="/settings" element={<Settings />} />
+							</Routes>
+						</Container>
+					</Box>
+				</Box>
+			</Router>
+		</ThemeProvider>
+	);
+
 }
 
 export default App

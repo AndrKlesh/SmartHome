@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react'
+import {Box, Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, useTheme} from '@mui/material'
+import React, {useCallback, useEffect, useState} from 'react'
+import {API_BASE_URL} from "../Config"
 import ErrorMessage from './ErrorMessage'
-import './styles.css'
-import { TopicData } from './types'
-import { API_BASE_URL } from "../config"
+import {TopicData} from './Types'
 
-const SubscribeToMqttTopics: React.FC = () =>
+const Settings: React.FC = () =>
 {
 	const [data, setData] = useState<TopicData[]>([])
 	const [editingKey, setEditingKey] = useState<string | null>(null)
@@ -12,35 +12,38 @@ const SubscribeToMqttTopics: React.FC = () =>
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
+	const theme = useTheme()
+
 	const generateUniqueKey = () => crypto.randomUUID()
 
-	const isEditing = (record: TopicData): boolean => record.measurementId === editingKey
+	const isEditing = (record: TopicData): boolean =>
+		record.measurementId === editingKey
+
+	const fetchData = useCallback(async () =>
+	{
+		setLoading(true)
+		try
+		{
+			const response = await fetch(API_BASE_URL + '/Subscriptions/getAllSubscriptions')
+			if (!response.ok)
+			{
+				throw new Error('Failed to fetch topics')
+			}
+			const result = await response.json()
+			setData(result)
+		} catch (err)
+		{
+			setError('Failed to load topics.')
+		} finally
+		{
+			setLoading(false)
+		}
+	}, [])
 
 	useEffect(() =>
 	{
-		const fetchData = async () =>
-		{
-			setLoading(true)
-			try
-			{
-				const response = await fetch(API_BASE_URL + '/Subscriptions/getAllSubscriptions')
-				if (!response.ok)
-				{
-					throw new Error('Failed to fetch topics')
-				}
-				const result = await response.json()
-				setData(result)
-			} catch
-			{
-				setError('Failed to load topics.')
-			} finally
-			{
-				setLoading(false)
-			}
-		}
-
 		fetchData()
-	}, [])
+	}, [fetchData])
 
 	const handleAdd = async (): Promise<void> =>
 	{
@@ -59,12 +62,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 			const response = await fetch(API_BASE_URL + '/Subscriptions/addSubscription', {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({
-					measurementId: newRecord.measurementId,
-					measurementName: newRecord.measurementName,
-					unit: newRecord.unit,
-					mqttTopic: newRecord.mqttTopic,
-				}),
+				body: JSON.stringify(newRecord),
 			})
 
 			if (!response.ok)
@@ -82,11 +80,12 @@ const SubscribeToMqttTopics: React.FC = () =>
 	const handleDelete = async (measurementId: string): Promise<void> =>
 	{
 		setError(null)
-
 		try
 		{
 			const response = await fetch(API_BASE_URL + `/deleteSubscription`, {
 				method: 'DELETE',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({measurementId}),
 			})
 
 			if (!response.ok)
@@ -126,12 +125,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 			const response = await fetch(API_BASE_URL + `/Subscriptions/updateSubscription/${measurementId}`, {
 				method: 'PUT',
 				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({
-					measurementId: formValues.measurementId,
-					measurementName: formValues.measurementName,
-					unit: formValues.unit,
-					mqttTopic: formValues.mqttTopic,
-				}),
+				body: JSON.stringify(formValues),
 			})
 
 			if (!response.ok)
@@ -146,7 +140,7 @@ const SubscribeToMqttTopics: React.FC = () =>
 			)
 		} catch
 		{
-			setError('Failed to update topic. Please try again.')
+			setError('Failed to update topic')
 		} finally
 		{
 			setEditingKey(null)
@@ -154,7 +148,10 @@ const SubscribeToMqttTopics: React.FC = () =>
 		}
 	}
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof TopicData) =>
+	const handleInputChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		field: keyof TopicData
+	) =>
 	{
 		setFormValues((prevValues) => ({
 			...prevValues,
@@ -163,81 +160,126 @@ const SubscribeToMqttTopics: React.FC = () =>
 	}
 
 	return (
-		<div className="table">
-			<h2>Subscribe to MQTT Topics</h2>
-			<table>
-				<thead>
-					<tr>
-						<th>Id</th>
-						<th>Name</th>
-						<th>Units</th>
-						<th>MQTT Topic</th>
-						<th>Converter</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{data.map((record) => (
-						<tr key={record.measurementId}>
-							{isEditing(record) ? (
-								<>
-									<td>{record.measurementId}</td>
-									<td>
-										<input
-											type="text"
-											value={formValues.measurementName || ''}
-											onChange={(e) => handleInputChange(e, 'measurementName')}
-										/>
-									</td>
-									<td>
-										<input
-											type="text"
-											value={formValues.unit || ''}
-											onChange={(e) => handleInputChange(e, 'unit')}
-										/>
-									</td>
-									<td>
-										<input
-											type="text"
-											value={formValues.mqttTopic || ''}
-											onChange={(e) => handleInputChange(e, 'mqttTopic')}
-										/>
-									</td>
-									<td>
-										<input
-											type="text"
-											value={formValues.converterName || ''}
-											onChange={(e) => handleInputChange(e, 'converterName')}
-										/>
-									</td>
-									<td>
-										<button onClick={() => handleSave(record.measurementId)} className="button">Save</button>
-										<button onClick={handleCancel} className="button">Cancel</button>
-									</td>
-								</>
-							) : (
-								<>
-									<td>{record.measurementId}</td>
-									<td>{record.measurementName}</td>
-									<td>{record.unit}</td>
-									<td>{record.mqttTopic}</td>
-									<td>{record.converterName}</td>
-									<td>
-										<button onClick={() => handleEdit(record)} className="button">Edit</button>
-											<button onClick={ () => handleDelete(record.measurementId) } className="button" style={ { marginLeft: "8px" } }>Delete</button>
-									</td>
-								</>
-							)}
-						</tr>
-					))}
-				</tbody>
-			</table>
-			<button onClick={handleAdd} className="button" disabled={loading}>
-				{loading ? 'Adding...' : 'Add Topic'}
-			</button>
+		<Box sx={{width: '100%', border: `none`, padding: 3, backgroundColor: theme.palette.background.default, color: theme.palette.text.primary}}>
+			<Typography variant="h4" sx={{marginBottom: 3, fontWeight: 'bold', color: theme.palette.primary.main, textAlign: 'center'}}>
+				Настройки
+			</Typography>
+			<TableContainer sx={{border: `1px solid ${theme.palette.divider}`}}>
+				<Table aria-label="topics table" sx={{borderCollapse: 'separate'}}>
+					<TableHead>
+						<TableRow>
+							<TableCell sx={{width: '30%', border: `1px solid ${theme.palette.divider}`}}>Id</TableCell>
+							<TableCell sx={{width: '15%', border: `1px solid ${theme.palette.divider}`}}>Name</TableCell>
+							<TableCell sx={{width: '10%', border: `1px solid ${theme.palette.divider}`}}>Units</TableCell>
+							<TableCell sx={{width: '25%', border: `1px solid ${theme.palette.divider}`}}>MQTT Topic</TableCell>
+							<TableCell sx={{width: '10%', border: `1px solid ${theme.palette.divider}`}}>Converter</TableCell>
+							<TableCell sx={{width: '10%', border: `1px solid ${theme.palette.divider}`}}>Actions</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{data.map((record) => (
+							<TableRow
+								key={record.measurementId}
+								sx={{
+									'&:hover': {backgroundColor: theme.palette.action.hover},
+									borderBottom: `1px solid ${theme.palette.divider}`,
+								}}
+							>
+								{isEditing(record) ? (
+									<>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<Typography variant="body2">{record.measurementId}</Typography>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<TextField
+												value={formValues.measurementName || ''}
+												onChange={(e) => handleInputChange(e, 'measurementName')}
+												size="small"
+												sx={{width: '100%'}}
+											/>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<TextField
+												value={formValues.unit || ''}
+												onChange={(e) => handleInputChange(e, 'unit')}
+												size="small"
+												sx={{width: '100%'}}
+											/>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<TextField
+												value={formValues.mqttTopic || ''}
+												onChange={(e) => handleInputChange(e, 'mqttTopic')}
+												size="small"
+												sx={{width: '100%'}}
+											/>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<TextField
+												value={formValues.converterName || ''}
+												onChange={(e) => handleInputChange(e, 'converterName')}
+												size="small"
+												sx={{width: '100%'}}
+											/>
+										</TableCell>
+										<TableCell>
+											<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+												<Button
+													onClick={() => handleSave(record.measurementId)}
+													variant="contained"
+													color="primary"
+													fullWidth
+												>
+													Save
+												</Button>
+												<Button onClick={handleCancel} variant="outlined" color="error" fullWidth>
+													Cancel
+												</Button>
+											</Box>
+										</TableCell>
+									</>
+								) : (
+									<>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<Typography variant="body2">{record.measurementId}</Typography>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<Typography variant="body2">{record.measurementName}</Typography>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<Typography variant="body2">{record.unit}</Typography>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<Typography variant="body2">{record.mqttTopic}</Typography>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<Typography variant="body2">{record.converterName}</Typography>
+										</TableCell>
+										<TableCell sx={{border: `1px solid ${theme.palette.divider}`}}>
+											<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+												<Button onClick={() => handleEdit(record)} variant="contained" color="primary" fullWidth>
+													Edit
+												</Button>
+												<Button onClick={() => handleDelete(record.measurementId)} variant="outlined" color="error" fullWidth>
+													Delete
+												</Button>
+											</Box>
+										</TableCell>
+									</>
+								)}
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+			<Box sx={{mt: 2}}>
+				<Button onClick={handleAdd} variant="contained" color="primary" disabled={loading} fullWidth>
+					{loading ? <CircularProgress size={24} /> : 'Add Topic'}
+				</Button>
+			</Box>
 			{error && <ErrorMessage message={error} />}
-		</div>
+		</Box>
 	)
 }
 
-export default SubscribeToMqttTopics
+export default Settings

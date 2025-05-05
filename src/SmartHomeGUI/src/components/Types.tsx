@@ -1,3 +1,9 @@
+export interface MeasurementLink
+{
+	path: string
+	mode: string
+}
+
 export interface DashboardData
 {
 	measurementId: string
@@ -23,8 +29,3 @@ export interface Measurement
 	unit: string
 }
 
-export interface MeasurementLink
-{
-	path: string
-	mode: string
-}

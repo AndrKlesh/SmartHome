@@ -15,7 +15,8 @@ namespace SmartHomeAPI.Services;
 public sealed class MeasuresStorageService (MeasuresRepository measurementRepository,
 									 SubscriptionRepository subscriptionRepository,
 									 MeasuresLinksRepository measuresLinksRepository,
-									 ILogger<MeasuresStorageService> logger) : IDisposable
+									 ILogger<MeasuresStorageService> logger)
+	: IMeasuresStorageServiceLoader, IMeasuresStorageServiceWriter, IDisposable
 {
 	private readonly SemaphoreSlim _newMeasuresSemaphore = new(1);
 	private bool _disposed;

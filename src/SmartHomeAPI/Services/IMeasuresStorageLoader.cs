@@ -7,7 +7,7 @@ namespace SmartHomeAPI.Services;
 /// <summary>
 /// Интерфейс чтения для сервиса хранения измерений
 /// </summary>
-public interface IMeasuresStorageServiceLoader
+public interface IMeasuresStorageLoader
 {
 	public Task<IReadOnlyList<MeasureDTO>> GetLatestMeasurementsAsync (string mask);
 	public Task<IReadOnlyList<MeasureDTO>> SubscribeToLatestMeasurementsAsync (string mask);

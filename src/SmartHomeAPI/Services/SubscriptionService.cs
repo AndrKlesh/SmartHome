@@ -11,7 +11,7 @@ namespace SmartHomeAPI.Services;
 /// Сопоставляет Guid измерения <-> mqtt-топик
 /// </summary>
 /// <param name="subscriptionRepository">Репозиторий подписок на измерения</param>
-public sealed class SubscriptionService (SubscriptionRepository subscriptionRepository, ILogger<SubscriptionService> logger)
+public sealed class SubscriptionService (SubscriptionRepository subscriptionRepository, ILogger<SubscriptionService> logger) : ISubscriptionService
 {
 	/// <summary>
 	/// Получить все подписки

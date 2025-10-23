@@ -16,7 +16,7 @@ public sealed class MeasuresStorageService (MeasuresRepository measurementReposi
 									 SubscriptionRepository subscriptionRepository,
 									 MeasuresLinksRepository measuresLinksRepository,
 									 ILogger<MeasuresStorageService> logger)
-	: IMeasuresStorageServiceLoader, IMeasuresStorageServiceWriter, IDisposable
+	: IMeasuresStorageLoader, IMeasuresStorageWriter, IDisposable
 {
 	private readonly SemaphoreSlim _newMeasuresSemaphore = new(1);
 	private bool _disposed;

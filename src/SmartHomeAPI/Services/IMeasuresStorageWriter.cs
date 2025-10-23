@@ -7,7 +7,7 @@ namespace SmartHomeAPI.Services;
 /// <summary>
 /// Интерфейс записи для сервиса хранения измерений
 /// </summary>
-public interface IMeasuresStorageServiceWriter
+public interface IMeasuresStorageWriter
 {
 	public Task AddMeasureAsync (MeasureDTO measurementDto);
 }

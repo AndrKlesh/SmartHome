@@ -8,6 +8,7 @@ namespace SmartHomeAPI.Repositories;
 /// Репозиторий измерений
 /// </summary>
 public sealed class MeasuresRepository (ILogger<MeasuresRepository> logger)
+	: IMeasuresRepositoryLoader, IMeasuresRepositoryWriter
 {
 	private readonly List<MeasureDomain> _measurements = new();
 	private readonly Lock _lock = new();

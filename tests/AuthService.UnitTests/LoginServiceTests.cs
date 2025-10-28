@@ -2,8 +2,6 @@ using AuthService.Jwt;
 using AuthService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
-using Moq;
 using NUnit.Framework;
 
 namespace AuthService.UnitTests;
@@ -13,20 +11,20 @@ internal sealed class LoginServiceTests
 	[Test]
 	public void LoginTest ()
 	{
-		ConfStub conf = new();
+		IConfiguration conf = TestConfig.Build();
 		LoginService ls = new(conf);
 		string username = "user";
-		string token = ls.Login(username, username);
-		Assert.That(token, Is.Not.EqualTo(string.Empty));
-		bool isValid = ls.CheckToken(token, out string usernameCheckToken);
+		(string accessToken, string refreshToken) = ls.Login(username, username);
+		Assert.That(accessToken, Is.Not.EqualTo(string.Empty));
+		bool isValid = ls.CheckToken(accessToken, out string usernameCheckToken);
 		Assert.That(isValid, Is.True);
-		Assert.That(isValid, username);
+		Assert.That(usernameCheckToken, Is.EqualTo(username));
 	}
 }
 
 internal class JwtMiddlewareTests
 {
-	private Mock<IConfiguration> _configMock;
+	private IConfiguration _configuration;
 	private LoginService _loginService;
 	private DefaultHttpContext _httpContext;
 	private JwtMiddleware _middleware;
@@ -34,9 +32,8 @@ internal class JwtMiddlewareTests
 	[SetUp]
 	public void SetUp ()
 	{
-		_configMock = new Mock<IConfiguration>();
-		_ = _configMock.Setup(c => c ["Jwt:Key"]).Returns("F8h#9sLm@2vX!zP$QeRtY&5*KdNwUoG1");
-		_loginService = new LoginService(_configMock.Object);
+		_configuration = TestConfig.Build();
+		_loginService = new LoginService(_configuration);
 		_middleware = new JwtMiddleware(context => Task.CompletedTask, _loginService);
 		_httpContext = new DefaultHttpContext();
 	}
@@ -45,7 +42,7 @@ internal class JwtMiddlewareTests
 	public async Task InvokeValidTokenSetsAuthenticatedUser ()
 	{
 		string username = "user";
-		string token = _loginService.Login(username, username);
+		(string token, string refresh) = _loginService.Login(username, username);
 		_httpContext.Request.Path = "/SmartHome/dashboard/devices";
 		Dictionary<string, string> cookies = new()
 		{ { "jwt", token } };
@@ -79,23 +76,28 @@ internal class JwtMiddlewareTests
 	}
 }
 
-internal sealed class ConfStub : IConfiguration
+internal static class TestConfig
 {
-	public string? this [string key] { get => "F8h#9sLm@2vX!zP$QeRtY&5*KdNwUoG1"; set => throw new NotImplementedException(); }
-
-	public IEnumerable<IConfigurationSection> GetChildren ()
+	public static IConfiguration Build ()
 	{
-		throw new NotImplementedException();
+		Dictionary<string, string?> data = new()
+		{
+			["Jwt:Key"] = "F8h#9sLm@2vX!zP$QeRtY&5*KdNwUoG1",
+			["users:0:login"] = "user",
+			["users:0:passwordSha512"] = ComputeSha512Hex("user"),
+			["users:0:role"] = "User",
+		};
+		return new ConfigurationBuilder().AddInMemoryCollection(data).Build();
 	}
 
-	public IChangeToken GetReloadToken ()
+	private static string ComputeSha512Hex (string input)
 	{
-		throw new NotImplementedException();
-	}
-
-	public IConfigurationSection GetSection (string key)
-	{
-		throw new NotImplementedException();
+		using var sha = System.Security.Cryptography.SHA512.Create();
+		byte [] bytes = System.Text.Encoding.UTF8.GetBytes(input);
+		byte [] hash = sha.ComputeHash(bytes);
+		var sb = new System.Text.StringBuilder(hash.Length * 2);
+		foreach (byte b in hash) sb.Append(b.ToString("x2"));
+		return sb.ToString();
 	}
 }
 

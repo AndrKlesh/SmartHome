@@ -4,6 +4,6 @@ namespace AuthService.Models;
 
 public sealed class User
 {
-	public required string Username { get; set; }
-	public required string Password { get; set; }
+	public required string Username { get; set; } = string.Empty;
+	public required string Password { get; set; } = string.Empty;
 }

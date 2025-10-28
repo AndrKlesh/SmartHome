@@ -19,12 +19,23 @@ public sealed class AuthController (LoginService loginService) : ControllerBase
 
 		try
 		{
-			string token = loginService.Login(user.Username, user.Password);
-			Response.Cookies.Append("jwt", token, new CookieOptions
+			(string accessToken, string refreshToken) = loginService.Login(user.Username, user.Password);
+
+			Response.Cookies.Append("jwt", accessToken, new CookieOptions
 			{
-				SameSite = SameSiteMode.None
+				HttpOnly = true,
+				SameSite = SameSiteMode.Lax,
+				Secure = Request.IsHttps,
+			});
+
+			Response.Cookies.Append("refresh", refreshToken, new CookieOptions
+			{
+				HttpOnly = true,
+				SameSite = SameSiteMode.Lax,
+				Secure = Request.IsHttps,
 			});
 			return Ok();
+
 		}
 		catch (Exception)
 		{

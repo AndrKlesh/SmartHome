@@ -78,7 +78,7 @@ const Authpage: React.FC = () => {
 			console.log('Response status:', response.status);
 
 			if (response.ok) {
-				// TODO
+				// Successful login
 				// const data = await response.json()
 				setLoginData({ username: '', password: '' }) // очищаем форму
 				// редирект на dashboard
@@ -103,8 +103,7 @@ const Authpage: React.FC = () => {
 		e.preventDefault();
 		setRegisterError(null);
 
-		// TODO
-		// Провека токена и пароля пользователя
+		// Registration request (token/password will be validated server-side)
 
 		try {
 
@@ -119,7 +118,7 @@ const Authpage: React.FC = () => {
 			console.log('Response status:', response.status);
 
 			if (response.ok) {
-				// TODO
+				// Successful registration
 				setRegisterData({ username: '', password: '' })
 				setIsRegistering(false);
 			}

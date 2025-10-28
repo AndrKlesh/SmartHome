@@ -35,7 +35,6 @@ public sealed class AuthController (LoginService loginService) : ControllerBase
 				Secure = Request.IsHttps,
 			});
 			return Ok();
-
 		}
 		catch (Exception)
 		{

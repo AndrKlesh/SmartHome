@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SubscriptionsService.Abstractions\SubscriptionsService.Abstractions.csproj" />
+		<ProjectReference Include="..\SubscriptionsService.Implementation\SubscriptionsService.Implementation.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Scalar.AspNetCore" />
+	</ItemGroup>
+
+</Project>

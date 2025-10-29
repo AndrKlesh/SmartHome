@@ -111,6 +111,7 @@ csharp_style_prefer_range_operator = false:warning
 csharp_style_prefer_tuple_swap = true:warning
 csharp_style_prefer_utf8_string_literals = true:warning
 csharp_style_prefer_unbound_generic_type_in_nameof = true:warning
+csharp_style_prefer_implicitly_typed_lambda_expression = true:warning
 csharp_style_conditional_delegate_call = true:warning
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_deconstructed_variable_declaration = true:warning

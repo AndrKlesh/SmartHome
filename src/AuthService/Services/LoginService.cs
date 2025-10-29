@@ -11,10 +11,19 @@ namespace AuthService.Services;
 
 public sealed class LoginService (IConfiguration configuration)
 {
+	//TODO: Можно не создавать Dictionary, а просто обращаться к configuration.GetSection("users") каждый раз,
+	//когда пользователь выполняет login
+	//При этом можно сделать reloadOnChange = true для appsettings.json
+	//В Program.cs добавить
+	//builder.Configuration.AddJsonFile("appsettings.json", 
+	//                                  optional: false, 
+    //                                  reloadOnChange: true);
+
 	private readonly Dictionary<string, (string PasswordSha512, string Role)> _users = BuildUsers(configuration);
 
 	public (string AccessToken, string RefreshToken) Login (string username, string password)
 	{
+		//TODO: заменить _users.TryGetValue на функцию получения пользователя и его пароля из секции конфигурации
 		if (_users.TryGetValue(username, out (string PasswordSha512, string Role) userInfo) &&
 			string.Equals(ComputeSha512Hex(password), userInfo.PasswordSha512, StringComparison.OrdinalIgnoreCase))
 		{

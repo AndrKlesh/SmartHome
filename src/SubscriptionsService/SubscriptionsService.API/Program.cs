@@ -1,5 +1,9 @@
 using Microsoft.Extensions.Logging.Console;
 using Scalar.AspNetCore;
+using SubscriptionsService.Abstractions.Repositories;
+using SubscriptionsService.Abstractions.Services;
+using SubscriptionsService.Implementation.Repositories;
+using SubscriptionsService.Implementation.Services;
 
 namespace SubscriptionsService.API;
 
@@ -10,6 +14,11 @@ internal sealed class Program
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 		_ = builder.WebHost.UseKestrel();
+
+		_ = builder.Services.Configure<List<SubscriptionsService.Abstractions.Entities.SubscriptionDomain>>(builder.Configuration.GetSection("Subscriptions"));
+
+		_ = builder.Services.AddSingleton<ISubscriptionRepository, SubscriptionRepository>();
+		_ = builder.Services.AddSingleton<ISubscriptionService, SubscriptionService>();
 
 		// Logging
 		_ = builder.Logging
@@ -29,8 +38,6 @@ internal sealed class Program
 			.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()))
 			.AddOpenApi()
 			.AddControllers();
-
-		// TODO: Тут мы должны зарегестрировать абстракцию и имплементацию. ССылки на них уже добавлены в проект
 
 		WebApplication app = builder.Build();
 

@@ -22,7 +22,10 @@ public sealed class SubscriptionsController : ControllerBase
 	{
 		IReadOnlyList<SubscriptionDTO> subs = await _service.GetAllSubscriptionsAsync().ConfigureAwait(false);
 		if (subs.Count == 0)
+		{
 			return NotFound(new { message = "Список подписок пуст" });
+		}
+
 		return Ok(subs);
 	}
 
@@ -31,7 +34,10 @@ public sealed class SubscriptionsController : ControllerBase
 	{
 		SubscriptionDTO sub = await _service.GetSubscriptionByMeasurementIdAsync(measurementId).ConfigureAwait(false);
 		if (sub == null)
+		{
 			return NotFound(new { message = $"Подписка {measurementId} не найдена" });
+		}
+
 		return Ok(sub);
 	}
 

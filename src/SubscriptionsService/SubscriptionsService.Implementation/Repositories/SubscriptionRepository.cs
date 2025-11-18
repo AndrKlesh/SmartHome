@@ -18,7 +18,6 @@ public sealed class SubscriptionRepository : ISubscriptionRepository
 		_logger = logger;
 		_optionsMonitor = optionsMonitor;
 
-		// Seed from configuration if provided
 		List<SubscriptionDomain>? initial = optionsMonitor.CurrentValue;
 		if (initial != null)
 		{
@@ -28,11 +27,13 @@ public sealed class SubscriptionRepository : ISubscriptionRepository
 			}
 		}
 
-		// If configuration changes, re-seed (but do not override runtime mutations)
 		_ = optionsMonitor.OnChange(updated =>
 		{
 			if (updated is null)
+			{
 				return;
+			}
+
 			foreach (SubscriptionDomain s in updated)
 			{
 				_store.AddOrUpdate(s.MeasurementId, s, (_, __) => s);
@@ -62,7 +63,10 @@ public sealed class SubscriptionRepository : ISubscriptionRepository
 	public Task AddSubscriptionAsync (SubscriptionDomain subscription)
 	{
 		if (subscription == null)
+		{
 			throw new ArgumentNullException(nameof(subscription));
+		}
+
 		_logger.LogInformation("Repository: AddSubscription {Id}", subscription.MeasurementId);
 		if (!_store.TryAdd(subscription.MeasurementId, subscription))
 		{
@@ -75,7 +79,10 @@ public sealed class SubscriptionRepository : ISubscriptionRepository
 	public Task UpdateSubscriptionAsync (SubscriptionDomain subscription)
 	{
 		if (subscription == null)
+		{
 			throw new ArgumentNullException(nameof(subscription));
+		}
+
 		_logger.LogInformation("Repository: UpdateSubscription {Id}", subscription.MeasurementId);
 		_store.AddOrUpdate(subscription.MeasurementId, subscription, (_, __) => subscription);
 		return Task.CompletedTask;

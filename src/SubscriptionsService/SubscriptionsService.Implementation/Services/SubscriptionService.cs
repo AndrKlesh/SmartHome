@@ -50,7 +50,10 @@ public sealed class SubscriptionService : ISubscriptionService
 	public async Task<SubscriptionDTO?> GetSubscriptionByMqttTopicAsync (string mqttTopic)
 	{
 		if (string.IsNullOrWhiteSpace(mqttTopic))
+		{
 			throw new ArgumentNullException(nameof(mqttTopic));
+		}
+
 		SubscriptionDomain s = await _repository.GetSubscriptionByMqttTopicAsync(mqttTopic).ConfigureAwait(false);
 		if (s == null)
 		{
